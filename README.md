@@ -1,4 +1,5 @@
-# HR-System (Think for a name for the application, we will sooner or later create a GUI, so it you can also think of a name that matches the theme of the UI we are going to create, or it can be just a good name regardless of the theme)
+# HR-System 
+(Think for a name for the application, we will sooner or later create a GUI, so you can think of a name that matches the theme of the UI we are going to create, or it can be just a good name regardless of the theme)
 
 # Workflow For Milestone 2
 
