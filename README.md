@@ -32,5 +32,4 @@ _Think for a name for the application, we will sooner or later create a GUI, so 
 - Only SQL scripts are tracked — no `.mdf`, `.ldf`, or backup files.  
 - Follow consistent SQL formatting and naming.
 - Provide documentation for your queries 
-- The final deliverable is a single `final_database.sql` file containing the complete database.
 
