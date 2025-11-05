@@ -144,3 +144,14 @@ CREATE TABLE Payroll (
     emp_ID INT,
     FOREIGN KEY (emp_ID) REFERENCES Employee(employee_ID)
 );
+
+CREATE TABLE Attendance (
+    attendance_ID INT IDENTITY(1,1) PRIMARY KEY,
+    date DATE,
+    check_in_time TIME,
+    check_out_time TIME,
+    total_duration AS (DATEDIFF(MINUTE, check_in_time, check_out_time)) PERSISTED,
+    status VARCHAR(50) DEFAULT 'Absent' CHECK (status IN ('absent', 'attended')),
+    emp_ID INT,
+    FOREIGN KEY (emp_ID) REFERENCES Employee(employee_ID)
+);
