@@ -151,7 +151,7 @@ CREATE TABLE Attendance (
     check_in_time TIME,
     check_out_time TIME,
     total_duration AS (DATEDIFF(MINUTE, check_in_time, check_out_time)) PERSISTED,
-    status VARCHAR(50) DEFAULT 'Absent' CHECK (status IN ('absent', 'attended')),
+    status VARCHAR(50) DEFAULT 'absent' CHECK (status IN ('absent', 'attended')), -- Problem with inconsistent capitalization in description 
     emp_ID INT,
     FOREIGN KEY (emp_ID) REFERENCES Employee(employee_ID)
 );
@@ -188,7 +188,9 @@ CREATE TABLE Employee_Replace_Employee (
     to_date DATE,
     PRIMARY KEY (table_id, Emp1_ID, Emp2_ID),
     FOREIGN KEY (Emp1_ID) REFERENCES Employee(employee_ID),
-    FOREIGN KEY (Emp2_ID) REFERENCES Employee(employee_ID)
+    FOREIGN KEY (Emp2_ID) REFERENCES Employee(employee_ID),
+    CONSTRAINT CHK_Different_Employees CHECK (Emp1_ID <> Emp2_ID) -- Self made contraint infered from last point in 1.2
+
 );
 
 CREATE TABLE Employee_Approve_Leave (
