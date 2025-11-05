@@ -190,3 +190,12 @@ CREATE TABLE Employee_Replace_Employee (
     FOREIGN KEY (Emp1_ID) REFERENCES Employee(employee_ID),
     FOREIGN KEY (Emp2_ID) REFERENCES Employee(employee_ID)
 );
+
+CREATE TABLE Employee_Approve_Leave (
+    Emp1_ID INT,
+    Leave_ID INT,
+    status VARCHAR(50),
+    PRIMARY KEY (Emp1_ID, Leave_ID),
+    FOREIGN KEY (Emp1_ID) REFERENCES Employee(employee_ID),
+    FOREIGN KEY (Leave_ID) REFERENCES Leave(request_ID)
+);
