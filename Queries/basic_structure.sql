@@ -211,3 +211,31 @@ BEGIN
 
 END;
 GO
+
+CREATE PROCEDURE dropAllTables
+AS
+BEGIN
+    --SET NOCOUNT ON; -- Optimization so that it does not return how many rows where affected (unecessary logs)
+
+    -- Drop all tables (reverse dependency order to avoid FK constraint issues)
+    DROP TABLE Employee_Approve_Leave;
+    DROP TABLE Employee_Replace_Employee;
+    DROP TABLE Performance;
+    DROP TABLE Deduction;
+    DROP TABLE Attendance;
+    DROP TABLE Payroll;
+    DROP TABLE Document;
+    DROP TABLE Compensation_Leave;
+    DROP TABLE Unpaid_Leave;
+    DROP TABLE Medical_Leave;
+    DROP TABLE Accidental_Leave;
+    DROP TABLE Annual_Leave;
+    DROP TABLE Leave;
+    DROP TABLE Role_existsIn_Department;
+    DROP TABLE Employee_Role;
+    DROP TABLE Role;
+    DROP TABLE Employee_Phone;
+    DROP TABLE Employee;
+    DROP TABLE Department;
+END;
+GO
