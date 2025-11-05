@@ -13,3 +13,11 @@ SELECT
     annual_balance,
     accidental_balance
 FROM Employee;
+GO
+
+CREATE VIEW NoEmployeeDept AS
+SELECT name, COUNT(*)
+FROM Department d
+JOIN Employee e ON e.dept_name = d.name  
+GROUP BY d.name 
+GO
