@@ -45,3 +45,12 @@ CREATE TABLE Role (
     annual_balance INT,
     accidental_balance INT
 );
+
+CREATE TABLE Employee_Role (
+    emp_ID INT,
+    role_name VARCHAR(50),
+    PRIMARY KEY (emp_ID, role_name),
+    FOREIGN KEY (emp_ID) REFERENCES Employee(employee_ID),
+    FOREIGN KEY (role_name) REFERENCES Role(role_name)
+);
+
