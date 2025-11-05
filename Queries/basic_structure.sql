@@ -81,4 +81,11 @@ CREATE TABLE Annual_Leave (
 );
 
 
+CREATE TABLE Accidental_Leave (
+    request_ID INT PRIMARY KEY,
+    emp_ID INT,
+    FOREIGN KEY (request_ID) REFERENCES Leave(request_ID),
+    FOREIGN KEY (emp_ID) REFERENCES Employee(employee_ID)
+);
+
 
