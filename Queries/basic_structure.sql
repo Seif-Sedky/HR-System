@@ -239,3 +239,39 @@ BEGIN
     DROP TABLE Department;
 END;
 GO
+
+
+
+-- TO-DO: dropAllProceduresFunctionsViews
+
+
+
+
+
+CREATE PROCEDURE clearAllTables
+AS
+BEGIN
+
+    -- Drop all tables (reverse dependency order to avoid FK constraint issues)
+    DELETE FROM Employee_Approve_Leave;
+    DELETE FROM Employee_Replace_Employee;
+    DELETE FROM Performance;
+    DELETE FROM Deduction;
+    DELETE FROM Attendance;
+    DELETE FROM Payroll;
+    DELETE FROM Document;
+    DELETE FROM Compensation_Leave;
+    DELETE FROM Unpaid_Leave;
+    DELETE FROM Medical_Leave;
+    DELETE FROM Accidental_Leave;
+    DELETE FROM Annual_Leave;
+    DELETE FROM Leave;
+    DELETE FROM Role_existsIn_Department;
+    DELETE FROM Employee_Role;
+    DELETE FROM Role;
+    DELETE FROM Employee_Phone;
+    DELETE FROM Employee;
+    DELETE FROM Department;
+
+END;
+GO
