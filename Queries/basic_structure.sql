@@ -179,3 +179,14 @@ CREATE TABLE Performance (
     emp_ID INT,
     FOREIGN KEY (emp_ID) REFERENCES Employee(employee_ID)
 );
+
+CREATE TABLE Employee_Replace_Employee (
+    table_id INT IDENTITY(1,1),
+    Emp1_ID INT,
+    Emp2_ID INT,
+    from_date DATE,
+    to_date DATE,
+    PRIMARY KEY (table_id, Emp1_ID, Emp2_ID),
+    FOREIGN KEY (Emp1_ID) REFERENCES Employee(employee_ID),
+    FOREIGN KEY (Emp2_ID) REFERENCES Employee(employee_ID)
+);
