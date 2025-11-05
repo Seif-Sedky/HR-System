@@ -62,5 +62,15 @@ CREATE TABLE Role_existsIn_Department (
     FOREIGN KEY (Role_name) REFERENCES Role(role_name)
 );
 
+CREATE TABLE Leave (
+    request_ID INT IDENTITY(1,1) PRIMARY KEY,
+    date_of_request DATE,
+    start_date DATE,
+    end_date DATE,
+    num_days AS (DATEDIFF(DAY, start_date, end_date)) PERSISTED,
+    final_approval_status VARCHAR(50) DEFAULT 'pending' CHECK (final_approval_status IN ('approved', 'rejected', 'pending'))
+);
+
+
 
 
