@@ -116,3 +116,18 @@ CREATE TABLE Compensation_Leave (
     FOREIGN KEY (replacement_emp) REFERENCES Employee(employee_ID)
 );
 
+CREATE TABLE Document (
+    document_ID INT IDENTITY(1,1) PRIMARY KEY,
+    type VARCHAR(50),
+    description VARCHAR(50),
+    file_name VARCHAR(50),
+    creation_date DATE,
+    expiry_date DATE,
+    status VARCHAR(50) CHECK (status IN ('valid', 'expired')),
+    emp_ID INT,
+    medical_ID INT,
+    unpaid_ID INT,
+    FOREIGN KEY (emp_ID) REFERENCES Employee(employee_ID),
+    FOREIGN KEY (medical_ID) REFERENCES Medical_Leave(request_ID),
+    FOREIGN KEY (unpaid_ID) REFERENCES Unpaid_Leave(request_ID)
+);
