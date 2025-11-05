@@ -105,3 +105,14 @@ CREATE TABLE Unpaid_Leave (
     FOREIGN KEY (Emp_ID) REFERENCES Employee(employee_ID)
 );
 
+CREATE TABLE Compensation_Leave (
+    request_ID INT PRIMARY KEY,
+    reason VARCHAR(50),
+    date_of_original_workday DATE,
+    emp_ID INT,
+    replacement_emp INT,
+    FOREIGN KEY (request_ID) REFERENCES Leave(request_ID),
+    FOREIGN KEY (emp_ID) REFERENCES Employee(employee_ID),
+    FOREIGN KEY (replacement_emp) REFERENCES Employee(employee_ID)
+);
+
