@@ -54,3 +54,13 @@ CREATE TABLE Employee_Role (
     FOREIGN KEY (role_name) REFERENCES Role(role_name)
 );
 
+CREATE TABLE Role_existsIn_Department (
+    department_name VARCHAR(50),
+    Role_name VARCHAR(50),
+    PRIMARY KEY (department_name, Role_name),
+    FOREIGN KEY (department_name) REFERENCES Department(name),
+    FOREIGN KEY (Role_name) REFERENCES Role(role_name)
+);
+
+
+
