@@ -71,6 +71,14 @@ CREATE TABLE Leave (
     final_approval_status VARCHAR(50) DEFAULT 'pending' CHECK (final_approval_status IN ('approved', 'rejected', 'pending'))
 );
 
+CREATE TABLE Annual_Leave (
+    request_ID INT PRIMARY KEY,
+    emp_ID INT,
+    replacement_emp INT,
+    FOREIGN KEY (request_ID) REFERENCES Leave(request_ID),
+    FOREIGN KEY (emp_ID) REFERENCES Employee(employee_ID),
+    FOREIGN KEY (replacement_emp) REFERENCES Employee(employee_ID)
+);
 
 
 
