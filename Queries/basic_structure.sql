@@ -88,4 +88,14 @@ CREATE TABLE Accidental_Leave (
     FOREIGN KEY (emp_ID) REFERENCES Employee(employee_ID)
 );
 
+CREATE TABLE Medical_Leave (
+    request_ID INT PRIMARY KEY,
+    insurance_status BIT,
+    disability_details VARCHAR(50),
+    type VARCHAR(50) CHECK (type IN ('sick', 'maternity')),
+    Emp_ID INT,
+    FOREIGN KEY (request_ID) REFERENCES Leave(request_ID),
+    FOREIGN KEY (Emp_ID) REFERENCES Employee(employee_ID)
+);
+
 
