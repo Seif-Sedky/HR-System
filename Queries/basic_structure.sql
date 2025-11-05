@@ -171,3 +171,11 @@ CREATE TABLE Deduction (
     FOREIGN KEY (attendance_ID) REFERENCES Attendance(attendance_ID)
 );
 
+CREATE TABLE Performance (
+    performance_ID INT IDENTITY(1,1) PRIMARY KEY,
+    rating INT CHECK (rating BETWEEN 1 AND 5),
+    comments VARCHAR(50),
+    semester CHAR(3),
+    emp_ID INT,
+    FOREIGN KEY (emp_ID) REFERENCES Employee(employee_ID)
+);
