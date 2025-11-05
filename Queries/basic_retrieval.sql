@@ -36,3 +36,10 @@ FROM Performance p
 JOIN Employee e ON p.emp_ID = e.employee_ID
 WHERE p.semester LIKE 'W%';
 GO
+
+CREATE VIEW allRejectedMedicals AS
+SELECT * -- When I just join and select all this would return 2 IDs, is that ok?
+FROM Medical_Leave m
+JOIN Leave l ON m.request_ID = l.request_ID
+WHERE l.final_approval_status = 'rejected';
+GO
