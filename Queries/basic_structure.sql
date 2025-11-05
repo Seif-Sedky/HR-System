@@ -131,3 +131,16 @@ CREATE TABLE Document (
     FOREIGN KEY (medical_ID) REFERENCES Medical_Leave(request_ID),
     FOREIGN KEY (unpaid_ID) REFERENCES Unpaid_Leave(request_ID)
 );
+
+CREATE TABLE Payroll (
+    ID INT IDENTITY(1,1) PRIMARY KEY,
+    payment_date DATE,
+    final_salary_amount DECIMAL(10,1),
+    from_date DATE,
+    to_date DATE,
+    comments VARCHAR(150),
+    bonus_amount DECIMAL(10,2),
+    deductions_amount DECIMAL(10,2),
+    emp_ID INT,
+    FOREIGN KEY (emp_ID) REFERENCES Employee(employee_ID)
+);
