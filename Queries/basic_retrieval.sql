@@ -16,8 +16,23 @@ FROM Employee;
 GO
 
 CREATE VIEW NoEmployeeDept AS
-SELECT name, COUNT(*)
+SELECT 
+    d.name,
+    COUNT(e.employee_ID) 
 FROM Department d
-JOIN Employee e ON e.dept_name = d.name  
-GROUP BY d.name 
+LEFT JOIN Employee e ON e.dept_name = d.name --Uses LEFT JOIN so departments with no employees still appear with 0
+GROUP BY d.name;
+GO 
+
+
+CREATE VIEW allPerformance AS
+SELECT 
+    p.performance_ID,
+    p.rating,
+    p.comments,
+    p.semester,
+    e.employee_ID -- Just ID ?
+FROM Performance p
+JOIN Employee e ON p.emp_ID = e.employee_ID
+WHERE p.semester LIKE 'W%';
 GO
