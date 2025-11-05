@@ -27,3 +27,9 @@ CREATE TABLE Employee (
     FOREIGN KEY (dept_name) REFERENCES Department(name)
 );
 
+CREATE TABLE Employee_Phone (
+    emp_ID INT,
+    phone_num CHAR(11),
+    PRIMARY KEY (emp_ID, phone_num),
+    FOREIGN KEY (emp_ID) REFERENCES Employee(employee_ID)
+);
