@@ -1,3 +1,6 @@
+CREATE DATABASE University_HR_ManagementSystem_6;
+
+
 CREATE TABLE Department (
     name VARCHAR(50) PRIMARY KEY,
     building_location VARCHAR(50)
