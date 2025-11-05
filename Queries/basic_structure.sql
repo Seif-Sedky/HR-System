@@ -155,3 +155,19 @@ CREATE TABLE Attendance (
     emp_ID INT,
     FOREIGN KEY (emp_ID) REFERENCES Employee(employee_ID)
 );
+
+
+CREATE TABLE Deduction (
+    deduction_ID INT IDENTITY(1,1) PRIMARY KEY,
+    emp_ID INT,
+    date DATE,
+    amount DECIMAL(10,2),
+    type VARCHAR(50) CHECK (type IN ('unpaid', 'missing_hours', 'missing_days')),
+    status VARCHAR(50) DEFAULT 'pending' CHECK (status IN ('pending', 'finalized')),
+    unpaid_ID INT,
+    attendance_ID INT,
+    FOREIGN KEY (emp_ID) REFERENCES Employee(employee_ID),
+    FOREIGN KEY (unpaid_ID) REFERENCES Unpaid_Leave(request_ID),
+    FOREIGN KEY (attendance_ID) REFERENCES Attendance(attendance_ID)
+);
+
