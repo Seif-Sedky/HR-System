@@ -33,3 +33,15 @@ CREATE TABLE Employee_Phone (
     PRIMARY KEY (emp_ID, phone_num),
     FOREIGN KEY (emp_ID) REFERENCES Employee(employee_ID)
 );
+
+CREATE TABLE Role (
+    role_name VARCHAR(50) PRIMARY KEY,
+    title VARCHAR(50),
+    description VARCHAR(50),
+    rank INT,
+    base_salary DECIMAL(10,2),
+    percentage_YOE DECIMAL(4,2),
+    percentage_overtime DECIMAL(4,2),
+    annual_balance INT,
+    accidental_balance INT
+);
