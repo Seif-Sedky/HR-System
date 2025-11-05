@@ -98,4 +98,10 @@ CREATE TABLE Medical_Leave (
     FOREIGN KEY (Emp_ID) REFERENCES Employee(employee_ID)
 );
 
+CREATE TABLE Unpaid_Leave (
+    request_ID INT PRIMARY KEY,
+    Emp_ID INT,
+    FOREIGN KEY (request_ID) REFERENCES Leave(request_ID),
+    FOREIGN KEY (Emp_ID) REFERENCES Employee(employee_ID)
+);
 
