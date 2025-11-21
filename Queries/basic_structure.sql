@@ -1,6 +1,10 @@
 CREATE DATABASE University_HR_ManagementSystem_6;
 GO
 
+USE University_HR_ManagementSystem_6 ;
+GO
+
+
 CREATE PROCEDURE createAllTables
 AS
 BEGIN
