@@ -196,25 +196,25 @@ AS
 BEGIN
     --SET NOCOUNT ON; -- Optimization so that it does not return how many rows where affected (unecessary logs)
     -- Drop all tables (reverse dependency order to avoid FK constraint issues)
-    DROP TABLE Employee_Approve_Leave;
-    DROP TABLE Employee_Replace_Employee;
-    DROP TABLE Performance;
-    DROP TABLE Deduction;
-    DROP TABLE Attendance;
-    DROP TABLE Payroll;
-    DROP TABLE Document;
-    DROP TABLE Compensation_Leave;
-    DROP TABLE Unpaid_Leave;
-    DROP TABLE Medical_Leave;
-    DROP TABLE Accidental_Leave;
-    DROP TABLE Annual_Leave;
-    DROP TABLE Leave;
-    DROP TABLE Role_existsIn_Department;
-    DROP TABLE Employee_Role;
-    DROP TABLE Role;
-    DROP TABLE Employee_Phone;
-    DROP TABLE Employee;
-    DROP TABLE Department;
+    DROP TABLE IF EXISTS Employee_Approve_Leave;
+    DROP TABLE IF EXISTS Employee_Replace_Employee;
+    DROP TABLE IF EXISTS Performance;
+    DROP TABLE IF EXISTS Deduction;
+    DROP TABLE IF EXISTS Attendance;
+    DROP TABLE IF EXISTS Payroll;
+    DROP TABLE IF EXISTS Document;
+    DROP TABLE IF EXISTS Compensation_Leave;
+    DROP TABLE IF EXISTS Unpaid_Leave;
+    DROP TABLE IF EXISTS Medical_Leave;
+    DROP TABLE IF EXISTS Accidental_Leave;
+    DROP TABLE IF EXISTS Annual_Leave;
+    DROP TABLE IF EXISTS Leave;
+    DROP TABLE IF EXISTS Role_existsIn_Department;
+    DROP TABLE IF EXISTS Employee_Role;
+    DROP TABLE IF EXISTS Role;
+    DROP TABLE IF EXISTS Employee_Phone;
+    DROP TABLE IF EXISTS Employee;
+    DROP TABLE IF EXISTS Department;
 END;
 GO
 
