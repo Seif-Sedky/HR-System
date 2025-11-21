@@ -1,8 +1,10 @@
 -- A
-CREATE FUNCTION EmployeeLoginValidation(
+CREATE FUNCTION EmployeeLoginValidation
+(
     @employee_ID INT,
     @password VARCHAR(50)
-) RETURNS BIT
+) 
+RETURNS BIT
 AS
 BEGIN
     DECLARE @isValid BIT = 0;
@@ -16,12 +18,18 @@ BEGIN
 
     RETURN @isValid;
 END
+GO
 
---B
-CREATE FUNCTION MyPerformance(
+
+
+
+-- B
+CREATE FUNCTION MyPerformance
+(
     @employee_ID INT,
     @semester char(3)
-) RETURNS TABLE
+) 
+RETURNS TABLE
 AS 
 RETURN
 (
@@ -29,11 +37,17 @@ RETURN
     FROM Performance
     WHERE emp_ID = @employee_ID AND semester = @semester 
 )
+GO 
+
+
+
 
 -- C
-CREATE FUNCTION MyAttendance(
+CREATE FUNCTION MyAttendance
+(
     @employee_ID INT
-) RETURNS TABLE
+) 
+RETURNS TABLE
 AS
 RETURN
 (
@@ -44,24 +58,41 @@ RETURN
     AND a.[date] < DATEADD(MONTH, 1, DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1))
     AND NOT (DATENAME(weekday, a.[date]) = e.official_day_off AND a.status = 'Absent')
 )
+GO 
 
---D
-CREATE FUNCTION Last_month_payroll(
+
+
+
+-- D
+CREATE FUNCTION Last_month_payroll
+(
     @employee_ID INT
-) RETURNS TABLE
-AS 
-RETURN(
-    SELECT *
+)
+RETURNS TABLE
+AS
+RETURN
+(
+    SELECT * 
     FROM Payroll
     WHERE emp_ID = @employee_ID
-    AND from_date >= DATEADD(MONTH, -1, DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1))
-    AND from_date < DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)
-    AND to_date >= DATEADD(MONTH, -1, DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1))
-    AND to_date < DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)
-)
+      -- payment_date in previous calendar month ( is it correct dicision ? ) 
+      AND payment_date >= DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()) - 1, 0)
+      AND payment_date <  DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()), 0)
+
+      -- Osama Solution : 
+      -- AND from_date >= DATEADD(MONTH, -1, DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1))
+      -- AND from_date < DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)
+      -- AND to_date >= DATEADD(MONTH, -1, DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1))
+      -- AND to_date < DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)
+);
+GO
+
+
+
 
 -- E
-CREATE FUNCTION Deductions_Attendance(
+CREATE FUNCTION Deductions_Attendance
+(
     @employee_ID INT,
     @month INT
 ) RETURNS TABLE
@@ -72,13 +103,19 @@ RETURN
     FROM deductions d
     WHERE d.emp_ID = @employee_ID AND MONTH(d.[date]) = @month AND d.[type] = 'missing_days'
 )
+GO
 
---F
-CREATE FUNCTION Is_On_Leave(
+
+
+
+-- F
+CREATE FUNCTION Is_On_Leave
+(
     @employee_ID INT,
     @from_date DATE,
     @to_date DATE
-) RETURNS BIT
+) 
+RETURNS BIT
 AS
 BEGIN
     DECLARE @SuccessBit BIT = 0;
@@ -111,9 +148,12 @@ BEGIN
         SET @SuccessBit = 1
     RETURN @SuccessBit
 END
+GO
 
 
---G
+
+
+-- G
 CREATE PROCEDURE Submit_annual
     @employee_ID INT,
     @replacement_emp INT,
@@ -217,8 +257,12 @@ BEGIN
         VALUES (@approver_id, @leaveId, 'pending')
     END
 END
+GO
 
---H
+
+
+
+-- H
 CREATE FUNCTION Status_leaves(
     @employee_ID INT
 )RETURNS TABLE
@@ -237,8 +281,12 @@ RETURN(
         )
     )
 )
+GO
 
---I
+
+
+
+-- I
 CREATE PROCEDURE Upperboard_approve_annual
     @request_ID INT,
     @Upperboard_ID INT,
@@ -277,8 +325,12 @@ BEGIN
         WHERE Leave_ID = @request_ID AND Emp1_ID = @Upperboard_ID
     END
 END
+GO
 
---J
+
+
+
+-- J
 CREATE PROCEDURE Submit_accidental
     @employee_ID INT,
     @start_date DATE,
@@ -323,8 +375,12 @@ BEGIN
         JOIN Role r ON er.role_name = r.role_name
         WHERE r.role_name = @hrRep
 END
+GO
 
---K
+
+
+
+-- K
 CREATE PROCEDURE Submit_medical
     @employee_ID INT,
     @start_date DATE,
@@ -399,8 +455,12 @@ BEGIN
         JOIN Role r ON er.role_name = r.role_name
         WHERE r.role_name = @hrRep OR r.role_name = 'Medical Doctor'
 END
+GO
 
---L
+
+
+
+-- L
 CREATE PROCEDURE Submit_unpaid
     @employee_ID INT,
     @start_date DATE,
@@ -513,8 +573,12 @@ BEGIN
         VALUES (@approver_id, @leaveId, 'pending')
     END
 END
+GO
 
---M
+
+
+
+-- M
 CREATE PROCEDURE Upperboard_approve_unpaids
     @request_ID INT,
     @Upperboard_ID INT
@@ -542,8 +606,12 @@ BEGIN
           AND Emp1_ID = @Upperboard_ID;
     END
 END
+GO
 
---N
+
+
+
+-- N
 CREATE PROCEDURE Submit_compensation
     @employee_ID INT,
     @compensation_date DATE,
@@ -604,8 +672,12 @@ BEGIN
         WHERE r.role_name = @hrRep
 
 END
+GO
 
---O
+
+
+
+-- O
 CREATE PROCEDURE Dean_andHR_Evaluation
     @employee_ID INT,
     @rating INT,
@@ -620,3 +692,4 @@ BEGIN
     INSERT INTO Performance(rating, comments, semester, emp_ID)
     VALUES (@rating, @comment, @semester, @employee_ID)
 END
+GO
