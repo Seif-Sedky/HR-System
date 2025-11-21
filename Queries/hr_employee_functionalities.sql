@@ -512,14 +512,18 @@ AS
         IF MONTH(@start_date) <> MONTH(@end_date)
         BEGIN
         -- The unpaid leave spans two months
+         IF MONTH(@start_date) = MONTH(GETDATE()) and YEAR(@start_date) = YEAR(GETDATE())
+         BEGIN
             SET @deduction_amount = 8 * @hourly_rate * (DATEDIFF(DAY, @start_date, EOMONTH(@start_date)) + 1) -- THE DAYS OF MONTH 1
             INSERT INTO Deduction (emp_ID, date, amount, type, status, unpaid_ID, attendance_ID)
             VALUES (@employee_ID, GETDATE(), @deduction_amount, 'unpaid', 'pending', @unpaid_ID, NULL);
-
+        END
+        ELSE IF MONTH(@end_date) = MONTH(GETDATE()) and YEAR(@end_date) = YEAR(GETDATE())
+        BEGIN
             SET @deduction_amount = 8 * @hourly_rate * (@unpaid_days - DATEDIFF(DAY, @start_date, EOMONTH(@start_date)) + 1);-- tHE DAYS OF MONTH 2 (REST OF THE DAYS)
             INSERT INTO Deduction (emp_ID, date, amount, type, status, unpaid_ID, attendance_ID)
             VALUES (@employee_ID, GETDATE(), @deduction_amount, 'unpaid', 'pending', @unpaid_ID, NULL);
-
+          END 
         END
         ELSE 
         BEGIN
