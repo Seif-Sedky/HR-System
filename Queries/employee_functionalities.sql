@@ -171,7 +171,10 @@ BEGIN
     INSERT INTO Annual_Leave (request_ID, emp_ID, replacement_emp)
     VALUES (@leaveId, @employee_ID, @replacement_emp);
 
-    
+    DECLARE @hrRep VARCHAR(50)
+    SET @hrRep = 'HR_Representative_' + @employee_dept
+
+
     IF @employee_role IN ('Dean', 'Vice Dean')
     BEGIN
         INSERT INTO Employee_Approve_Leave (Emp1_ID, Leave_ID, status)
@@ -179,7 +182,7 @@ BEGIN
         FROM Employee e
         JOIN Employee_Role er ON e.employee_ID = er.emp_ID
         JOIN Role r ON er.role_name = r.role_name
-        WHERE r.role_name IN ('President', 'HR Representative')
+        WHERE r.role_name IN ('President', @hrRep)
     END
 
     ELSE IF @employee_dept = 'HR'
@@ -201,7 +204,7 @@ BEGIN
         FROM Employee e
         JOIN Employee_Role er ON e.employee_ID = er.emp_ID
         JOIN Role r ON er.role_name = r.role_name
-        WHERE r.role_name = 'HR Representative'
+        WHERE r.role_name = @hrRep
 
         DECLARE @approver_id INT
         
@@ -286,6 +289,19 @@ BEGIN
     BEGIN
         RETURN;
     END
+    DECLARE @employee_dept VARCHAR(50)
+    DECLARE @employee_role VARCHAR(50)
+    DECLARE @employee_rank INT
+
+    SELECT TOP 1 
+           @employee_dept = e.dept_name,
+           @employee_role = r.role_name,
+           @employee_rank = r.rank
+    FROM Employee e
+    JOIN Employee_Role er ON e.employee_ID = er.emp_ID
+    JOIN Role r ON r.role_name = er.role_name 
+    WHERE e.employee_id = @employee_ID
+    ORDER BY r.rank ASC;
 
     INSERT INTO [Leave] (date_of_request, start_date, end_date)
     VALUES (GETDATE(), @start_date, @end_date);
@@ -295,13 +311,17 @@ BEGIN
 
     INSERT INTO Accidental_Leave (request_ID, emp_ID)
     VALUES (@leaveId, @employee_ID);    
-    
+
+    DECLARE @hrRep VARCHAR(50)
+    SET @hrRep = 'HR_Representative_' + @employee_dept
+
+
     INSERT INTO Employee_Approve_Leave (Emp1_ID, Leave_ID, status)
         SELECT e.employee_ID, @leaveId, 'pending'
         FROM Employee e
         JOIN Employee_Role er ON e.employee_ID = er.emp_ID
         JOIN Role r ON er.role_name = r.role_name
-        WHERE r.role_name = ('HR Representative')
+        WHERE r.role_name = @hrRep
 END
 
 --K
@@ -316,6 +336,21 @@ CREATE PROCEDURE Submit_medical
     @file_name VARCHAR(50)
 AS
 BEGIN
+
+    DECLARE @employee_dept VARCHAR(50)
+    DECLARE @employee_role VARCHAR(50)
+    DECLARE @employee_rank INT
+
+    SELECT TOP 1 
+           @employee_dept = e.dept_name,
+           @employee_role = r.role_name,
+           @employee_rank = r.rank
+    FROM Employee e
+    JOIN Employee_Role er ON e.employee_ID = er.emp_ID
+    JOIN Role r ON r.role_name = er.role_name 
+    WHERE e.employee_id = @employee_ID
+    ORDER BY r.rank ASC;
+
     DECLARE @dean_id INT
     DECLARE @vice_dean_id INT 
 
@@ -352,14 +387,17 @@ BEGIN
     VALUES (@leaveId, @insurance_status, @disability_details, @type, @employee_ID); 
     
     INSERT INTO Document(type, description, file_name, creation_date, status, emp_ID, medical_ID)
-    VALUES ('medical', @document_description, @file_name, GETDATE(), 'valid', @employee_ID, @leaveID)
+    VALUES ('medical', @document_description, @file_name, GETDATE(), 'valid', @employee_ID, @leaveId)
+
+    DECLARE @hrRep VARCHAR(50)
+    SET @hrRep = 'HR_Representative_' + @employee_dept
 
     INSERT INTO Employee_Approve_Leave (Emp1_ID, Leave_ID, status)
         SELECT e.employee_ID, @leaveId, 'pending'
         FROM Employee e
         JOIN Employee_Role er ON e.employee_ID = er.emp_ID
         JOIN Role r ON er.role_name = r.role_name
-        WHERE r.role_name = ('HR Representative') OR r.role_name = 'Medical Doctor'
+        WHERE r.role_name = @hrRep OR r.role_name = 'Medical Doctor'
 END
 
 --L
@@ -430,7 +468,10 @@ BEGIN
     VALUES (@leaveId, @employee_ID); 
     
     INSERT INTO Document(type, description, file_name, creation_date, status, emp_ID, unpaid_ID)
-    VALUES ('memo', @document_description, @file_name, GETDATE(), 'valid', @employee_ID, @leaveID)
+    VALUES ('memo', @document_description, @file_name, GETDATE(), 'valid', @employee_ID, @leaveId)
+
+    DECLARE @hrRep VARCHAR(50)
+    SET @hrRep = 'HR_Representative_' + @employee_dept
 
     IF @employee_role IN ('Dean', 'Vice Dean')
     BEGIN
@@ -439,7 +480,7 @@ BEGIN
         FROM Employee e
         JOIN Employee_Role er ON e.employee_ID = er.emp_ID
         JOIN Role r ON er.role_name = r.role_name
-        WHERE r.role_name IN ('President', 'HR Representative')
+        WHERE r.role_name IN ('President', @hrRep)
     END
 
     ELSE IF @employee_dept = 'HR'
@@ -459,7 +500,7 @@ BEGIN
         FROM Employee e
         JOIN Employee_Role er ON e.employee_ID = er.emp_ID
         JOIN Role r ON er.role_name = r.role_name
-        WHERE r.role_name = 'HR Representative'
+        WHERE r.role_name = @hrRep
 
         DECLARE @approver_id INT
         
@@ -482,7 +523,7 @@ BEGIN
     IF EXISTS (
         SELECT 1 
         FROM Document
-        WHERE leave_ID = @request_ID 
+        WHERE unpaid_ID = @request_ID 
           AND type = 'memo' 
           AND status = 'valid'
           AND description IS NOT NULL
@@ -528,6 +569,20 @@ BEGIN
         RETURN
     END
 
+    DECLARE @employee_dept VARCHAR(50)
+    DECLARE @employee_role VARCHAR(50)
+    DECLARE @employee_rank INT
+
+    SELECT TOP 1 
+           @employee_dept = e.dept_name,
+           @employee_role = r.role_name,
+           @employee_rank = r.rank
+    FROM Employee e
+    JOIN Employee_Role er ON e.employee_ID = er.emp_ID
+    JOIN Role r ON r.role_name = er.role_name 
+    WHERE e.employee_id = @employee_ID
+    ORDER BY r.rank ASC;
+
     INSERT INTO [Leave] (date_of_request, start_date, end_date)
     VALUES (GETDATE(), @compensation_date, @compensation_date);
 
@@ -537,12 +592,16 @@ BEGIN
     INSERT INTO Compensation_Leave (request_ID, reason, date_of_original_workday, Emp_ID, replacement_emp)
     VALUES (@leaveId, @reason, @date_of_original_workday, @employee_ID, @replacement_emp);
     
+    DECLARE @hrRep VARCHAR(50)
+    SET @hrRep = 'HR_Representative_' + @employee_dept
+
+
     INSERT INTO Employee_Approve_Leave (Emp1_ID, Leave_ID, status)
         SELECT e.employee_ID, @leaveId, 'pending'
         FROM Employee e
         JOIN Employee_Role er ON e.employee_ID = er.emp_ID
         JOIN Role r ON er.role_name = r.role_name
-        WHERE r.role_name = 'HR Representative'
+        WHERE r.role_name = @hrRep
 
 END
 
