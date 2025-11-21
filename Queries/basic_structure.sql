@@ -29,7 +29,7 @@ BEGIN
         emergency_contact_phone CHAR(11),
         annual_balance INT,
         accidental_balance INT,
-        salary DECIMAL(10,2),
+        salary AS dbo.CalculateSalary(employee_ID),
         hire_date DATE,
         last_working_date DATE,
         dept_name VARCHAR(50),
@@ -284,5 +284,42 @@ BEGIN
     DELETE FROM Employee_Phone;
     DELETE FROM Employee;
     DELETE FROM Department;
+END;
+GO
+
+
+
+CREATE OR ALTER FUNCTION dbo.CalculateSalary (@EmpID INT)
+RETURNS DECIMAL(10, 2)
+AS
+BEGIN
+    DECLARE @CalculatedSalary DECIMAL(10, 2);
+    
+    DECLARE @BaseSalary DECIMAL(10, 2);
+    DECLARE @PercentageYOE DECIMAL(4, 2);
+    DECLARE @YearsExp INT;
+
+    -- 1. Get Years of Experience
+    SELECT @YearsExp = years_of_experience 
+    FROM Employee 
+    WHERE employee_ID = @EmpID;
+
+    -- 2. Get Base Salary and %YOE based on the Highest Rank
+    SELECT TOP 1 
+        @BaseSalary = r.base_salary,
+        @PercentageYOE = r.percentage_YOE
+    FROM Role r
+    JOIN Employee_Role er ON r.role_name = er.role_name
+    WHERE er.emp_ID = @EmpID
+    ORDER BY r.rank ASC; 
+
+    -- 3. Apply the Formula
+    
+    SET @CalculatedSalary = @BaseSalary + 
+                            (
+                                (ISNULL(@PercentageYOE, 0) / 100.0) * ISNULL(@YearsExp, 0) * @BaseSalary
+                            );
+
+    RETURN @CalculatedSalary;
 END;
 GO

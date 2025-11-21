@@ -6,6 +6,7 @@ EXEC dropAllProceduresFunctionsViews
 EXEC clearAllTables
 
 
+
 SELECT * FROM allEmployeeProfiles
 SELECT * FROM NoEmployeeDept
 SELECT * FROM allPerformance
@@ -113,10 +114,10 @@ INSERT INTO Role_existsIn_Department (department_name, Role_name) VALUES
 
 -- 4. Insert Employees (Depends on Department)
 -- Note: 'active', 'full_time' satisfy CHECK constraints
-INSERT INTO Employee (first_name, last_name, email, password, address, gender, official_day_off, years_of_experience, national_ID, employment_status, type_of_contract, emergency_contact_name, emergency_contact_phone, annual_balance, accidental_balance, salary, hire_date, dept_name) VALUES 
-('Alice', 'Smith', 'alice@company.com', 'pass123', '123 Main St', 'F', 'Sunday', 10, '1234567890123456', 'active', 'full_time', 'Bob Smith', '01000000001', 30, 7, 5000.00, '2020-01-01', 'HR'),
-('Bob', 'Jones', 'bob@company.com', 'pass123', '456 Tech Ave', 'M', 'Saturday', 5, '6543210987654321', 'active', 'full_time', 'Sara Jones', '01000000002', 21, 7, 3000.00, '2022-05-15', 'IT'),
-('Charlie', 'Brown', 'charlie@company.com', 'pass123', '789 Money Rd', 'M', 'Friday', 2, '1111222233334444', 'onleave', 'part_time', 'Lucy Brown', '01000000003', 15, 5, 2500.00, '2023-08-01', 'Finance');
+INSERT INTO Employee (first_name, last_name, email, password, address, gender, official_day_off, years_of_experience, national_ID, employment_status, type_of_contract, emergency_contact_name, emergency_contact_phone, annual_balance, accidental_balance, hire_date, dept_name) VALUES 
+('Alice', 'Smith', 'alice@company.com', 'pass123', '123 Main St', 'F', 'Sunday', 10, '1234567890123456', 'active', 'full_time', 'Bob Smith', '01000000001', 30, 7, '2020-01-01', 'HR'),
+('Bob', 'Jones', 'bob@company.com', 'pass123', '456 Tech Ave', 'M', 'Saturday', 5, '6543210987654321', 'active', 'full_time', 'Sara Jones', '01000000002', 21, 7, '2022-05-15', 'IT'),
+('Charlie', 'Brown', 'charlie@company.com', 'pass123', '789 Money Rd', 'M', 'Friday', 2, '1111222233334444', 'onleave', 'part_time', 'Lucy Brown', '01000000003', 15, 5, '2023-08-01', 'Finance');
 
 -- 5. Insert Employee Phones (Depends on Employee)
 INSERT INTO Employee_Phone (emp_ID, phone_num) VALUES 
