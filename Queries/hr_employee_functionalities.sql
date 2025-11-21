@@ -2,6 +2,9 @@
 EXEC createAllTables
  GO
 
+
+
+
  drop FUNCTION HRLoginValidation
  Go
 -- 2.4 (a) HR Login Validation Function
@@ -39,7 +42,6 @@ CREATE PROC HR_approval_an_acc
     @HR_ID INT
 AS
 BEGIN
-    SET NOCOUNT ON;
 
     DECLARE 
         @num_days INT,
@@ -47,11 +49,7 @@ BEGIN
         @old_balance INT,
         @new_balance INT,
         @leave_type VARCHAR(50),
-        @employee_rank INT,
-
-        -- better for readbility
-        @employee_is_dean BIT = 0, -- dean or vice dean 
-        @employee_is_HR BIT = 0;
+        @employee_rank INT
 
 
     -- Determine leave type
@@ -69,8 +67,32 @@ BEGIN
         FROM Leave l JOIN Annual_Leave a ON l.request_ID = a.request_ID
         WHERE l.request_ID = @request_ID;
 
+        IF 
+            (SELECT annual_balance
+            FROM Employee
+            WHERE employee_ID = @employee_id) < @num_days
+        
+        BEGIN
+            UPDATE Leave
+            SET final_approval_status = 'rejected'
+            WHERE request_ID = @request_ID;
+            PRINT 'Insufficient Annual Leave Balance. Request Rejected.';
+            RETURN;
+        END
+
         -- Check replacement employee availability
         ------------------------------------IMPLEMENT------------------------------
+  --       IF Is_On_Leave((SELECT replacement_emp FROM Annual_Leave WHERE request_ID = @request_ID), 
+  --                        (SELECT start_date FROM Leave WHERE request_ID = @request_ID), 
+  --                        (SELECT end_date FROM Leave WHERE request_ID = @request_ID)) = 1
+  --      BEGIN
+  --     UPDATE Leave
+  --         SET final_approval_status = 'rejected'
+  --          WHERE request_ID = @request_ID;
+  --          PRINT 'Replacement Employee Is On Leave During The Requested Period. Request Rejected.';
+  --         RETURN;
+  --      END
+  -------------------------------------------------------------------------------------------------
 
   
 
@@ -78,22 +100,36 @@ BEGIN
     ELSE  -- accidental
     BEGIN
 
-        DECLARE @hours_since_request INT;
+        DECLARE @days_to_request INT;
 
-        SELECT @employee_id = a.emp_ID, @num_days = l.num_days,  @hours_since_request = DATEDIFF(HOUR, date_of_request, GETDATE())
+        SELECT @employee_id = a.emp_ID, @num_days = l.num_days,  @days_to_request = DATEDIFF(DAY, end_date, date_of_request)
         FROM Leave l 
         JOIN Accidental_Leave a ON l.request_ID = a.request_ID
         WHERE l.request_ID = @request_ID;
 
-        -- Accidental leave exceeds 1 day or has been submitted more then 48 hours ago
+        -- Accidental leave exceeds 1 day or has been submitted more then 48 hours after the leave
 
-        IF @num_days > 1 OR @hours_since_request > 48
+        IF @num_days > 1 OR @days_to_request > 2
         BEGIN
             UPDATE Leave
             SET final_approval_status = 'rejected'
             WHERE request_ID = @request_ID;
 
             PRINT 'Accidental Leave Exceeds 1 Day, or has been submitted more than 48 hours ago. Request Rejected.';
+            RETURN;
+        END
+
+        IF NOT EXISTS (
+            SELECT *
+            FROM Employee
+            WHERE employee_ID = @employee_id
+              AND accidental_balance >= @num_days
+        )
+        BEGIN
+            UPDATE Leave
+            SET final_approval_status = 'rejected'
+            WHERE request_ID = @request_ID;
+            PRINT 'Insufficient Accidental Leave Balance. Request Rejected.';
             RETURN;
         END
     END
@@ -113,84 +149,29 @@ BEGIN
     END
 
 
-    -- Load rank and determine role category
-    SELECT @employee_rank = MAX(r.rank)
-    FROM Employee_Role er
-    JOIN Role r ON er.role_name = r.role_name
-    WHERE er.emp_ID = @employee_id;
-
-    IF EXISTS (SELECT * FROM Employee_Role WHERE emp_ID = @employee_id AND role_name = 'Dean')
-        SET @employee_is_dean = 1;
-
-    IF EXISTS (SELECT * FROM Employee_Role WHERE emp_ID = @employee_id AND role_name = 'Vice Dean')
-        SET @employee_is_dean = 1;
-
-    IF EXISTS (SELECT * FROM Employee WHERE employee_ID = @employee_id AND dept_name = 'HR')
-        SET @employee_is_HR = 1;
-
-
-    -- Annual leave approval logic
-    IF @leave_type = 'annual'
-    BEGIN
-
-        -- Case 1: Employee is Normal employee
-        IF @employee_is_dean = 0 AND @employee_is_HR = 0
+---------------------APPROVALS HEIRARCHY---------------------------------------
+        IF EXISTS(
+        SELECT status FROM Employee_Approve_Leave
+        WHERE Leave_ID = @request_ID
+        AND Emp1_ID <> @HR_ID
+        AND status = 'rejected')
         BEGIN
-            -- Must be approved by Dean
-            IF NOT EXISTS (
-                SELECT *
-                FROM Employee_Approve_Leave eal
-                JOIN Employee_Role er ON eal.Emp1_ID = er.emp_ID
-                WHERE eal.Leave_ID = @request_ID
-                  AND er.role_name = 'Dean'
-            )
-            BEGIN
-                PRINT 'Annual Leave Requires Dean Approval First.';
-                RETURN;
-            END
+            UPDATE Leave
+            SET final_approval_status = 'rejected'
+            WHERE request_ID = @request_ID;
+            PRINT 'Approvals Heirarchy not met. Unpaid Leave Request Rejected.';
+            RETURN;
         END
 
-        -- Case 2: Employee is Dean or Vice-Dean
-        IF @employee_is_dean = 1 
+        IF EXISTS(
+        SELECT status FROM Employee_Approve_Leave
+        WHERE Leave_ID = @request_ID
+        AND Emp1_ID <> @HR_ID
+        AND status = 'pending')
         BEGIN
-            -- Must have approval from someone with higher rank
-            IF NOT EXISTS (
-                SELECT *
-                FROM Employee_Approve_Leave eal
-                JOIN Employee ER ON eal.Emp1_ID = ER.employee_ID
-                JOIN Employee_Role RR ON ER.employee_ID = RR.emp_ID
-                JOIN Role R ON RR.role_name = R.role_name
-                WHERE eal.Leave_ID = @request_ID
-                  AND ER.dept_name = 'Upper Board'
-                  AND R.rank > @employee_rank
-            )
-            BEGIN
-                PRINT 'Annual Leave Requires Approval From a Higher-Rank Upper Board Member.';
-                RETURN;
-            END
+            PRINT 'Approvals Heirarchy not met. Unpaid Leave Request pending.';
+            RETURN;
         END
-
-
-        -- Case 3: Employee is HR
-        IF @employee_is_HR = 1
-        BEGIN
-            -- Must be approved by HR staff of higher rank
-            IF NOT EXISTS (
-                SELECT *
-                FROM Employee_Approve_Leave eal
-                JOIN Employee ER ON eal.Emp1_ID = ER.employee_ID
-                JOIN Employee_Role RR ON ER.employee_ID = RR.emp_ID
-                JOIN Role R ON RR.role_name = R.role_name
-                WHERE eal.Leave_ID = @request_ID
-                  AND ER.dept_name = 'HR'
-                  AND R.rank > @employee_rank
-            )
-            BEGIN
-                PRINT 'Annual Leave Requires Approval From Higher-Rank HR Personnel.';
-                RETURN;
-            END
-        END
-    END
 
 
     -- Everything validated SO HR can now approve
@@ -210,7 +191,8 @@ BEGIN
 END
 GO
 
-
+drop PROC HR_approval_unpaid
+go
 CREATE PROC HR_approval_unpaid
 @request_ID int, @HR_ID int
 AS
@@ -253,68 +235,8 @@ AS
 
         END
 
-        -- MAKE SURE THE PRESIDENT AND HR MANAGER HAS APPROVED THE REQUEST IF THE EMPLOYEE IS AN HR REP or a dean/vice dean
-        if EXISTS (
-              SELECT *
-              FROM Employee_Role
-              WHERE emp_ID = @employee_id
-                AND role_name IN ('HR Representative', 'Dean', 'Vice Dean')
-          )
-          -- start of the condition in the case that the role of the requester is HR REP/ DEAN/ VICE DEAN
-          -- NEEDS TO BE APPROVED BY hr manager and president who already check if it has a valid memo
-            iF
-            NOT EXISTS (
-              SELECT *
-              FROM Employee_Approve_Leave
-              WHERE Leave_ID = @request_ID
-                AND Emp1_ID IN (
-                    SELECT e.employee_ID
-                    FROM Employee e
-                    JOIN Employee_Role er ON e.employee_ID = er.emp_ID
-                    WHERE er.role_name = 'President'
-                )
-                AND status = 'approved') 
 
-             OR NOT EXISTS (
-              SELECT *
-              FROM Employee_Approve_Leave
-              WHERE Leave_ID = @request_ID
-                AND Emp1_ID IN (
-                    SELECT e.employee_ID
-                    FROM Employee e
-                    JOIN Employee_Role er ON e.employee_ID = er.emp_ID
-                    WHERE er.role_name = 'HR Manager'
-                )
-                AND status = 'approved')
-
-             BEGIN
-             PRINT 'The Unpaid Leave Request Has Not Been Approved By Dean Or Vice Dean Yet.';
-                  RETURN;
-              END
-       
-        ELSE
-        -- make sure the dean/vice dean/ president already approved the request
-        BEGIN
-             -- Start of the condition if this is the regular employee
-             -- needs to be approved by dean/vice dean/ president who already checked if it has a valid memo
-            iF EXISTS(
-            SELECT *
-            FROM Employee_Approve_Leave
-            WHERE Leave_ID = @request_ID
-              AND Emp1_ID IN (
-                  SELECT e.employee_ID
-                  FROM Employee e
-                  JOIN Employee_Role er ON e.employee_ID = er.emp_ID
-                  WHERE er.role_name IN ('Dean', 'Vice Dean', 'President')
-              )
-              AND status = 'approved')
-
-             BEGIN
-                 PRINT 'The Unpaid Leave Request Has Not Been Approved By Dean Or Vice Dean Yet.';
-                 RETURN;
-              END
-        END
-
+            
         -- Finally we need to see if the unpaid leave exceeds 30 days or if the employee took unpaid leave in the last  year
         SELECT @leave_duration = DATEDIFF(DAY, start_date, end_date)
         FROM leave l, Unpaid_Leave ul
@@ -345,6 +267,30 @@ AS
                   PRINT 'The Employee Has Taken Unpaid Leave In The Last Year. Request Rejected.';
                   RETURN;
             END
+
+                ---------------------APPROVALS HEIRARCHY---------------------------------------
+        IF EXISTS(
+        SELECT status FROM Employee_Approve_Leave
+        WHERE Leave_ID = @request_ID
+        AND Emp1_ID <> @HR_ID
+        AND status = 'rejected')
+        BEGIN
+            UPDATE Leave
+            SET final_approval_status = 'rejected'
+            WHERE request_ID = @request_ID;
+            PRINT 'Approvals Heirarchy not met. Unpaid Leave Request Rejected.';
+            RETURN;
+        END
+
+        IF EXISTS(
+        SELECT status FROM Employee_Approve_Leave
+        WHERE Leave_ID = @request_ID
+        AND Emp1_ID <> @HR_ID
+        AND status = 'pending')
+        BEGIN
+            PRINT 'Approvals Heirarchy not met. Unpaid Leave Request pending.';
+            RETURN;
+        END
         
         -- Otherwise we accept
 		INSERT INTO Employee_Approve_Leave 
@@ -369,8 +315,18 @@ AS
         DECLARE @initial_balance INT;
 
         -- check if replacement employee is available
-        ------------------------------------------------------IMPLEMENT---------------------------------------------------------------------
-
+        ------------------------------------------------------DEPENDS ON 2.5 ---------------------------------------------------------------------
+  --       IF Is_On_Leave((SELECT replacement_emp FROM Annual_Leave WHERE request_ID = @request_ID), 
+  --                        (SELECT start_date FROM Leave WHERE request_ID = @request_ID), 
+  --                        (SELECT end_date FROM Leave WHERE request_ID = @request_ID)) = 1
+  --      BEGIN
+  --     UPDATE Leave
+  --         SET final_approval_status = 'rejected'
+  --          WHERE request_ID = @request_ID;
+  --          PRINT 'Replacement Employee Is On Leave During The Requested Period. Request Rejected.';
+  --         RETURN;
+  --      END
+        -------------------------------------------------------------------------------------------------------------------------------
 
         -- get the empoyee id of the requester and the date of original workday
         SELECT @employee_id = emp_ID, @date_of_original_workday = date_of_original_workday
@@ -625,6 +581,8 @@ BEGIN
 END;
 GO
 
+DROP PROC Add_Payroll
+go
 CREATE PROC Add_Payroll
 @employee_ID INT,
 @from_date DATE,
@@ -643,12 +601,25 @@ AS
     -- Get bonus amount
     SET @bonus_amount = dbo.Bonus_amount(@employee_ID);
 
-    -- Get total deductions in the period
+    -- Get total deductions in the period -- NOTE BY DATE OF DEDUCTION BUT BY DATE OF ACTION
     SELECT @deductions_amount = ISNULL(SUM(amount), 0) -- isnull does a check. if it is null, it returns 0, otherwise it returns the sum
-    FROM Deduction
+    FROM Deduction d
     WHERE emp_ID = @employee_ID
-      AND date BETWEEN @from_date AND @to_date
-      AND status = 'pending';
+      AND 
+      ( 
+          EXISTS(
+          SELECT * FROM Attendance a
+          WHERE a.attendance_id = d.attendance_ID
+          AND a.date BETWEEN @from_date AND @to_date
+          ) 
+          OR EXISTS(
+           SELECT * FROM Unpaid_Leave ul
+           JOIN Leave l ON ul.request_ID = l.request_ID
+           WHERE ul.request_id = d.unpaid_ID
+           AND l.start_date BETWEEN @from_date AND @to_date
+          ) 
+      )
+
 
     --finalize the deductions
     UPDATE Deduction SET status = 'finalized'
