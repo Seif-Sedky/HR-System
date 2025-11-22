@@ -145,7 +145,13 @@ BEGIN
         date DATE,
         check_in_time TIME,
         check_out_time TIME,
-        total_duration AS (DATEDIFF(MINUTE, check_in_time, check_out_time)) PERSISTED,
+        total_duration AS (
+            CASE 
+                WHEN check_out_time >= check_in_time 
+                THEN DATEDIFF(MINUTE, check_in_time, check_out_time)
+                ELSE DATEDIFF(MINUTE, check_in_time, check_out_time) + 1440 -- Cycle back day (1440 is total minutes in one day) 
+            END
+        ) PERSISTED,
         status VARCHAR(50) DEFAULT 'absent' CHECK (status IN ('absent', 'attended')), -- Problem with inconsistent capitalization in description 
         emp_ID INT,
         FOREIGN KEY (emp_ID) REFERENCES Employee(employee_ID)
