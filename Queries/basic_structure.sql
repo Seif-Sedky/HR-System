@@ -71,7 +71,7 @@ BEGIN
         date_of_request DATE,
         start_date DATE,
         end_date DATE,
-        num_days AS (DATEDIFF(DAY, start_date, end_date)) PERSISTED,
+        num_days AS (DATEDIFF(DAY, start_date, end_date) + 1) PERSISTED,
         final_approval_status VARCHAR(50) DEFAULT 'pending' CHECK (final_approval_status IN ('approved', 'rejected', 'pending'))
     );
     CREATE TABLE Annual_Leave (
@@ -157,7 +157,7 @@ BEGIN
         FOREIGN KEY (emp_ID) REFERENCES Employee(employee_ID)
     );
     CREATE TABLE Deduction (
-        deduction_ID INT IDENTITY(1,1) PRIMARY KEY,
+        deduction_ID INT IDENTITY(1,1),
         emp_ID INT,
         date DATE,
         amount DECIMAL(10,2),
@@ -165,6 +165,7 @@ BEGIN
         status VARCHAR(50) DEFAULT 'pending' CHECK (status IN ('pending', 'finalized')),
         unpaid_ID INT,
         attendance_ID INT,
+        PRIMARY KEY (deduction_ID, emp_ID),
         FOREIGN KEY (emp_ID) REFERENCES Employee(employee_ID),
         FOREIGN KEY (unpaid_ID) REFERENCES Unpaid_Leave(request_ID),
         FOREIGN KEY (attendance_ID) REFERENCES Attendance(attendance_ID)
@@ -178,12 +179,12 @@ BEGIN
         FOREIGN KEY (emp_ID) REFERENCES Employee(employee_ID)
     );
     CREATE TABLE Employee_Replace_Employee (
-        table_id INT IDENTITY(1,1),
+        Table_ID INT IDENTITY(1,1),
         Emp1_ID INT,
         Emp2_ID INT,
         from_date DATE,
         to_date DATE,
-        PRIMARY KEY (table_id, Emp1_ID, Emp2_ID),
+        PRIMARY KEY (Table_ID, Emp1_ID, Emp2_ID),
         FOREIGN KEY (Emp1_ID) REFERENCES Employee(employee_ID),
         FOREIGN KEY (Emp2_ID) REFERENCES Employee(employee_ID),
         CONSTRAINT CHK_Different_Employees CHECK (Emp1_ID <> Emp2_ID) -- Self made contraint infered from last point in 1.2
