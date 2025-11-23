@@ -235,32 +235,42 @@ CREATE OR ALTER PROCEDURE dropAllProceduresFunctionsViews
 AS
 BEGIN
     SET NOCOUNT ON;
+
+    DECLARE @sql NVARCHAR(MAX) = N'';
+
     -----------------------------------------------------------------
     -- 1. DROP VIEWS
     -----------------------------------------------------------------
-    DECLARE @sql NVARCHAR(MAX) = N'';
     SELECT @sql = @sql + 'DROP VIEW [' + SCHEMA_NAME(schema_id) + '].[' + name + '];' + CHAR(10)
     FROM sys.views
     WHERE is_ms_shipped = 0;   -- user-created only
+    
     EXEC (@sql);
+
     -----------------------------------------------------------------
     -- 2. DROP FUNCTIONS (scalar + table-valued)
+    -- *MODIFIED TO EXCLUDE dbo.CalculateSalary*
     -----------------------------------------------------------------
     SET @sql = N'';
+    
     SELECT @sql = @sql + 'DROP FUNCTION [' + SCHEMA_NAME(schema_id) + '].[' + name + '];' + CHAR(10)
     FROM sys.objects
     WHERE type IN ('FN','IF','TF')   -- scalar, inline TVF, multi-statement TVF
-
-      AND is_ms_shipped = 0;
+      AND is_ms_shipped = 0
+      AND name <> 'CalculateSalary'; -- << EXCEPTION ADDED HERE
+      
     EXEC (@sql);
+
     -----------------------------------------------------------------
     -- 3. DROP STORED PROCEDURES except this one
     -----------------------------------------------------------------
     SET @sql = N'';
+    
     SELECT @sql = @sql + 'DROP PROCEDURE [' + SCHEMA_NAME(schema_id) + '].[' + name + '];' + CHAR(10)
     FROM sys.procedures
     WHERE name <> 'dropAllProceduresFunctionsViews'
       AND is_ms_shipped = 0;
+      
     EXEC (@sql);
 END;
 GO
