@@ -138,6 +138,8 @@ BEGIN
             RETURN;
         END
     END
+    -- the next will apply to both leaves:
+
     -- Reject if employee is part-time
     IF EXISTS (
         SELECT * FROM Employee
@@ -409,6 +411,7 @@ AS
               AND cl.date_of_original_workday = @date_of_original_workday
         )
         BEGIN
+        -- we accept
 		    UPDATE Leave
 		    SET final_approval_status = 'approved'
 		    WHERE request_ID = @request_ID 
