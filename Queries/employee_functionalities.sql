@@ -75,15 +75,9 @@ RETURN
     SELECT * 
     FROM Payroll
     WHERE emp_ID = @employee_ID
-      -- payment_date in previous calendar month ( is it correct dicision ? ) 
       AND payment_date >= DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()) - 1, 0)
       AND payment_date <  DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()), 0)
 
-      -- Osama Solution : 
-      -- AND from_date >= DATEADD(MONTH, -1, DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1))
-      -- AND from_date < DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)
-      -- AND to_date >= DATEADD(MONTH, -1, DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1))
-      -- AND to_date < DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)
 );
 GO
 
@@ -194,9 +188,6 @@ BEGIN
             SELECT 1 FROM Employee 
             WHERE employee_ID = @employee_ID AND type_of_contract = 'part_time'
         )
-        OR (@employee_ID = @dean_id AND dbo.Is_On_Leave(@vice_dean_id, @start_date, @end_date) = 1)
-        OR (@employee_ID = @vice_dean_id AND dbo.Is_On_Leave(@dean_id, @start_date, @end_date) = 1)
-        OR (Is_On_Leave(@replacement_emp, @start_date, @end_date) = 1)
     )
     BEGIN
         RETURN;
@@ -214,6 +205,26 @@ BEGIN
     DECLARE @hrRep VARCHAR(50)
     SET @hrRep = 'HR_Representative_' + @employee_dept
 
+    DECLARE @hrID INT
+    SET @hrID = (
+        SELECT e.employee_ID
+        FROM Employee e
+        JOIN Employee_Role er ON e.employee_ID = er.emp_ID
+        JOIN Role r ON er.role_name = r.role_name
+        WHERE r.role_name = @hrRep
+    )
+    
+    IF (Is_On_Leave(@hrId, GETDATE(), GETDATE()) = 1)
+    BEGIN
+        SET @hrID = (
+            SELECT TOP 1 e.employee_ID
+            FROM Employee e
+            JOIN Employee_Role er ON e.employee_ID = er.emp_ID
+            JOIN Role r ON er.role_name = r.role_name
+            WHERE r.role_name LIKE 'HR_Representative_%' AND dbo.Is_On_Leave(e.employee_ID, GETDATE(), GETDATE()) = 0 
+        )
+    END
+
 
     IF @employee_role IN ('Dean', 'Vice Dean')
     BEGIN
@@ -222,7 +233,7 @@ BEGIN
         FROM Employee e
         JOIN Employee_Role er ON e.employee_ID = er.emp_ID
         JOIN Role r ON er.role_name = r.role_name
-        WHERE r.role_name IN ('President', @hrRep)
+        WHERE r.role_name = 'President' OR e.employee_ID = @hrID
     END
 
     ELSE IF @employee_dept = 'HR'
@@ -232,9 +243,7 @@ BEGIN
         FROM Employee e
         JOIN Employee_Role er ON e.employee_ID = er.emp_ID
         JOIN Role r ON er.role_name = r.role_name
-        WHERE e.dept_name = 'HR' 
-          AND e.employee_ID <> @employee_ID
-          AND r.rank < @employee_rank
+        WHERE r.role_name = 'President' OR r.role_name = 'HR Manager'
     END
 
     ELSE
@@ -242,9 +251,7 @@ BEGIN
         INSERT INTO Employee_Approve_Leave (Emp1_ID, Leave_ID, status)
         SELECT e.employee_ID, @leaveId, 'pending'
         FROM Employee e
-        JOIN Employee_Role er ON e.employee_ID = er.emp_ID
-        JOIN Role r ON er.role_name = r.role_name
-        WHERE r.role_name = @hrRep
+        WHERE e.employee_ID = @hrID
 
         DECLARE @approver_id INT
         
@@ -367,13 +374,31 @@ BEGIN
     DECLARE @hrRep VARCHAR(50)
     SET @hrRep = 'HR_Representative_' + @employee_dept
 
-
-    INSERT INTO Employee_Approve_Leave (Emp1_ID, Leave_ID, status)
-        SELECT e.employee_ID, @leaveId, 'pending'
+    DECLARE @hrID INT
+    SET @hrID = (
+        SELECT e.employee_ID
         FROM Employee e
         JOIN Employee_Role er ON e.employee_ID = er.emp_ID
         JOIN Role r ON er.role_name = r.role_name
         WHERE r.role_name = @hrRep
+    )
+    
+    IF (Is_On_Leave(@hrId, GETDATE(), GETDATE()) = 1)
+    BEGIN
+        SET @hrID = (
+            SELECT TOP 1 e.employee_ID
+            FROM Employee e
+            JOIN Employee_Role er ON e.employee_ID = er.emp_ID
+            JOIN Role r ON er.role_name = r.role_name
+            WHERE r.role_name LIKE 'HR_Representative_%' AND dbo.Is_On_Leave(e.employee_ID, GETDATE(), GETDATE()) = 0 
+        )
+    END
+
+
+    INSERT INTO Employee_Approve_Leave (Emp1_ID, Leave_ID, status)
+        SELECT e.employee_ID, @leaveId, 'pending'
+        FROM Employee e
+        WHERE e.employee_ID = @hrID
 END
 GO
 
@@ -426,8 +451,6 @@ BEGIN
             SELECT 1 FROM Employee 
             WHERE employee_ID = @employee_ID AND type_of_contract = 'part_time'
         ) AND @type = 'maternity'
-        OR (@employee_ID = @dean_id AND dbo.Is_On_Leave(@vice_dean_id, @start_date, @end_date) = 1)
-        OR (@employee_ID = @vice_dean_id AND dbo.Is_On_Leave(@dean_id, @start_date, @end_date) = 1)
     )
     BEGIN
         RETURN;
@@ -448,12 +471,37 @@ BEGIN
     DECLARE @hrRep VARCHAR(50)
     SET @hrRep = 'HR_Representative_' + @employee_dept
 
-    INSERT INTO Employee_Approve_Leave (Emp1_ID, Leave_ID, status)
-        SELECT e.employee_ID, @leaveId, 'pending'
+    DECLARE @hrID INT
+    SET @hrID = (
+        SELECT e.employee_ID
         FROM Employee e
         JOIN Employee_Role er ON e.employee_ID = er.emp_ID
         JOIN Role r ON er.role_name = r.role_name
-        WHERE r.role_name = @hrRep OR r.role_name = 'Medical Doctor'
+        WHERE r.role_name = @hrRep
+    )
+    
+    IF (Is_On_Leave(@hrId, GETDATE(), GETDATE()) = 1)
+    BEGIN
+        SET @hrID = (
+            SELECT TOP 1 e.employee_ID
+            FROM Employee e
+            JOIN Employee_Role er ON e.employee_ID = er.emp_ID
+            JOIN Role r ON er.role_name = r.role_name
+            WHERE r.role_name LIKE 'HR_Representative_%' AND dbo.Is_On_Leave(e.employee_ID, GETDATE(), GETDATE()) = 0 
+        )
+    END
+
+    INSERT INTO Employee_Approve_Leave (Emp1_ID, Leave_ID, status)
+        SELECT e.employee_ID, @leaveId, 'pending'
+        FROM Employee e
+        WHERE e.employee_ID = @hrID
+
+    INSERT INTO Employee_Approve_Leave (Emp1_ID, Leave_ID, status)
+        SELECT TOP 1 e.employee_ID, @leaveId, 'pending'
+        FROM Employee e
+        JOIN Employee_Role er ON e.employee_ID = er.emp_ID
+        JOIN Role r ON er.role_name = r.role_name
+        WHERE r.role_name = 'Medical Doctor' AND dbo.Is_On_Leave(e.employee_ID, GETDATE(), GETDATE()) = 0 AND e.employee_ID <> @employee_ID
 END
 GO
 
@@ -504,15 +552,6 @@ BEGIN
             SELECT 1 FROM Employee 
             WHERE employee_ID = @employee_ID AND type_of_contract = 'part_time'
         )
-        OR (@employee_ID = @dean_id AND dbo.Is_On_Leave(@vice_dean_id, @start_date, @end_date) = 1)
-        OR (@employee_ID = @vice_dean_id AND dbo.Is_On_Leave(@dean_id, @start_date, @end_date) = 1)
-        OR EXISTS(
-            SELECT 1
-            FROM Unpaid_Leave up
-            JOIN Leave l ON up.request_ID = l.request_ID
-            WHERE YEAR(l.start_date) = YEAR(@start_date) AND up.Emp_ID = @employee_ID AND l.final_approval_status = 'approved'
-        )
-        OR DATEDIFF(DAY, @end_date, @start_date) > 30
     )
     BEGIN
         RETURN;
@@ -533,6 +572,26 @@ BEGIN
     DECLARE @hrRep VARCHAR(50)
     SET @hrRep = 'HR_Representative_' + @employee_dept
 
+    DECLARE @hrID INT
+    SET @hrID = (
+        SELECT e.employee_ID
+        FROM Employee e
+        JOIN Employee_Role er ON e.employee_ID = er.emp_ID
+        JOIN Role r ON er.role_name = r.role_name
+        WHERE r.role_name = @hrRep
+    )
+    
+    IF (dbo.Is_On_Leave(@hrId, GETDATE(), GETDATE()) = 1)
+    BEGIN
+        SET @hrID = (
+            SELECT TOP 1 e.employee_ID
+            FROM Employee e
+            JOIN Employee_Role er ON e.employee_ID = er.emp_ID
+            JOIN Role r ON er.role_name = r.role_name
+            WHERE r.role_name LIKE 'HR_Representative_%' AND dbo.Is_On_Leave(e.employee_ID, GETDATE(), GETDATE()) = 0 
+        )
+    END
+
     IF @employee_role IN ('Dean', 'Vice Dean')
     BEGIN
         INSERT INTO Employee_Approve_Leave (Emp1_ID, Leave_ID, status)
@@ -540,7 +599,7 @@ BEGIN
         FROM Employee e
         JOIN Employee_Role er ON e.employee_ID = er.emp_ID
         JOIN Role r ON er.role_name = r.role_name
-        WHERE r.role_name IN ('President', @hrRep)
+        WHERE r.role_name = 'President' OR e.employee_ID = @hrID
     END
 
     ELSE IF @employee_dept = 'HR'
@@ -558,9 +617,7 @@ BEGIN
         INSERT INTO Employee_Approve_Leave (Emp1_ID, Leave_ID, status)
         SELECT e.employee_ID, @leaveId, 'pending'
         FROM Employee e
-        JOIN Employee_Role er ON e.employee_ID = er.emp_ID
-        JOIN Role r ON er.role_name = r.role_name
-        WHERE r.role_name = @hrRep
+        WHERE e.employee_ID = @hrID
 
         DECLARE @approver_id INT
         
@@ -620,23 +677,6 @@ CREATE PROCEDURE Submit_compensation
     @replacement_emp INT
 AS
 BEGIN
-    IF(
-        YEAR(@compensation_date) <> YEAR(@date_of_original_workday)
-        OR MONTH(@compensation_date) <> MONTH (@date_of_original_workday)
-        OR @reason IS NULL
-        OR (dbo.Is_On_Leave(@replacement_emp, @compensation_date, @compensation_date) = 1)
-        OR NOT EXISTS (
-        SELECT 1 
-        FROM Attendance 
-        WHERE Emp_ID = @employee_ID 
-          AND date = @date_of_original_workday
-          AND DATEDIFF(HOUR, start_time, end_time) >= 8
-        )
-    )
-    BEGIN
-        RETURN
-    END
-
     DECLARE @employee_dept VARCHAR(50)
     DECLARE @employee_role VARCHAR(50)
     DECLARE @employee_rank INT
@@ -663,13 +703,30 @@ BEGIN
     DECLARE @hrRep VARCHAR(50)
     SET @hrRep = 'HR_Representative_' + @employee_dept
 
-
-    INSERT INTO Employee_Approve_Leave (Emp1_ID, Leave_ID, status)
-        SELECT e.employee_ID, @leaveId, 'pending'
+    DECLARE @hrID INT
+    SET @hrID = (
+        SELECT e.employee_ID
         FROM Employee e
         JOIN Employee_Role er ON e.employee_ID = er.emp_ID
         JOIN Role r ON er.role_name = r.role_name
         WHERE r.role_name = @hrRep
+    )
+    
+    IF (dbo.Is_On_Leave(@hrId, GETDATE(), GETDATE()) = 1)
+    BEGIN
+        SET @hrID = (
+            SELECT TOP 1 e.employee_ID
+            FROM Employee e
+            JOIN Employee_Role er ON e.employee_ID = er.emp_ID
+            JOIN Role r ON er.role_name = r.role_name
+            WHERE r.role_name LIKE 'HR_Representative_%' AND dbo.Is_On_Leave(e.employee_ID, GETDATE(), GETDATE()) = 0 
+        )
+    END
+
+    INSERT INTO Employee_Approve_Leave (Emp1_ID, Leave_ID, status)
+        SELECT e.employee_ID, @leaveId, 'pending'
+        FROM Employee e
+        WHERE e.employee_ID = @hrId
 
 END
 GO
@@ -685,10 +742,6 @@ CREATE PROCEDURE Dean_andHR_Evaluation
     @semester char(3)
 AS
 BEGIN
-    IF (@rating < 1 OR @rating > 5)
-    BEGIN
-        RETURN
-    END
     INSERT INTO Performance(rating, comments, semester, emp_ID)
     VALUES (@rating, @comment, @semester, @employee_ID)
 END
