@@ -344,10 +344,6 @@ CREATE PROCEDURE Submit_accidental
     @end_date DATE
 AS 
 BEGIN
-    IF (GETDATE() > @start_date AND DATEDIFF(DAY, @start_date, GETDATE()) > 2)
-    BEGIN
-        RETURN;
-    END
     DECLARE @employee_dept VARCHAR(50)
     DECLARE @employee_role VARCHAR(50)
     DECLARE @employee_rank INT
