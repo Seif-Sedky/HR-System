@@ -97,6 +97,8 @@ VALUES
 INSERT INTO Attendance(emp_ID,date,check_in_time,check_out_time,status)
 VALUES (1,'2025-11-14',NULL,NULL,'absent');
 
+
+
 -------------------------------------------------------------
 -- RUN REQUIRED PROCEDURES IN ORDER
 -------------------------------------------------------------
@@ -108,13 +110,12 @@ SELECT * FROM Document;
 PRINT '---- RUN Remove_Deductions ----';
 EXEC Remove_Deductions;
 SELECT * FROM Deduction;
-/*
-NOT DONE YES I DON'T HAVE IS ON_LEAVE
+
 PRINT '---- RUN Update_Employment_Status ----';
 EXEC Update_Employment_Status 1;
 EXEC Update_Employment_Status 3;
 SELECT employee_ID,employment_status FROM Employee;
-*/
+
 PRINT '---- RUN Intitiate_Attendance ----';
 EXEC Intitiate_Attendance;
 SELECT * FROM Attendance WHERE date = CAST(GETDATE() AS DATE);
