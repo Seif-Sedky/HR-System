@@ -1,10 +1,16 @@
+USE MASTER;
+
+DROP DATABASE University_HR_ManagementSystem_6;
+
+CREATE DATABASE University_HR_ManagementSystem_6;
+
+
 USE University_HR_ManagementSystem_6 ;
 
 EXEC createAllTables 
 EXEC dropAllTables
 EXEC dropAllProceduresFunctionsViews
 EXEC clearAllTables
-
 
 
 SELECT * FROM allEmployeeProfiles
