@@ -586,6 +586,7 @@ BEGIN
     SELECT @extra_hours = (ISNULL(SUM(total_duration),0) / 60.0 - 8 * COUNT(*)) -- to be full time each day is 8 hours
     FROM Attendance
     WHERE emp_ID = @employee_ID
+      AND status = 'attended'
       AND MONTH(date) = MONTH(GETDATE())
       AND YEAR(date) = YEAR(GETDATE())
     -- ENSURE EXTRA HOURS IS NOT NEGATIVE
