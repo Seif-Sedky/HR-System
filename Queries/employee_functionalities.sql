@@ -95,7 +95,7 @@ RETURN
 (
     SELECT d.deduction_ID
     FROM deductions d
-    WHERE d.emp_ID = @employee_ID AND MONTH(d.[date]) = @month AND d.[type] = 'missing_days'
+    WHERE d.emp_ID = @employee_ID AND MONTH(d.[date]) = @month AND (d.[type] = 'missing_days' OR d.[type] = 'missing_hours')
 )
 GO
 
@@ -214,7 +214,7 @@ BEGIN
         WHERE r.role_name = @hrRep
     )
     
-    IF (Is_On_Leave(@hrId, GETDATE(), GETDATE()) = 1)
+    IF (dbo.Is_On_Leave(@hrId, GETDATE(), GETDATE()) = 1)
     BEGIN
         SET @hrID = (
             SELECT TOP 1 e.employee_ID
@@ -255,7 +255,7 @@ BEGIN
 
         DECLARE @approver_id INT
         
-        IF dbo.Is_On_Leave(@dean_id, @start_date, @end_date) = 1
+        IF dbo.Is_On_Leave(@dean_id, GETDATE(), GETDATE()) = 1
             SET @approver_id = @vice_dean_id
         ELSE
             SET @approver_id = @dean_id
@@ -319,7 +319,7 @@ BEGIN
     FROM Employee e
     WHERE e.employee_ID = @replacement_ID
 
-    IF (Is_On_Leave(@replacement_ID, @start_date, @end_date) = 1 OR @employee_dept <> @replacement_dept)
+    IF (dbo.Is_On_Leave(@replacement_ID, @start_date, @end_date) = 1 OR @employee_dept <> @replacement_dept)
     BEGIN
         UPDATE Employee_Approve_Leave 
         SET status = 'rejected'
@@ -379,7 +379,7 @@ BEGIN
         WHERE r.role_name = @hrRep
     )
     
-    IF (Is_On_Leave(@hrId, GETDATE(), GETDATE()) = 1)
+    IF (dbo.Is_On_Leave(@hrId, GETDATE(), GETDATE()) = 1)
     BEGIN
         SET @hrID = (
             SELECT TOP 1 e.employee_ID
@@ -428,21 +428,6 @@ BEGIN
     WHERE e.employee_id = @employee_ID
     ORDER BY r.rank ASC;
 
-    DECLARE @dean_id INT
-    DECLARE @vice_dean_id INT 
-
-    SELECT @dean_id = e.employee_ID
-    FROM Employee e
-    JOIN Employee_Role er ON e.employee_ID = er.emp_ID
-    JOIN Role r ON r.role_name = er.role_name
-    WHERE e.dept_name = @employee_dept AND r.role_name = 'Dean'
-
-    SELECT @vice_dean_id = e.employee_ID
-    FROM Employee e
-    JOIN Employee_Role er ON e.employee_ID = er.emp_ID
-    JOIN Role r ON r.role_name = er.role_name
-    WHERE e.dept_name = @employee_dept AND r.role_name = 'Vice Dean'
-
     IF (EXISTS(
             SELECT 1 FROM Employee 
             WHERE employee_ID = @employee_ID AND type_of_contract = 'part_time'
@@ -476,7 +461,7 @@ BEGIN
         WHERE r.role_name = @hrRep
     )
     
-    IF (Is_On_Leave(@hrId, GETDATE(), GETDATE()) = 1)
+    IF (dbo.Is_On_Leave(@hrId, GETDATE(), GETDATE()) = 1)
     BEGIN
         SET @hrID = (
             SELECT TOP 1 e.employee_ID
@@ -617,7 +602,7 @@ BEGIN
 
         DECLARE @approver_id INT
         
-        IF dbo.Is_On_Leave(@dean_id, @start_date, @end_date) = 1
+        IF dbo.Is_On_Leave(@dean_id, GETDATE(), GETDATE()) = 1
             SET @approver_id = @vice_dean_id
         ELSE
             SET @approver_id = @dean_id
