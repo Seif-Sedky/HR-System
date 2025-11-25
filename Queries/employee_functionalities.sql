@@ -207,7 +207,7 @@ BEGIN
 
     DECLARE @hrID INT
     SET @hrID = (
-        SELECT e.employee_ID
+        SELECT TOP 1 e.employee_ID
         FROM Employee e
         JOIN Employee_Role er ON e.employee_ID = er.emp_ID
         JOIN Role r ON er.role_name = r.role_name
@@ -217,11 +217,9 @@ BEGIN
     IF (dbo.Is_On_Leave(@hrId, GETDATE(), GETDATE()) = 1)
     BEGIN
         SET @hrID = (
-            SELECT TOP 1 e.employee_ID
-            FROM Employee e
-            JOIN Employee_Role er ON e.employee_ID = er.emp_ID
-            JOIN Role r ON er.role_name = r.role_name
-            WHERE r.role_name LIKE 'HR_Representative_%' AND dbo.Is_On_Leave(e.employee_ID, GETDATE(), GETDATE()) = 0 
+            SELECT TOP 1 Emp2_ID
+            FROM Employee_Replace_Employee
+            WHERE Emp1_ID = @hrID AND from_date <= GETDATE() AND to_date >= GETDATE()
         )
     END
 
@@ -372,7 +370,7 @@ BEGIN
 
     DECLARE @hrID INT
     SET @hrID = (
-        SELECT e.employee_ID
+        SELECT TOP 1 e.employee_ID
         FROM Employee e
         JOIN Employee_Role er ON e.employee_ID = er.emp_ID
         JOIN Role r ON er.role_name = r.role_name
@@ -382,11 +380,9 @@ BEGIN
     IF (dbo.Is_On_Leave(@hrId, GETDATE(), GETDATE()) = 1)
     BEGIN
         SET @hrID = (
-            SELECT TOP 1 e.employee_ID
-            FROM Employee e
-            JOIN Employee_Role er ON e.employee_ID = er.emp_ID
-            JOIN Role r ON er.role_name = r.role_name
-            WHERE r.role_name LIKE 'HR_Representative_%' AND dbo.Is_On_Leave(e.employee_ID, GETDATE(), GETDATE()) = 0 
+            SELECT TOP 1 Emp2_ID
+            FROM Employee_Replace_Employee
+            WHERE Emp1_ID = @hrID AND from_date <= GETDATE() AND to_date >= GETDATE()
         )
     END
 
@@ -454,7 +450,7 @@ BEGIN
 
     DECLARE @hrID INT
     SET @hrID = (
-        SELECT e.employee_ID
+        SELECT TOP 1 e.employee_ID
         FROM Employee e
         JOIN Employee_Role er ON e.employee_ID = er.emp_ID
         JOIN Role r ON er.role_name = r.role_name
@@ -464,11 +460,9 @@ BEGIN
     IF (dbo.Is_On_Leave(@hrId, GETDATE(), GETDATE()) = 1)
     BEGIN
         SET @hrID = (
-            SELECT TOP 1 e.employee_ID
-            FROM Employee e
-            JOIN Employee_Role er ON e.employee_ID = er.emp_ID
-            JOIN Role r ON er.role_name = r.role_name
-            WHERE r.role_name LIKE 'HR_Representative_%' AND dbo.Is_On_Leave(e.employee_ID, GETDATE(), GETDATE()) = 0 
+            SELECT TOP 1 Emp2_ID
+            FROM Employee_Replace_Employee
+            WHERE Emp1_ID = @hrID AND from_date <= GETDATE() AND to_date >= GETDATE()
         )
     END
 
@@ -555,7 +549,7 @@ BEGIN
 
     DECLARE @hrID INT
     SET @hrID = (
-        SELECT e.employee_ID
+        SELECT TOP 1 e.employee_ID
         FROM Employee e
         JOIN Employee_Role er ON e.employee_ID = er.emp_ID
         JOIN Role r ON er.role_name = r.role_name
@@ -565,11 +559,9 @@ BEGIN
     IF (dbo.Is_On_Leave(@hrId, GETDATE(), GETDATE()) = 1)
     BEGIN
         SET @hrID = (
-            SELECT TOP 1 e.employee_ID
-            FROM Employee e
-            JOIN Employee_Role er ON e.employee_ID = er.emp_ID
-            JOIN Role r ON er.role_name = r.role_name
-            WHERE r.role_name LIKE 'HR_Representative_%' AND dbo.Is_On_Leave(e.employee_ID, GETDATE(), GETDATE()) = 0 
+            SELECT TOP 1 Emp2_ID
+            FROM Employee_Replace_Employee
+            WHERE Emp1_ID = @hrID AND from_date <= GETDATE() AND to_date >= GETDATE()
         )
     END
 
@@ -686,7 +678,7 @@ BEGIN
 
     DECLARE @hrID INT
     SET @hrID = (
-        SELECT e.employee_ID
+        SELECT TOP 1 e.employee_ID
         FROM Employee e
         JOIN Employee_Role er ON e.employee_ID = er.emp_ID
         JOIN Role r ON er.role_name = r.role_name
@@ -696,11 +688,9 @@ BEGIN
     IF (dbo.Is_On_Leave(@hrId, GETDATE(), GETDATE()) = 1)
     BEGIN
         SET @hrID = (
-            SELECT TOP 1 e.employee_ID
-            FROM Employee e
-            JOIN Employee_Role er ON e.employee_ID = er.emp_ID
-            JOIN Role r ON er.role_name = r.role_name
-            WHERE r.role_name LIKE 'HR_Representative_%' AND dbo.Is_On_Leave(e.employee_ID, GETDATE(), GETDATE()) = 0 
+            SELECT TOP 1 Emp2_ID
+            FROM Employee_Replace_Employee
+            WHERE Emp1_ID = @hrID AND from_date <= GETDATE() AND to_date >= GETDATE()
         )
     END
 
