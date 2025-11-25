@@ -632,8 +632,8 @@ AS
     -- Calculate net salary
     SET @net_salary = @basic_salary + @bonus_amount - @deductions_amount;
     -- Insert into Payroll
-    INSERT INTO Payroll ( final_salary_amount, from_date, to_date, comments, bonus_amount, deductions_amount, emp_ID)
-    VALUES ( @net_salary, @from_date, @to_date, 'Monthly Payroll', @bonus_amount, @deductions_amount, @employee_ID);
+    INSERT INTO Payroll ( payment_date, final_salary_amount, from_date, to_date, comments, bonus_amount, deductions_amount, emp_ID)
+    VALUES ( GETDATE() ,@net_salary, @from_date, @to_date, 'Monthly Payroll', @bonus_amount, @deductions_amount, @employee_ID);
 GO
 
 
