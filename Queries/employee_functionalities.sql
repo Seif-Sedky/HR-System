@@ -243,7 +243,7 @@ BEGIN
         FROM Employee e
         JOIN Employee_Role er ON e.employee_ID = er.emp_ID
         JOIN Role r ON er.role_name = r.role_name
-        WHERE r.role_name = 'President' OR r.role_name = 'HR Manager'
+        WHERE r.role_name = 'HR Manager'
     END
 
     ELSE
