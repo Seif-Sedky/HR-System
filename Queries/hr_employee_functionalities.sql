@@ -1,6 +1,4 @@
 ﻿
-EXEC createAllTables
- GO
 
 drop FUNCTION HRLoginValidation
 DROP PROC HR_approval_an_acc
@@ -78,11 +76,11 @@ BEGIN
             SET status = 'rejected'
             WHERE Leave_ID = @request_ID AND Emp1_ID = @HR_ID
 
-            PRINT 'Insufficient Annual Leave Balance. Request Rejected.';
+--            PRINT 'Insufficient Annual Leave Balance. Request Rejected.';
             RETURN;
         END
         -- Check replacement employee availability
-         IF Is_On_Leave((SELECT replacement_emp FROM Annual_Leave WHERE request_ID = @request_ID), 
+         IF dbo.Is_On_Leave((SELECT replacement_emp FROM Annual_Leave WHERE request_ID = @request_ID), 
                           (SELECT start_date FROM Leave WHERE request_ID = @request_ID), 
                           (SELECT end_date FROM Leave WHERE request_ID = @request_ID)) = 1
         BEGIN
@@ -94,7 +92,7 @@ BEGIN
             SET status = 'rejected'
             WHERE Leave_ID = @request_ID AND Emp1_ID = @HR_ID
 
-            PRINT 'Replacement Employee Is On Leave During The Requested Period. Request Rejected.';
+--            PRINT 'Replacement Employee Is On Leave During The Requested Period. Request Rejected.';
            RETURN;
         END
     END
@@ -116,7 +114,7 @@ BEGIN
             SET status = 'rejected'
             WHERE Leave_ID = @request_ID AND Emp1_ID = @HR_ID
 
-            PRINT 'Accidental Leave Exceeds 1 Day, or has been submitted more than 48 hours ago. Request Rejected.';
+--            PRINT 'Accidental Leave Exceeds 1 Day, or has been submitted more than 48 hours ago. Request Rejected.';
             RETURN;
         END
         IF NOT EXISTS (
@@ -134,7 +132,7 @@ BEGIN
             SET status = 'rejected'
             WHERE Leave_ID = @request_ID AND Emp1_ID = @HR_ID
 
-            PRINT 'Insufficient Accidental Leave Balance. Request Rejected.';
+--            PRINT 'Insufficient Accidental Leave Balance. Request Rejected.';
             RETURN;
         END
     END
@@ -154,7 +152,7 @@ BEGIN
             SET status = 'rejected'
             WHERE Leave_ID = @request_ID AND Emp1_ID = @HR_ID
 
-        PRINT 'Part-Time Employees Cannot Take Annual or Accidental Leave. Rejected.';
+--        PRINT 'Part-Time Employees Cannot Take Annual or Accidental Leave. Rejected.';
         RETURN;
     END
     --APPROVALS HEIRARCHY
@@ -172,19 +170,11 @@ BEGIN
             SET status = 'rejected'
             WHERE Leave_ID = @request_ID AND Emp1_ID = @HR_ID
 
-            PRINT 'Approvals Heirarchy not met. Unpaid Leave Request Rejected.';
+--            PRINT 'Approvals Heirarchy not met. Unpaid Leave Request Rejected.';
             RETURN;
         END
 
-        IF EXISTS(
-        SELECT status FROM Employee_Approve_Leave
-        WHERE Leave_ID = @request_ID
-        AND Emp1_ID <> @HR_ID
-        AND status = 'pending')
-        BEGIN
-            PRINT 'Approvals Heirarchy not met. Unpaid Leave Request pending.';
-            RETURN;
-        END
+
     -- Everything validated SO HR can now approve
     UPDATE Leave
     SET final_approval_status = 'approved'
@@ -230,7 +220,7 @@ AS
             SET status = 'rejected'
             WHERE Leave_ID = @request_ID AND Emp1_ID = @HR_ID
 
-            PRINT 'The Employee Annual Leave Balance Is Greater Than Zero. Unpaid Leave Request Rejected.';
+--            PRINT 'The Employee Annual Leave Balance Is Greater Than Zero. Unpaid Leave Request Rejected.';
             RETURN;
         END
         -- reject if requested by a part timer
@@ -249,7 +239,7 @@ AS
             SET status = 'rejected'
             WHERE Leave_ID = @request_ID AND Emp1_ID = @HR_ID
 
-            PRINT 'The Employee Is Part-Time. Unpaid Leave Request Rejected.';
+--            PRINT 'The Employee Is Part-Time. Unpaid Leave Request Rejected.';
             RETURN;
         END     
         -- Finally we need to see if the unpaid leave exceeds 30 days or if the employee took unpaid leave in the last  year
@@ -268,7 +258,7 @@ AS
                 SET status = 'rejected'
                 WHERE Leave_ID = @request_ID AND Emp1_ID = @HR_ID
 
-                  PRINT 'The Unpaid Leave Duration Exceeds 30 Days. Request Rejected.';
+--                  PRINT 'The Unpaid Leave Duration Exceeds 30 Days. Request Rejected.';
                   RETURN;
           END
           IF EXISTS (
@@ -287,7 +277,7 @@ AS
                SET status = 'rejected'
                WHERE Leave_ID = @request_ID AND Emp1_ID = @HR_ID
 
-                PRINT 'The Employee Has Taken Unpaid Leave In The Last Year. Request Rejected.';
+ --               PRINT 'The Employee Has Taken Unpaid Leave In The Last Year. Request Rejected.';
                 RETURN;
             END
 
@@ -306,19 +296,10 @@ AS
             SET status = 'rejected'
             WHERE Leave_ID = @request_ID AND Emp1_ID = @HR_ID
 
-            PRINT 'Approvals Heirarchy not met. Unpaid Leave Request Rejected.';
+ --           PRINT 'Approvals Heirarchy not met. Unpaid Leave Request Rejected.';
             RETURN;
         END
 
-        IF EXISTS(
-        SELECT status FROM Employee_Approve_Leave
-        WHERE Leave_ID = @request_ID
-        AND Emp1_ID <> @HR_ID
-        AND status = 'pending')
-        BEGIN
-            PRINT 'Approvals Heirarchy not met. Unpaid Leave Request pending.';
-            RETURN;
-        END
         
         -- Otherwise we accept
 		UPDATE Leave
@@ -342,7 +323,7 @@ AS
         DECLARE @initial_balance INT;
 
         -- check if replacement employee is available
-         IF Is_On_Leave((SELECT replacement_emp FROM Annual_Leave WHERE request_ID = @request_ID), 
+         IF dbo.Is_On_Leave((SELECT replacement_emp FROM Compensation_Leave WHERE request_ID = @request_ID), 
                           (SELECT start_date FROM Leave WHERE request_ID = @request_ID), 
                           (SELECT end_date FROM Leave WHERE request_ID = @request_ID)) = 1
         BEGIN
@@ -354,7 +335,7 @@ AS
           SET status = 'rejected'
           WHERE Leave_ID = @request_ID AND Emp1_ID = @HR_ID
 
-          PRINT 'Replacement Employee Is On Leave During The Requested Period. Request Rejected.';
+--          PRINT 'Replacement Employee Is On Leave During The Requested Period. Request Rejected.';
           RETURN;
         END
         -- get the empoyee id of the requester and the date of original workday
@@ -362,7 +343,7 @@ AS
         FROM Compensation_Leave 
         WHERE request_ID = @request_ID;
         -- check if the date in the request is actually a workday for the employee
-        IF (SELECT official_day_off FROM Employee WHERE employee_ID = @employee_id) = DATENAME(WEEKDAY, @date_of_original_workday)
+        IF (SELECT official_day_off FROM Employee WHERE employee_ID = @employee_id) <> DATENAME(WEEKDAY, @date_of_original_workday)
         BEGIN
             UPDATE Leave
             SET final_approval_status = 'rejected'
@@ -372,7 +353,7 @@ AS
             SET status = 'rejected'
             WHERE Leave_ID = @request_ID AND Emp1_ID = @HR_ID
 
-            PRINT 'The Specified Date Is A Day Off For The Employee. Compensation Leave Request Rejected.';
+--            PRINT 'The Specified Date Is A Day Off For The Employee. Compensation Leave Request Rejected.';
             RETURN;
         END
         -- check if Compensation not within the same month or more than a day
@@ -381,6 +362,7 @@ AS
             FROM Leave l JOIN  Compensation_Leave cl ON l.request_ID = cl.request_ID
             WHERE l.request_ID = @request_ID
             AND MONTH(l.start_date) = Month(cl.date_of_original_workday)
+            AND YEAR(l.start_date) = YEAR(cl.date_of_original_workday)
             AND l.start_date = l.end_date
         )
         BEGIN
@@ -392,7 +374,7 @@ AS
             SET status = 'rejected'
             WHERE Leave_ID = @request_ID AND Emp1_ID = @HR_ID
 
-            PRINT 'Compensation not within the same month or more than a day. Compensation Leave Request Rejected.';
+ --           PRINT 'Compensation not within the same month or more than a day. Compensation Leave Request Rejected.';
             RETURN;
         END
          -- OTHERWISE  we see if the employee has attended at least 8 hours on that day off and that he did not already take compensation leave for that
@@ -430,7 +412,7 @@ AS
             SET status = 'rejected'
             WHERE Leave_ID = @request_ID AND Emp1_ID = @HR_ID
 
-            PRINT 'The Employee Has Not Spent At Least 8 Hours During His/Her Day Off. Compensation Leave Request Rejected.';
+--            PRINT 'The Employee Has Not Spent At Least 8 Hours During His/Her Day Off. Compensation Leave Request Rejected.';
             RETURN;
         END
 GO
@@ -533,6 +515,8 @@ AS
           SELECT * FROM Deduction
           WHERE emp_ID = @employee_ID
           AND unpaid_ID = @unpaid_ID
+          AND Month(date) = MONTH(GETDATE())
+          AND YEAR(date) = YEAR(GETDATE())
       ); -- make sure we dont add the deduction again if we already did it
 
     SET @unpaid_days = DATEDIFF(DAY, @start_date, @end_date) + 1
@@ -590,7 +574,14 @@ BEGIN
     FROM Employee e, Employee_Role er, Role r
     WHERE e.employee_ID = er.emp_ID
       AND er.role_name = r.role_name
-      AND e.employee_ID = @employee_ID;
+      AND e.employee_ID = @employee_ID
+      AND r.rank >= ALL (
+          SELECT r2.rank
+          FROM Employee e2, Employee_Role er2, Role r2
+          WHERE e2.employee_ID = er2.emp_ID
+            AND er2.role_name = r2.role_name
+            AND e2.employee_ID = @employee_ID
+      );
       -- CALCULATE THE TOTAL EXTRA HOURS IN ATTENDANCE
     SELECT @extra_hours = (ISNULL(SUM(total_duration),0) / 60.0 - 8 * COUNT(*)) -- to be full time each day is 8 hours
     FROM Attendance
@@ -637,7 +628,7 @@ AS
     UPDATE Deduction SET status = 'finalized'
     WHERE emp_ID = @employee_ID
     AND date BETWEEN @from_date AND @to_date
-    AND d.status = 'pending';
+    AND status = 'pending';
     -- Calculate net salary
     SET @net_salary = @basic_salary + @bonus_amount - @deductions_amount;
     -- Insert into Payroll
