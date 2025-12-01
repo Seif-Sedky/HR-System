@@ -1,0 +1,138 @@
+@page
+@model Milestone3.Pages.Employee2.Approvals.ApproveUnpaidLeavesModel
+@{
+    ViewData["Title"] = "Approve Unpaid Leaves";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">
+        Approve Unpaid Leave Requests
+        @if (!string.IsNullOrEmpty(Model.UserRole))
+        {
+            <small class="text-muted">(@Model.UserRole)</small>
+        }
+    </h2>
+
+    @if (!string.IsNullOrEmpty(Model.Message))
+    {
+        <div class="alert alert-@(Model.MessageType == "success" ? "success" : "danger") alert-dismissible fade show" role="alert">
+            @Model.Message
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (Model.PendingRequests.Any())
+    {
+        <div class="row">
+            @foreach (var request in Model.PendingRequests)
+            {
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h6 class="mb-0">
+                                Request #@request.RequestId - @request.EmployeeName
+                                <span class="badge bg-light text-dark float-end">@request.MyApprovalStatus</span>
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-2">
+                                <div class="col-6">
+                                    <strong>Employee ID:</strong> @request.EmployeeId
+                                </div>
+                                <div class="col-6">
+                                    <strong>Department:</strong> @request.Department
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6">
+                                    <strong>Request Date:</strong> @request.DateOfRequest.ToString("MMM dd, yyyy")
+                                </div>
+                                <div class="col-6">
+                                    <strong>Duration:</strong> @request.NumDays day(s)
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6">
+                                    <strong>Start Date:</strong> @request.StartDate.ToString("MMM dd, yyyy")
+                                </div>
+                                <div class="col-6">
+                                    <strong>End Date:</strong> @request.EndDate.ToString("MMM dd, yyyy")
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <strong>Contract Type:</strong> 
+                                    <span class="badge bg-@(request.ContractType == "full_time" ? "success" : "warning")">
+                                        @request.ContractType
+                                    </span>
+                                </div>
+                                <div class="col-6">
+                                    <strong>Annual Balance:</strong> 
+                                    <span class="badge bg-@(request.AnnualBalance == 0 ? "success" : "danger")">
+                                        @request.AnnualBalance days
+                                    </span>
+                                </div>
+                            </div>
+
+                            <hr />
+
+                            <div class="mb-3">
+                                <strong>Document:</strong> @request.FileName<br />
+                                <small class="text-muted">@request.DocumentDescription</small>
+                            </div>
+
+                            <div class="alert alert-info mb-3">
+                                <strong>Validation Checklist:</strong>
+                                <ul class="mb-0 small">
+                                    <li class="@(request.NumDays <= 30 ? "text-success" : "text-danger")">
+                                        Duration ? 30 days (@request.NumDays days)
+                                    </li>
+                                    <li class="@(request.AnnualBalance == 0 ? "text-success" : "text-danger")">
+                                        Annual balance is zero (@request.AnnualBalance)
+                                    </li>
+                                    <li class="@(request.ContractType == "full_time" ? "text-success" : "text-danger")">
+                                        Full-time employee (@request.ContractType)
+                                    </li>
+                                    <li class="@(!string.IsNullOrEmpty(request.FileName) ? "text-success" : "text-danger")">
+                                        Memo document attached
+                                    </li>
+                                </ul>
+                            </div>
+
+                            @if (request.MyApprovalStatus == "Pending")
+                            {
+                                <div class="d-grid gap-2">
+                                    <form method="post" class="d-inline">
+                                        <input type="hidden" name="requestId" value="@request.RequestId" />
+                                        <button type="submit" asp-page-handler="Approve" class="btn btn-success w-100 mb-2">
+                                            <i class="bi bi-check-circle"></i> Approve
+                                        </button>
+                                    </form>
+                                    <form method="post" class="d-inline">
+                                        <input type="hidden" name="requestId" value="@request.RequestId" />
+                                        <button type="submit" asp-page-handler="Reject" class="btn btn-danger w-100">
+                                            <i class="bi bi-x-circle"></i> Reject
+                                        </button>
+                                    </form>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-secondary mb-0">
+                                    Status: <strong>@request.MyApprovalStatus</strong>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            <h5><i class="bi bi-info-circle"></i> No Pending Requests</h5>
+            <p class="mb-0">There are currently no unpaid leave requests pending your approval.</p>
+        </div>
+    }
+</div>

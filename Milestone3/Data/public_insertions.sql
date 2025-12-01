@@ -1,4 +1,4 @@
-﻿USE University_HR_ManagementSystem_6;
+﻿USE University_HR_ManagementSystem;
 go
 
 

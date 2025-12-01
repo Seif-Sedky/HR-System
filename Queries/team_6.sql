@@ -4,6 +4,8 @@ GO
 USE University_HR_ManagementSystem_6 ;
 GO
 
+
+
 -- 2.1 BASIC STRUCTURE 
 
 -- IMPORTANT NOTE
@@ -404,7 +406,6 @@ SELECT *
 FROM Attendance a 
 WHERE a.date = CAST(GETDATE() - 1 AS DATE); -- Get date returns datetime, so we cast to date 
 GO
-
 
 -- 2.3 ADMIN FUNCTIONALITIES 
 

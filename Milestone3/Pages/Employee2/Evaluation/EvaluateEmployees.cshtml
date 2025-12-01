@@ -1,0 +1,179 @@
+@page
+@model Milestone3.Pages.Employee2.Evaluation.EvaluateEmployeesModel
+@{
+    ViewData["Title"] = "Evaluate Employees";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">
+        Evaluate Employees - @Model.DeanDepartment Department
+        @if (!string.IsNullOrEmpty(Model.UserRole))
+        {
+            <small class="text-muted">(@Model.UserRole)</small>
+        }
+    </h2>
+
+    @if (!string.IsNullOrEmpty(Model.Message))
+    {
+        <div class="alert alert-@(Model.MessageType == "success" ? "success" : "danger") alert-dismissible fade show" role="alert">
+            @Model.Message
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (Model.Employees.Any())
+    {
+        <div class="row">
+            <!-- Employee List -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Department Employees (@Model.Employees.Count)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Role</th>
+                                        <th>Experience</th>
+                                        <th>Last Evaluation</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var emp in Model.Employees)
+                                    {
+                                        <tr>
+                                            <td>@emp.EmployeeId</td>
+                                            <td>
+                                                <strong>@emp.FullName</strong><br />
+                                                <small class="text-muted">@emp.Email</small>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">@emp.RoleName</span><br />
+                                                <small>@emp.Title</small>
+                                            </td>
+                                            <td>@emp.YearsOfExperience years</td>
+                                            <td>
+                                                @if (emp.LastRating.HasValue)
+                                                {
+                                                    <span class="badge bg-@GetRatingColor(emp.LastRating.Value)">
+                                                        @emp.LastRating/5
+                                                    </span>
+                                                    <br />
+                                                    <small class="text-muted">@emp.LastSemester</small>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">Not evaluated</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-sm btn-success" 
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#evaluateModal"
+                                                        onclick="selectEmployee(@emp.EmployeeId, '@emp.FullName')">
+                                                    <i class="bi bi-clipboard-check"></i> Evaluate
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Evaluation Form -->
+            <div class="col-md-4">
+                <div class="card sticky-top" style="top: 20px;">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Submit Evaluation</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" asp-page-handler="Evaluate">
+                            <div class="mb-3">
+                                <label for="EmployeeId" class="form-label">Employee ID <span class="text-danger">*</span></label>
+                                <input type="number" asp-for="EmployeeId" class="form-control" id="employeeIdInput" required readonly />
+                                <small id="employeeNameDisplay" class="text-muted"></small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="Semester" class="form-label">Semester <span class="text-danger">*</span></label>
+                                <select asp-for="Semester" class="form-select" required>
+                                    <option value="">-- Select Semester --</option>
+                                    <option value="W24">Winter 2024 (W24)</option>
+                                    <option value="S24">Spring 2024 (S24)</option>
+                                    <option value="F24">Fall 2024 (F24)</option>
+                                    <option value="W25">Winter 2025 (W25)</option>
+                                    <option value="S25">Spring 2025 (S25)</option>
+                                    <option value="F25">Fall 2025 (F25)</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="Rating" class="form-label">Rating (1-5) <span class="text-danger">*</span></label>
+                                <select asp-for="Rating" class="form-select" required>
+                                    <option value="">-- Select Rating --</option>
+                                    <option value="1">1 - Poor</option>
+                                    <option value="2">2 - Below Average</option>
+                                    <option value="3">3 - Average</option>
+                                    <option value="4">4 - Good</option>
+                                    <option value="5">5 - Excellent</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="Comment" class="form-label">Comment</label>
+                                <textarea asp-for="Comment" class="form-control" rows="4" 
+                                          placeholder="Add evaluation comments (optional)" maxlength="50"></textarea>
+                                <small class="text-muted">Max 50 characters</small>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-check-circle"></i> Submit Evaluation
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            <h5><i class="bi bi-info-circle"></i> No Employees Found</h5>
+            <p class="mb-0">There are currently no active employees in your department to evaluate.</p>
+        </div>
+    }
+</div>
+
+@functions {
+    string GetRatingColor(int rating)
+    {
+        return rating switch
+        {
+            5 => "success",
+            4 => "primary",
+            3 => "warning",
+            2 => "danger",
+            1 => "dark",
+            _ => "secondary"
+        };
+    }
+}
+
+@section Scripts {
+    <script>
+        function selectEmployee(empId, empName) {
+            document.getElementById('employeeIdInput').value = empId;
+            document.getElementById('employeeNameDisplay').textContent = 'Selected: ' + empName;
+        }
+    </script>
+}
