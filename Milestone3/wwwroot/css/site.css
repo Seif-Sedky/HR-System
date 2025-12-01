@@ -20,3 +20,25 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+
+/* SUCCESS (green) */
+.toast-success {
+    background-color: white !important;
+    color: #1e7e34 !important; /* green text */
+    border: 2px solid #28a745 !important; /* solid green border */
+    box-shadow: 0 0 15px rgba(40, 167, 69, 0.3) !important; /* soft green glow */
+}
+
+/* ERROR (red) */
+.toast-error {
+    background-color: white !important;
+    color: #b02a37 !important; /* red text */
+    border: 2px solid #dc3545 !important; /* solid red border */
+    box-shadow: 0 0 15px rgba(220, 53, 69, 0.3) !important; /* soft red glow */
+}
+
+/* Make close button darker so it’s visible on white */
+.toast .btn-close {
+    filter: invert(40%) !important;
+}

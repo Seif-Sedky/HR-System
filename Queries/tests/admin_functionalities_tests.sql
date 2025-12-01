@@ -83,8 +83,16 @@ VALUES('TestHoliday','2024-11-20','2024-11-21');
 -------------------------------------------------------------
 INSERT INTO Attendance(emp_ID,date,check_in_time,check_out_time,status)
 VALUES
+(1,'2025-12-6',NULL,NULL,'absent'),
+(1,'2025-12-13',NULL,NULL,'absent'),
+(15,'2025-12-3',NULL,NULL,'absent'),
+(15,'2025-12-10',NULL,NULL,'absent'),
 (1,'2024-11-20',NULL,NULL,'absent'),
 (1,'2024-11-21',NULL,NULL,'absent'),
+(2,'2024-11-20',NULL,NULL,'absent'),
+(2,'2024-11-21',NULL,NULL,'absent'),
+(2,'2024-11-20',NULL,NULL,'absent'),
+(2,'2024-11-21',NULL,NULL,'absent'),
 (1,'2024-11-22',NULL,NULL,'absent'),
 (1,'2024-11-01',NULL,NULL,'absent'),
 (1,'2024-11-08',NULL,NULL,'absent'),
