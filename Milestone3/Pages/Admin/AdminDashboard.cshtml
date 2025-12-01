@@ -12,13 +12,13 @@
         color: #fff;
     }
 
-        .sidebar .nav-link {
-            color: #fff !important;
-        }
+    .sidebar .nav-link {
+        color: #fff !important;
+    }
 
-            .sidebar .nav-link:hover {
-                color: #cce4ff !important;
-            }
+    .sidebar .nav-link:hover {
+        color: #cce4ff !important;
+    }
 
     /* Accordion headers */
     .accordion-button {
@@ -27,9 +27,9 @@
         font-weight: 500;
     }
 
-        .accordion-button:focus {
-            box-shadow: none;
-        }
+    .accordion-button:focus {
+        box-shadow: none;
+     }
 
     /* Main content */
     .content {
@@ -76,7 +76,7 @@
 <div class="d-flex" style="min-height: 100vh;">
 
     <!-- Sidebar -->
-    <nav class="sidebar d-flex flex-column p-3" style="width:240px;">
+    <nav class="sidebar d-flex flex-column p-3" style="width:230px;">
         <div class="text-center mb-4">
             <h4 class="fw-light">HR SYSTEM</h4>
         </div>
@@ -85,7 +85,7 @@
                 <a asp-page="/Admin/AttendanceYesterday" class="nav-link">Attendance Yesterday</a>
             </li>
             <li class="nav-item mb-2">
-                <a asp-page="/Admin/EmployeePerformance" class="nav-link">Performance</a>
+                <a asp-page="/Admin/EmployeePerformance" class="nav-link"> Winter Performance</a>
             </li>
 
             
@@ -144,6 +144,26 @@
                 </div>
             </div>
 
+            <!-- Remove approved leaves  -->
+            <div class="accordion-item mb-3">
+                <h2 class="accordion-header" id="headingDayoff">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseApprovedLeaves" aria-expanded="false" aria-controls="collapseDayoff">
+                        Remove approved leaves for Employee
+                    </button>
+                </h2>
+                <div id="collapseApprovedLeaves" class="accordion-collapse collapse" aria-labelledby="headingApprovedLeaves" data-bs-parent="#adminActions">
+                    <div class="accordion-body">
+                        <form method="post">
+                            <div class="input-group mb-2">
+                                <input type="number" name="employeeId" class="form-control" placeholder="Employee ID" required />
+                                <button type="submit" asp-page-handler="RemoveApprovedLeaves" class="btn btn-dark">Remove Approved Leaves</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
             <!-- Update Employment Status -->
             <div class="accordion-item mb-3">
                 <h2 class="accordion-header" id="headingStatus">
@@ -174,8 +194,8 @@
                     <div class="accordion-body">
                         <form method="post">
                             <div class="row g-2">
-                                <div class="col-md-3"><input type="number" name="emp1Id" class="form-control" placeholder="Old Emp ID" required /></div>
-                                <div class="col-md-3"><input type="number" name="emp2Id" class="form-control" placeholder="New Emp ID" required /></div>
+                                <div class="col-md-3"><input type="number" name="emp1Id" class="form-control" placeholder="Employee being replaced ID" required /></div>
+                                <div class="col-md-3"><input type="number" name="emp2Id" class="form-control" placeholder="Replacement employee ID" required /></div>
                                 <div class="col-md-3"><input type="date" name="fromDate" class="form-control" required /></div>
                                 <div class="col-md-3"><input type="date" name="toDate" class="form-control" required /></div>
                             </div>
@@ -189,13 +209,67 @@
 
         </div>
 
-        <!-- Feedback Message -->
-        @if (TempData["Message"] != null)
+
+
+
+
+        <!-- SUCCESS TOAST (green, auto-hide) -->
+        @if (TempData["Success"] != null)
         {
-            <div class="alert alert-secondary mt-4">
-                @TempData["Message"]
+            <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+                <div id="successToast"
+                     class="toast toast-success border-0"
+                     role="alert">
+
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            @TempData["Success"]
+                        </div>
+
+                        <button type="button"
+                                class="btn-close me-2 m-auto"
+                                data-bs-dismiss="toast"></button>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    new bootstrap.Toast(document.getElementById("successToast"), {
+                        delay: 1500
+                    }).show();
+                });
+            </script>
+        }
+
+
+        <!-- ERROR TOAST (Red, DOES NOT auto-hide) -->
+        @if (TempData["Error"] != null)
+        {
+            <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+                <div id="errorToast"
+                     class="toast toast-error border-0 show"
+                     role="alert">
+
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            @TempData["Error"]
+                        </div>
+
+                        <button type="button"
+                                class="btn-close me-2 m-auto"
+                                data-bs-dismiss="toast"></button>
+                    </div>
+                </div>
             </div>
         }
 
+
+
+
     </div>
 </div>
+
+
+
+
