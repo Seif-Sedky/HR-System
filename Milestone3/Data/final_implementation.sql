@@ -2173,3 +2173,15 @@ AS
 
 
 GO
+
+-- added by ST
+CREATE TABLE AdminLog (
+    LogID INT IDENTITY PRIMARY KEY,
+    AdminName NVARCHAR(100),
+    Action NVARCHAR(200),
+    Timestamp DATETIME DEFAULT GETDATE()
+);
+
+
+
+
