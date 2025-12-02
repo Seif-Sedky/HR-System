@@ -1,0 +1,60 @@
+@page
+@model Milestone3.Pages.Admin.RemoveDeductionsModel
+
+<div class="container text-center" style="margin-top: 50px;">
+    <h2>Manage Resigned Employee Deductions</h2>
+
+    @if (!string.IsNullOrEmpty(Model.Message))
+    {
+        <div class="alert alert-success">@Model.Message</div>
+    }
+
+    @if (Model.ResignedDeductions != null && Model.ResignedDeductions.Rows.Count > 0)
+    {
+        <div class="alert alert-warning">
+            <strong>Warning:</strong> The following items are scheduled for removal.
+        </div>
+
+        <table class="table table-bordered table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Deduction ID</th>
+                    <th>Employee ID</th>
+                    <th>Amount</th>
+                    <th>Type</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (System.Data.DataRow row in Model.ResignedDeductions.Rows)
+                {
+                    <tr>
+                        <td>@row["deduction_ID"]</td>
+                        <td>@row["emp_ID"]</td>
+                        <td>@row["amount"]</td>
+                        <td>@row["type"]</td>
+                        <td>@row["date"]</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="card p-4 mx-auto mt-4" style="max-width: 500px;">
+            <p>Are you sure you want to permanently delete these records?</p>
+            <form method="post">
+                <button type="submit" class="btn btn-danger btn-lg w-100">
+                    Yes, Remove All Listed Deductions
+                </button>
+            </form>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info mt-4">
+            There are currently no deductions for resigned employees. Everything is clean!
+        </div>
+    }
+
+    <br />
+    <a asp-page="/Index" class="btn btn-secondary">Back to Home</a>
+</div>
