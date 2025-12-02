@@ -1,0 +1,24 @@
+@page
+@model Milestone3.Pages.Admin.InitiateAttendanceModel
+
+<div class="container text-center" style="margin-top: 50px;">
+    <h2>Initiate Daily Attendance</h2>
+    <p class="lead">Click the button below to generate attendance records for today (@DateTime.Now.ToShortDateString()).</p>
+    
+    @if (!string.IsNullOrEmpty(Model.Message))
+    {
+        <div class="alert alert-info">@Model.Message</div>
+    }
+
+    <div class="card p-4 mx-auto" style="max-width: 500px;">
+        <form method="post">
+            <button type="submit" class="btn btn-success btn-lg w-100">
+                Initiate Attendance for All Employees
+            </button>
+        </form>
+    </div>
+    
+    <div class="mt-4">
+         <a asp-page="/Index" class="btn btn-secondary">Back to Home</a>
+    </div>
+</div>
