@@ -7,7 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Pages\hr-employee\Index.cshtml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Pages\hr-employee\Index.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Models\" />
+    <Folder Include="Pages\hr-employee\NewFolder1\" />
+    <Folder Include="Pages\hr-employee\NewFolder\" />
     <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
