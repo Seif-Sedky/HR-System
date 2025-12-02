@@ -1,0 +1,21 @@
+@page
+@model Milestone3.Pages.Admin.LoginModel
+
+<div class="text-center">
+    <h1 class="display-4">Admin Login</h1>
+    
+    <div style="margin-top: 50px;">
+    <div class="alert alert-info">@Model.Message</div>
+        <form method="post">
+            <label>Admin ID:</label>
+            <input type="text" name="adminId" required />
+            <br /><br />
+
+            <label>Password:</label>
+            <input type="password" name="password" required />
+            <br /><br />
+
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+    </div>
+</div>
