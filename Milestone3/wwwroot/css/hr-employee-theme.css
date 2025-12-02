@@ -1,2 +1,150 @@
-﻿body {
+﻿/* Color Palette - GUC Inspired */
+:root {
+    --primary-blue: #003366; /* Deep Navy Blue */
+    --accent-red: #cc0000; /* GUC Red (for buttons/alerts) */
+    --light-bg: #f4f7f6; /* Very light grey for main content */
+    --sidebar-width: 260px;
+    --text-dark: #333333;
+    --text-white: #ffffff;
+    --card-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+body {
+    background-color: var(--light-bg);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+/* --- Layout Structure --- */
+.hr-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.hr-sidebar {
+    width: var(--sidebar-width);
+    background-color: var(--primary-blue);
+    color: var(--text-white);
+    position: fixed;
+    height: 100%;
+    transition: all 0.3s;
+    z-index: 1000;
+}
+
+.sidebar-header {
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+    .sidebar-header h3 {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 700;
+    }
+
+.sidebar-menu {
+    list-style: none;
+    padding: 20px 0;
+    margin: 0;
+}
+
+    .sidebar-menu li a {
+        padding: 15px 25px;
+        display: block;
+        color: rgba(255,255,255,0.8);
+        text-decoration: none;
+        transition: 0.3s;
+        border-left: 4px solid transparent;
+    }
+
+        .sidebar-menu li a:hover, .sidebar-menu li a.active {
+            color: #fff;
+            background-color: rgba(255,255,255,0.1);
+            border-left-color: var(--accent-red);
+        }
+
+/* Main Content Area */
+.hr-content {
+    flex: 1;
+    margin-left: var(--sidebar-width); /* Push content right */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Top Navbar */
+.hr-navbar {
+    background: #fff;
+    padding: 15px 30px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.page-container {
+    padding: 30px;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* --- Components --- */
+/* Cards */
+.stat-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.2s;
+    border-left: 5px solid var(--primary-blue);
+}
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+    }
+
+/* Buttons */
+.btn-primary-custom {
+    background-color: var(--primary-blue);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+    .btn-primary-custom:hover {
+        background-color: #002244;
+    }
+
+/* Alerts */
+.alert-custom {
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.alert-error {
+    background-color: #ffe6e6;
+    color: var(--accent-red);
+    border: 1px solid #ffcccc;
+}
+
+.alert-success {
+    background-color: #e6ffec;
+    color: #006622;
+    border: 1px solid #ccffda;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

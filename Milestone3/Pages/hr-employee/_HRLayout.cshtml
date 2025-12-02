@@ -1,4 +1,73 @@
-﻿@page
-@model Milestone3.Pages.hr_employee._HRLayoutModel
-@{
-}
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - HR Portal</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <!-- Our Custom Theme -->
+    <link rel="stylesheet" href="~/css/hr-employee-theme.css" />
+</head>
+<body>
+    <div class="hr-wrapper">
+        <!-- Sidebar -->
+        <nav class="hr-sidebar">
+            <div class="sidebar-header">
+                <h3><i class="fas fa-university me-2"></i>Uni HR System</h3>
+            </div>
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="/hr-employee/Dashboard" class="@(ViewData["ActivePage"] as string == "Dashboard" ? "active" : "")">
+                        <i class="fas fa-chart-line me-2"></i> Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="/hr-employee/Leaves/Review" class="@(ViewData["ActivePage"] as string == "Leaves" ? "active" : "")">
+                        <i class="fas fa-envelope-open-text me-2"></i> Leave Requests
+                    </a>
+                </li>
+                <li>
+                    <a href="/hr-employee/Attendance/Deductions" class="@(ViewData["ActivePage"] as string == "Attendance" ? "active" : "")">
+                        <i class="fas fa-user-clock me-2"></i> Attendance & Deductions
+                    </a>
+                </li>
+                <li>
+                    <a href="/hr-employee/Payroll/Generate" class="@(ViewData["ActivePage"] as string == "Payroll" ? "active" : "")">
+                        <i class="fas fa-file-invoice-dollar me-2"></i> Payroll
+                    </a>
+                </li>
+                <li style="margin-top: 50px;">
+                    <a href="/hr-employee/Login">
+                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="hr-content">
+            <!-- Top Navbar -->
+            <div class="hr-navbar">
+                <h4 class="m-0 text-secondary">@ViewData["Title"]</h4>
+                <div class="user-profile">
+                    <span class="text-muted me-2">Welcome, HR Admin</span>
+                    <i class="fas fa-user-circle fa-2x text-primary align-middle"></i>
+                </div>
+            </div>
+
+            <!-- Page Body -->
+            <div class="page-container">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+    <script src="~/js/hr-employee-actions.js"></script>
+
+</body>
+</html>
