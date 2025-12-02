@@ -624,3 +624,10 @@ UPDATE Employee
 SET dept_name = 'BI'
 WHERE employee_id = 14;
 
+-- Insert a fake deduction for the resigned employee (ID 15)
+INSERT INTO Deduction (emp_ID, date, amount, type, status, unpaid_ID, attendance_ID)
+VALUES (15, GETDATE(), 500.00, 'missing_hours', 'pending', NULL, NULL);
+
+-- Create a dummy "Absent" record for Employee ID 1 for TODAY
+INSERT INTO Attendance (date, emp_ID, status) 
+VALUES (CAST(GETDATE() AS DATE), 1, 'Absent');
