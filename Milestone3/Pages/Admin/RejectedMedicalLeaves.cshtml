@@ -1,0 +1,49 @@
+@page
+@model Milestone3.Pages.Admin.RejectedMedicalLeavesModel
+
+<div class="container text-center">
+    <h2 class="my-4">Rejected Medical Leaves</h2>
+
+    @if (Model.RejectedLeaves != null && Model.RejectedLeaves.Rows.Count > 0)
+    {
+        <table class="table table-striped table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Request ID</th>
+                    <th>Employee ID</th>
+                    <th>Type</th>
+                    <th>Disability Details</th>
+                    <th>Insurance Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (System.Data.DataRow row in Model.RejectedLeaves.Rows)
+                {
+                    <tr>
+                        <td>@row["request_ID"]</td>
+                        <td>@row["Emp_ID"]</td>
+                        <td>@row["type"]</td>
+                        <td>@row["disability_details"]</td>
+                        <td>
+                            @if(Convert.ToBoolean(row["insurance_status"])) 
+                            { 
+                                <span class="badge bg-success">Covered</span> 
+                            } 
+                            else 
+                            { 
+                                <span class="badge bg-secondary">Not Covered</span> 
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-info">No rejected medical leaves found.</div>
+    }
+    
+    <br />
+    <a asp-page="/Index" class="btn btn-secondary">Back to Home</a>
+</div>
