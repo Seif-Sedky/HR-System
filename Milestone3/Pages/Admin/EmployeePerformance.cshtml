@@ -1,0 +1,46 @@
+﻿@* @page
+@model Milestone3.Pages.Admin.EmployeePerformanceModel
+@{
+} *@
+
+
+
+
+
+@page
+@model Milestone3.Pages.Admin.EmployeePerformanceModel
+
+<h2>Employee Performance</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Performance ID</th>
+            <th>Rating</th>
+            <th>Comments</th>
+            <th>Semester</th>
+            <th>Employee ID</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.AttendanceData != null && Model.AttendanceData.Rows.Count > 0)
+        {
+            foreach (System.Data.DataRow row in Model.AttendanceData.Rows)
+            {
+                <tr>
+                    <td>@row["performance_ID"]</td>
+                    <td>@row["rating"]</td>
+                    <td>@row["comments"]</td>
+                    <td>@row["semester"]</td>
+                    <td>@row["emp_ID"]</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="7" class="text-center">No records found for Performance.</td>
+            </tr>
+        }
+    </tbody>
+</table>
