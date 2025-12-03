@@ -35,7 +35,7 @@
 
                         <!-- Step 1: Type -->
                         <div class="mb-4">
-                            <label class="form-label text-uppercase fw-bold text-secondary small ls-1">1. Deduction Type</label>
+                            <label class="form-label text-uppercase fw-bold text-secondary small ls-1">Deduction Type</label>
                             <div class="d-grid gap-2">
                                 <input type="radio" class="btn-check" name="SelectedType" id="typeHours" value="Hours" checked>
                                 <label class="btn btn-outline-white bg-white text-start p-3 border shadow-sm type-card" for="typeHours">
@@ -80,8 +80,8 @@
 
                         <!-- Step 2: Scope -->
                         <div class="mb-4">
-                            <label class="form-label text-uppercase fw-bold text-secondary small ls-1">2. Target Scope</label>
-                            <select asp-for="SelectedScope" class="form-select form-select-lg shadow-sm border-0" id="scopeSelect" onchange="toggleInputs()">
+                            <label class="form-label text-uppercase fw-bold text-secondary small ls-1">Target Scope</label>
+                            <select asp-for="SelectedScope" class="form-select form-select-lg shadow-sm border-0 fs-6" id="scopeSelect" onchange="toggleInputs()">
                                 <option value="All">All Employees</option>
                                 <option value="Department">Specific Department</option>
                                 <option value="Specific">Specific Employee ID</option>
