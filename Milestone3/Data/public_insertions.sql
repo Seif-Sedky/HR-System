@@ -767,5 +767,5 @@ VALUES (SCOPE_IDENTITY(), (SELECT employee_id FROM Employee WHERE first_name='Bo
 
 PRINT 'Pending Data Inserted. You can now test the Review Page.'
 
-SELECT * FROM Compensation_Leave INNER JOIN Leave l ON l.request_ID = Compensation_Leave.request_ID
+SELECT * FROM Annual_Leave INNER JOIN Leave l ON l.request_ID = Annual_Leave.request_ID
 SELECT * FROM Employee
