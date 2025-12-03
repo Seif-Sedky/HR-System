@@ -1,21 +1,38 @@
 @page
 @model Milestone3.Pages.Admin.LoginModel
+@{
+    ViewData["Title"] = "Admin Login";
+}
 
-<div class="text-center">
-    <h1 class="display-4">Admin Login</h1>
-    
-    <div style="margin-top: 50px;">
-    <div class="alert alert-info">@Model.Message</div>
+<div class="login-wrapper">
+    <div class="login-card">
+        <div class="text-center mb-4">
+            <h2 class="text-uni-blue fw-bold">University Admin</h2>
+            <p class="text-muted">Secure Access Portal</p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.Message))
+        {
+            <div class="alert alert-danger d-flex align-items-center" role="alert" style="background-color: var(--uni-red); color: white; border:none;">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <div>@Model.Message</div>
+            </div>
+        }
+
         <form method="post">
-            <label>Admin ID:</label>
-            <input type="text" name="adminId" required />
-            <br /><br />
+            <div class="mb-3">
+                <label class="form-label fw-bold">Admin ID</label>
+                <input type="text" name="adminId" class="form-control" placeholder="Enter your ID" required />
+            </div>
 
-            <label>Password:</label>
-            <input type="password" name="password" required />
-            <br /><br />
+            <div class="mb-4">
+                <label class="form-label fw-bold">Password</label>
+                <input type="password" name="password" class="form-control" placeholder="••••••••" required />
+            </div>
 
-            <button type="submit" class="btn btn-primary">Login</button>
+            <button type="submit" class="btn btn-uni-blue w-100 py-2 fw-bold shadow-sm">
+                Login to Dashboard
+            </button>
         </form>
     </div>
 </div>

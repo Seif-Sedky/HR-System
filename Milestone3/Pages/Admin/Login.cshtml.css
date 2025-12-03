@@ -1,0 +1,24 @@
+﻿/* Login.cshtml.css */
+
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 85vh;
+}
+
+.login-card {
+    background-color: white;
+    width: 100%;
+    max-width: 420px;
+    padding: 3rem;
+    border-radius: 16px;
+    box-shadow: 0 15px 35px rgba(36, 59, 85, 0.15); /* Deep Blue Shadow */
+    border-top: 6px solid #243B55; /* University Blue Accent */
+}
+
+/* Make the inputs look modern */
+.form-control:focus {
+    border-color: #243B55;
+    box-shadow: 0 0 0 4px rgba(36, 59, 85, 0.1);
+}
