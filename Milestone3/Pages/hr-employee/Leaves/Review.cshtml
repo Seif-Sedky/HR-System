@@ -35,7 +35,7 @@
 
                         <!-- Step 1: Type -->
                         <div class="mb-4">
-                            <label class="form-label text-uppercase fw-bold text-secondary small ls-1">1. Leave Type</label>
+                            <label class="form-label text-uppercase fw-bold text-secondary small ls-1">Leave Type</label>
                             <div class="d-grid gap-2">
                                 <input type="radio" class="btn-check" name="SelectedLeaveType" id="typeAA" value="AA" checked>
                                 <label class="btn btn-outline-white bg-white text-start p-3 border shadow-sm type-card" for="typeAA">
@@ -45,7 +45,7 @@
                                         </div>
                                         <div>
                                             <div class="fw-bold text-dark">Annual / Accidental</div>
-                                            <div class="small text-muted">Standard leaves</div>
+                                            <div class="small text-muted">Standard Leaves</div>
                                         </div>
                                     </div>
                                 </label>
@@ -58,7 +58,7 @@
                                         </div>
                                         <div>
                                             <div class="fw-bold text-dark">Unpaid Leave</div>
-                                            <div class="small text-muted">Financial impact</div>
+                                            <div class="small text-muted">Financial Impact</div>
                                         </div>
                                     </div>
                                 </label>
@@ -71,7 +71,7 @@
                                         </div>
                                         <div>
                                             <div class="fw-bold text-dark">Compensation</div>
-                                            <div class="small text-muted">Overtime exchange</div>
+                                            <div class="small text-muted">Overtime Exchange</div>
                                         </div>
                                     </div>
                                 </label>
@@ -80,8 +80,8 @@
 
                         <!-- Step 2: Scope -->
                         <div class="mb-4">
-                            <label class="form-label text-uppercase fw-bold text-secondary small ls-1">2. Target Scope</label>
-                            <select asp-for="SelectedScope" class="form-select form-select-lg shadow-sm border-0" id="scopeSelect" onchange="toggleInputs()">
+                            <label class="form-label text-uppercase fw-bold text-secondary small ls-1">Target Scope</label>
+                            <select asp-for="SelectedScope" class="form-select form-select-lg shadow-sm border-0 fs-6" id="scopeSelect" onchange="toggleInputs()">
                                 <option value="All">All Pending</option>
                                 <option value="Department">Specific Department</option>
                                 <option value="Specific">Specific Request ID</option>
@@ -107,7 +107,7 @@
 
                         <!-- Step 3: Action -->
                         <div class="mb-4">
-                            <label class="form-label text-uppercase fw-bold text-secondary small ls-1">3. Action</label>
+                            <label class="form-label text-uppercase fw-bold text-secondary small ls-1">Action</label>
                             <div class="d-flex gap-2">
                                 <input type="radio" class="btn-check" name="SelectedAction" id="actApprove" value="Approve" checked>
                                 <label class="btn btn-outline-success w-50 p-3 shadow-sm fw-bold" for="actApprove">
