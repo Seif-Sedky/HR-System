@@ -1,0 +1,174 @@
+﻿@page
+@model Milestone3.Pages.hr_employee.Leaves.ReviewModel
+@{
+    ViewData["Title"] = "Leave Requests";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-primary fw-bold"><i class="fas fa-tasks me-2"></i>Review Requests</h2>
+</div>
+
+<!-- Custom Tabs -->
+<ul class="nav nav-pills mb-4 gap-2" id="leaveTabs">
+    <li class="nav-item">
+        <a class="nav-link active hr-tab-link" href="#" data-target="tab-annual">
+            <i class="fas fa-calendar-check me-2"></i>Annual & Accidental
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link hr-tab-link" href="#" data-target="tab-unpaid">
+            <i class="fas fa-ban me-2"></i>Unpaid Leaves
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link hr-tab-link" href="#" data-target="tab-comp">
+            <i class="fas fa-hourglass-half me-2"></i>Compensation
+        </a>
+    </li>
+</ul>
+
+<!-- Tab 1: Annual & Accidental -->
+<div id="tab-annual" class="hr-tab-content" style="display: block;">
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <h5 class="card-title text-secondary mb-3">Pending Annual & Accidental Requests</h5>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Req ID</th>
+                            <th>Employee</th>
+                            <th>Type</th>
+                            <th>Duration</th>
+                            <th>Dates</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var leave in Model.AnnualAccidentalLeaves)
+                        {
+                            <tr>
+                                <td>#@leave["request_ID"]</td>
+                                <td>
+                                    <div class="fw-bold">@leave["first_name"] @leave["last_name"]</div>
+                                    <small class="text-muted">ID: @leave["emp_ID"]</small>
+                                </td>
+                                <td><span class="badge bg-info text-dark">@leave["type"]</span></td>
+                                <td>@leave["num_days"] Days</td>
+                                <td>@Convert.ToDateTime(leave["start_date"]).ToShortDateString() - @Convert.ToDateTime(leave["end_date"]).ToShortDateString()</td>
+                                <td>
+                                    <form method="post" class="d-flex gap-2">
+                                        <input type="hidden" name="RequestId" value="@leave["request_ID"]" />
+                                        <input type="hidden" name="LeaveType" value="AA" /> <!-- AA = Annual/Accidental -->
+                                        <button type="submit" asp-page-handler="Approve" class="btn btn-sm btn-success"><i class="fas fa-check"></i></button>
+                                        <button type="submit" asp-page-handler="Reject" class="btn btn-sm btn-danger"><i class="fas fa-times"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                @if (Model.AnnualAccidentalLeaves.Count == 0)
+                {
+                    <p class="text-center text-muted py-3">No pending requests.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tab 2: Unpaid -->
+<div id="tab-unpaid" class="hr-tab-content" style="display: none;">
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <h5 class="card-title text-secondary mb-3">Pending Unpaid Requests</h5>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Req ID</th>
+                            <th>Employee</th>
+                            <th>Duration</th>
+                            <th>Dates</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var leave in Model.UnpaidLeaves)
+                        {
+                            <tr>
+                                <td>#@leave["request_ID"]</td>
+                                <td>
+                                    <div class="fw-bold">@leave["first_name"] @leave["last_name"]</div>
+                                    <small class="text-muted">ID: @leave["emp_ID"]</small>
+                                </td>
+                                <td>@leave["num_days"] Days</td>
+                                <td>@Convert.ToDateTime(leave["start_date"]).ToShortDateString() - @Convert.ToDateTime(leave["end_date"]).ToShortDateString()</td>
+                                <td>
+                                    <form method="post" class="d-flex gap-2">
+                                        <input type="hidden" name="RequestId" value="@leave["request_ID"]" />
+                                        <input type="hidden" name="LeaveType" value="Unpaid" />
+                                        <button type="submit" asp-page-handler="Approve" class="btn btn-sm btn-success"><i class="fas fa-check"></i></button>
+                                        <button type="submit" asp-page-handler="Reject" class="btn btn-sm btn-danger"><i class="fas fa-times"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                @if (Model.UnpaidLeaves.Count == 0)
+                {
+                    <p class="text-center text-muted py-3">No pending requests.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tab 3: Compensation -->
+<div id="tab-comp" class="hr-tab-content" style="display: none;">
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <h5 class="card-title text-secondary mb-3">Pending Compensation Requests</h5>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Req ID</th>
+                            <th>Employee</th>
+                            <th>Reason</th>
+                            <th>Original Day</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var leave in Model.CompLeaves)
+                        {
+                            <tr>
+                                <td>#@leave["request_ID"]</td>
+                                <td>
+                                    <div class="fw-bold">@leave["first_name"] @leave["last_name"]</div>
+                                    <small class="text-muted">ID: @leave["emp_ID"]</small>
+                                </td>
+                                <td>@leave["reason"]</td>
+                                <td>@Convert.ToDateTime(leave["date_of_original_workday"]).ToShortDateString()</td>
+                                <td>
+                                    <form method="post" class="d-flex gap-2">
+                                        <input type="hidden" name="RequestId" value="@leave["request_ID"]" />
+                                        <input type="hidden" name="LeaveType" value="Comp" />
+                                        <button type="submit" asp-page-handler="Approve" class="btn btn-sm btn-success"><i class="fas fa-check"></i></button>
+                                        <button type="submit" asp-page-handler="Reject" class="btn btn-sm btn-danger"><i class="fas fa-times"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                @if (Model.CompLeaves.Count == 0)
+                {
+                    <p class="text-center text-muted py-3">No pending requests.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>

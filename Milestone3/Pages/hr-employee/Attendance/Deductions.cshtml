@@ -1,0 +1,52 @@
+﻿@page
+@model Milestone3.Pages.hr_employee.Attendance.DeductionsModel
+@{
+    ViewData["Title"] = "Manage Deductions";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow border-0">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 text-primary fw-bold"><i class="fas fa-calculator me-2"></i>Apply Deductions</h5>
+            </div>
+            <div class="card-body p-4">
+
+                @if (!string.IsNullOrEmpty(Model.Message))
+                {
+                    <div class="alert @(Model.IsSuccess ? "alert-success" : "alert-danger") alert-dismissible fade show">
+                        @Model.Message
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                <form method="post" class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Target Employee ID</label>
+                        <input type="number" asp-for="TargetEmployeeId" class="form-control form-control-lg" placeholder="Enter Employee ID" required />
+                    </div>
+
+                    <div class="col-12 mt-4">
+                        <p class="text-muted small mb-2">Select Deduction Type to Apply:</p>
+                        <div class="d-grid gap-3">
+                            <button type="submit" asp-page-handler="MissingHours" class="btn btn-outline-primary text-start p-3 hover-lift">
+                                <i class="fas fa-hourglass-end me-3"></i> <strong>Missing Hours</strong>
+                                <span class="d-block small text-muted ms-5">Calculates deductions based on hours missed this month.</span>
+                            </button>
+
+                            <button type="submit" asp-page-handler="MissingDays" class="btn btn-outline-warning text-start p-3 hover-lift">
+                                <i class="fas fa-calendar-times me-3"></i> <strong>Missing Days</strong>
+                                <span class="d-block small text-muted ms-5">Applies deductions for days absent without leave.</span>
+                            </button>
+
+                            <button type="submit" asp-page-handler="Unpaid" class="btn btn-outline-danger text-start p-3 hover-lift">
+                                <i class="fas fa-money-bill-wave me-3"></i> <strong>Unpaid Leave</strong>
+                                <span class="d-block small text-muted ms-5">Processes financial deductions for approved unpaid leaves.</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

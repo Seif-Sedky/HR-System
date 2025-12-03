@@ -19,8 +19,11 @@ namespace Milestone3.Pages.hr_employee
 
         public async Task<IActionResult> OnGetAsync()
         {
-            // Optional: Check if user is logged in (Simple session check)
-            // if (HttpContext.Session.GetInt32("UserId") == null) return RedirectToPage("/hr-employee/Login");
+            // CRITICAL CHECK: If session is empty, go to Login
+            if (HttpContext.Session.GetInt32("UserId") == null)
+            {
+                return RedirectToPage("/hr-employee/Login");
+            }
 
             try
             {
@@ -29,8 +32,7 @@ namespace Milestone3.Pages.hr_employee
                 if (dtEmp.Rows.Count > 0)
                     EmployeeCount = Convert.ToInt32(dtEmp.Rows[0][0]);
 
-                // 2. Get Pending Leaves (All types aggregated)
-                // Note: The 'Leave' table has the 'final_approval_status'
+                // 2. Get Pending Leaves
                 DataTable dtLeaves = await _db.ExecuteQuery("SELECT COUNT(*) FROM Leave WHERE final_approval_status = 'Pending'");
                 if (dtLeaves.Rows.Count > 0)
                     PendingLeavesCount = Convert.ToInt32(dtLeaves.Rows[0][0]);
@@ -42,7 +44,6 @@ namespace Milestone3.Pages.hr_employee
             }
             catch (Exception)
             {
-                // If DB fails, just show 0 to avoid crashing the dashboard
                 EmployeeCount = 0;
                 PendingLeavesCount = 0;
                 PendingDeductionsCount = 0;
