@@ -1,0 +1,147 @@
+@page
+@model Milestone3.Pages.Employee2.IndexModel
+@{
+    ViewData["Title"] = "Employee Dashboard";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h3 class="mb-0">
+                        Welcome, @Model.CurrentEmployee?.FullName!
+                        <span class="badge bg-light text-dark float-end">@Model.CurrentEmployee?.RoleName</span>
+                    </h3>
+                    @if (Model.CurrentEmployee != null)
+                    {
+                        <p class="mb-0">
+                            <i class="bi bi-building"></i> @Model.CurrentEmployee.Department Department | 
+                            <i class="bi bi-envelope"></i> @Model.CurrentEmployee.Email
+                        </p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.CurrentEmployee != null)
+    {
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="text-muted">Annual Leave Balance</h6>
+                        <h2 class="mb-0">@Model.CurrentEmployee.AnnualBalance <small class="text-muted">days</small></h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="text-muted">Accidental Leave Balance</h6>
+                        <h2 class="mb-0">@Model.CurrentEmployee.AccidentalBalance <small class="text-muted">days</small></h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <h4 class="mb-3">Leave Applications</h4>
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card h-100 border-primary">
+                <div class="card-body text-center">
+                    <i class="bi bi-calendar-x display-4 text-primary"></i>
+                    <h5 class="card-title mt-3">Accidental Leave</h5>
+                    <p class="card-text small">Apply for unexpected single-day leave</p>
+                    <a href="/Employee2/Leaves/ApplyAccidental" class="btn btn-primary">Apply Now</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card h-100 border-danger">
+                <div class="card-body text-center">
+                    <i class="bi bi-heart-pulse display-4 text-danger"></i>
+                    <h5 class="card-title mt-3">Medical Leave</h5>
+                    <p class="card-text small">Apply for sick or maternity leave</p>
+                    <a href="/Employee2/Leaves/ApplyMedical" class="btn btn-danger">Apply Now</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card h-100 border-warning">
+                <div class="card-body text-center">
+                    <i class="bi bi-cash-coin display-4 text-warning"></i>
+                    <h5 class="card-title mt-3">Unpaid Leave</h5>
+                    <p class="card-text small">Apply when annual balance is zero</p>
+                    <a href="/Employee2/Leaves/ApplyUnpaid" class="btn btn-warning">Apply Now</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card h-100 border-success">
+                <div class="card-body text-center">
+                    <i class="bi bi-arrow-repeat display-4 text-success"></i>
+                    <h5 class="card-title mt-3">Compensation Leave</h5>
+                    <p class="card-text small">Worked on day off? Get compensation</p>
+                    <a href="/Employee2/Leaves/ApplyCompensation" class="btn btn-success">Apply Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.IsUpperboard)
+    {
+        <h4 class="mb-3">Approval Functions</h4>
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <div class="card h-100 border-info">
+                    <div class="card-body">
+                        <i class="bi bi-check-circle display-4 text-info"></i>
+                        <h5 class="card-title mt-3">Approve Annual Leaves</h5>
+                        <p class="card-text">Review and approve/reject annual leave requests</p>
+                        <a href="/Employee2/Approvals/ApproveAnnualLeaves" class="btn btn-info">View Requests</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="card h-100 border-warning">
+                    <div class="card-body">
+                        <i class="bi bi-check-circle display-4 text-warning"></i>
+                        <h5 class="card-title mt-3">Approve Unpaid Leaves</h5>
+                        <p class="card-text">Review and approve/reject unpaid leave requests</p>
+                        <a href="/Employee2/Approvals/ApproveUnpaidLeaves" class="btn btn-warning">View Requests</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (Model.IsDean)
+    {
+        <h4 class="mb-3">Dean Functions</h4>
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <div class="card h-100 border-success">
+                    <div class="card-body">
+                        <i class="bi bi-clipboard-check display-4 text-success"></i>
+                        <h5 class="card-title mt-3">Evaluate Employees</h5>
+                        <p class="card-text">Evaluate employees within your department</p>
+                        <a href="/Employee2/Evaluation/EvaluateEmployees" class="btn btn-success">Start Evaluation</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="alert alert-info mt-4">
+        <h6><i class="bi bi-info-circle"></i> Quick Tips:</h6>
+        <ul class="mb-0">
+            <li><strong>Accidental Leave:</strong> Must be submitted within 2 days of the leave date, limited to 1 day</li>
+            <li><strong>Medical Leave:</strong> Requires medical documentation and approval from Medical Doctor and HR</li>
+            <li><strong>Unpaid Leave:</strong> Only available when annual balance is zero, max 30 days per year</li>
+            <li><strong>Compensation Leave:</strong> Requires 8+ hours worked on your official day off</li>
+        </ul>
+    </div>
+</div>

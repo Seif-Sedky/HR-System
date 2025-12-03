@@ -1,0 +1,86 @@
+@page
+@model Milestone3.Pages.Employee2.Leaves.ApplyMedicalModel
+@{
+    ViewData["Title"] = "Apply for Medical Leave";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Apply for Medical Leave</h2>
+
+    @if (!string.IsNullOrEmpty(Model.Message))
+    {
+        <div class="alert alert-@(Model.MessageType == "success" ? "success" : "danger") alert-dismissible fade show" role="alert">
+            @Model.Message
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="StartDate" class="form-label">Start Date <span class="text-danger">*</span></label>
+                        <input type="date" asp-for="StartDate" class="form-control" required />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="EndDate" class="form-label">End Date <span class="text-danger">*</span></label>
+                        <input type="date" asp-for="EndDate" class="form-control" required />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="MedicalType" class="form-label">Medical Leave Type <span class="text-danger">*</span></label>
+                        <select asp-for="MedicalType" class="form-select" required>
+                            <option value="">-- Select Type --</option>
+                            <option value="sick">Sick Leave</option>
+                            <option value="maternity">Maternity Leave</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="InsuranceStatus" class="form-label">Insurance Coverage</label>
+                        <div class="form-check mt-2">
+                            <input type="checkbox" asp-for="InsuranceStatus" class="form-check-input" />
+                            <label class="form-check-label" for="InsuranceStatus">
+                                I have insurance coverage
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="DisabilityDetails" class="form-label">Disability Details (if applicable)</label>
+                    <textarea asp-for="DisabilityDetails" class="form-control" rows="3" 
+                              placeholder="Describe any disability or special medical condition"></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="DocumentDescription" class="form-label">Medical Document Description <span class="text-danger">*</span></label>
+                    <input type="text" asp-for="DocumentDescription" class="form-control" 
+                           placeholder="e.g., Doctor's Certificate, Medical Report" required />
+                </div>
+
+                <div class="mb-3">
+                    <label for="FileName" class="form-label">Document File Name <span class="text-danger">*</span></label>
+                    <input type="text" asp-for="FileName" class="form-control" 
+                           placeholder="e.g., medical_cert_2024.pdf" required />
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href="/Employee2" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Submit Medical Leave</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="alert alert-info mt-4">
+        <h6><i class="bi bi-info-circle"></i> Important Information:</h6>
+        <ul class="mb-0">
+            <li>Medical leave requires approval from the Medical Doctor</li>
+            <li>Please ensure you attach the required medical documentation</li>
+            <li>You will be notified once your request is processed</li>
+        </ul>
+    </div>
+</div>

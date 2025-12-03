@@ -7,7 +7,27 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Pages\hr-employee\NewFolder1\**" />
+    <Compile Remove="Pages\hr-employee\NewFolder\**" />
+    <Content Remove="Pages\hr-employee\NewFolder1\**" />
+    <Content Remove="Pages\hr-employee\NewFolder\**" />
+    <EmbeddedResource Remove="Pages\hr-employee\NewFolder1\**" />
+    <EmbeddedResource Remove="Pages\hr-employee\NewFolder\**" />
+    <None Remove="Pages\hr-employee\NewFolder1\**" />
+    <None Remove="Pages\hr-employee\NewFolder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Pages\hr-employee\Index.cshtml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Pages\hr-employee\Index.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Models\" />
+    <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,0 +1,116 @@
+﻿@page
+@model Milestone3.Pages.hr_employee.DashboardModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<!-- Welcome Section -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 bg-primary text-white shadow-sm" style="background: linear-gradient(135deg, #003366 0%, #004080 100%);">
+            <div class="card-body p-4">
+                <h2 class="fw-bold"><i class="fas fa-hand-sparkles me-2"></i>Welcome back, HR Admin!</h2>
+                <p class="mb-0 opacity-75">Here is what is happening in the university today.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Cards Row -->
+<div class="row mb-5">
+    <!-- Active Employees -->
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted text-uppercase mb-1">Total Employees</h6>
+                    <h2 class="mb-0 fw-bold text-dark">@Model.EmployeeCount</h2>
+                </div>
+                <div class="icon-shape bg-light text-primary rounded-circle p-3">
+                    <i class="fas fa-users fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Leaves -->
+    <div class="col-md-4">
+        <div class="stat-card" style="border-left-color: #ffc107;">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted text-uppercase mb-1">Pending Leaves</h6>
+                    <h2 class="mb-0 fw-bold text-dark">@Model.PendingLeavesCount</h2>
+                </div>
+                <div class="icon-shape bg-light text-warning rounded-circle p-3">
+                    <i class="fas fa-clock fa-2x"></i>
+                </div>
+            </div>
+            <div class="mt-3">
+                <a href="/hr-employee/Leaves/Review" class="text-decoration-none text-warning fw-bold small">
+                    Review Requests <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Deductions -->
+    <div class="col-md-4">
+        <div class="stat-card" style="border-left-color: #dc3545;">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted text-uppercase mb-1">Pending Deductions</h6>
+                    <h2 class="mb-0 fw-bold text-dark">@Model.PendingDeductionsCount</h2>
+                </div>
+                <div class="icon-shape bg-light text-danger rounded-circle p-3">
+                    <i class="fas fa-file-invoice-dollar fa-2x"></i>
+                </div>
+            </div>
+            <div class="mt-3">
+                <a href="/hr-employee/Attendance/Deductions" class="text-decoration-none text-danger fw-bold small">
+                    Manage Deductions <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions Grid -->
+<h4 class="mb-3 text-secondary">Quick Actions</h4>
+<div class="row g-4">
+    <div class="col-md-6 col-lg-3">
+        <a href="/hr-employee/Leaves/Review" class="card text-center p-4 text-decoration-none text-dark shadow-sm border-0 h-100 hover-lift">
+            <div class="text-primary mb-3"><i class="fas fa-check-double fa-3x"></i></div>
+            <h5 class="fw-bold">Approve Leaves</h5>
+            <p class="text-muted small mb-0">Review annual, accidental, and unpaid requests.</p>
+        </a>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <a href="/hr-employee/Attendance/Deductions" class="card text-center p-4 text-decoration-none text-dark shadow-sm border-0 h-100 hover-lift">
+            <div class="text-danger mb-3"><i class="fas fa-user-clock fa-3x"></i></div>
+            <h5 class="fw-bold">Log Deductions</h5>
+            <p class="text-muted small mb-0">Record missing hours and days for payroll.</p>
+        </a>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <a href="/hr-employee/Payroll/Generate" class="card text-center p-4 text-decoration-none text-dark shadow-sm border-0 h-100 hover-lift">
+            <div class="text-success mb-3"><i class="fas fa-money-check-alt fa-3x"></i></div>
+            <h5 class="fw-bold">Generate Payroll</h5>
+            <p class="text-muted small mb-0">Calculate monthly salaries and finalize payments.</p>
+        </a>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card text-center p-4 text-secondary shadow-sm border-0 h-100 bg-light">
+            <div class="mb-3"><i class="fas fa-info-circle fa-3x"></i></div>
+            <h5 class="fw-bold">System Status</h5>
+            <p class="small mb-0">All systems operational.</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-lift { transition: transform 0.2s, box-shadow 0.2s; }
+    .hover-lift:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
+</style>

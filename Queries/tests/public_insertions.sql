@@ -464,6 +464,24 @@ values ('09-8-2025',null,null,'absent',1)
 insert into Attendance (date,check_in_time,check_out_time,status,emp_ID)
 values ('10-15-2025','08:30','16:00','attended',1)
 
+
+-- added by seif
+-- Employee 1 attended yesterday
+INSERT INTO Attendance (date, check_in_time, check_out_time, status, emp_ID)
+VALUES (CAST(GETDATE()-1 AS date), '09:00:00', '17:00:00', 'Attended', 1);
+
+-- Employee 2 was absent yesterday
+INSERT INTO Attendance (date, check_in_time, check_out_time, status, emp_ID)
+VALUES (CAST(GETDATE()-1 AS date), NULL, NULL, 'Absent', 2);
+
+-- Employee 3 attended yesterday with shorter hours
+INSERT INTO Attendance (date, check_in_time, check_out_time, status, emp_ID)
+VALUES (CAST(GETDATE()-1 AS date), '10:00:00', '15:30:00', 'Attended', 3);
+
+-- Employee 4 attended today (to check filtering works)
+INSERT INTO Attendance (date, check_in_time, check_out_time, status, emp_ID)
+VALUES (CAST(GETDATE() AS date), '08:30:00', '16:00:00', 'Attended', 4);
+
 select * from Attendance
 -----------------------------------------
 insert into Employee_Replace_Employee (Emp1_ID,Emp2_ID,from_date, to_date)

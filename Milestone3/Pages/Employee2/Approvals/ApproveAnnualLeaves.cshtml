@@ -1,0 +1,146 @@
+@page
+@model Milestone3.Pages.Employee2.Approvals.ApproveAnnualLeavesModel
+@{
+    ViewData["Title"] = "Approve Annual Leaves";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">
+        Approve Annual Leave Requests
+        @if (!string.IsNullOrEmpty(Model.UserRole))
+        {
+            <small class="text-muted">(@Model.UserRole)</small>
+        }
+    </h2>
+
+    @if (!string.IsNullOrEmpty(Model.Message))
+    {
+        <div class="alert alert-@(Model.MessageType == "success" ? "success" : "danger") alert-dismissible fade show" role="alert">
+            @Model.Message
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (Model.PendingRequests.Any())
+    {
+        <div class="row">
+            @foreach (var request in Model.PendingRequests)
+            {
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h6 class="mb-0">
+                                Request #@request.RequestId - @request.EmployeeName
+                                <span class="badge bg-light text-dark float-end">@request.MyApprovalStatus</span>
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-2">
+                                <div class="col-6">
+                                    <strong>Employee ID:</strong> @request.EmployeeId
+                                </div>
+                                <div class="col-6">
+                                    <strong>Department:</strong> @request.Department
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6">
+                                    <strong>Request Date:</strong> @request.DateOfRequest.ToString("MMM dd, yyyy")
+                                </div>
+                                <div class="col-6">
+                                    <strong>Duration:</strong> @request.NumDays day(s)
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6">
+                                    <strong>Start Date:</strong> @request.StartDate.ToString("MMM dd, yyyy")
+                                </div>
+                                <div class="col-6">
+                                    <strong>End Date:</strong> @request.EndDate.ToString("MMM dd, yyyy")
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <strong>Contract Type:</strong> 
+                                    <span class="badge bg-info">@request.ContractType</span>
+                                </div>
+                                <div class="col-6">
+                                    <strong>Annual Balance:</strong> 
+                                    <span class="badge bg-@(request.AnnualBalance >= request.NumDays ? "success" : "danger")">
+                                        @request.AnnualBalance days
+                                    </span>
+                                </div>
+                            </div>
+
+                            <hr />
+
+                            <div class="mb-3">
+                                <strong>Replacement Employee:</strong><br />
+                                <span class="text-@(request.ReplacementStatus == "active" ? "success" : "danger")">
+                                    @request.ReplacementName (@request.ReplacementStatus)
+                                </span>
+                            </div>
+
+                            <div class="alert alert-info mb-3">
+                                <strong>Validation Checklist:</strong>
+                                <ul class="mb-0 small">
+                                    <li class="@(request.AnnualBalance >= request.NumDays ? "text-success" : "text-danger")">
+                                        Sufficient annual balance (@request.AnnualBalance ? @request.NumDays)
+                                    </li>
+                                    <li class="@(request.ContractType == "full_time" ? "text-success" : "text-warning")">
+                                        Contract type: @request.ContractType
+                                    </li>
+                                    <li class="@(request.ReplacementEmployeeId > 0 ? "text-success" : "text-danger")">
+                                        Replacement assigned: @(request.ReplacementEmployeeId > 0 ? "Yes" : "No")
+                                    </li>
+                                    <li class="@(request.ReplacementStatus == "active" ? "text-success" : "text-danger")">
+                                        Replacement status: @request.ReplacementStatus
+                                    </li>
+                                </ul>
+                            </div>
+
+                            @if (request.MyApprovalStatus == "Pending")
+                            {
+                                <form method="post">
+                                    <input type="hidden" name="requestId" value="@request.RequestId" />
+                                    <input type="hidden" name="replacementId" value="@request.ReplacementEmployeeId" />
+                                    
+                                    <div class="d-grid gap-2">
+                                        <button type="submit" asp-page-handler="Approve" class="btn btn-success mb-2">
+                                            <i class="bi bi-check-circle"></i> Approve with Current Replacement
+                                        </button>
+                                        <button type="submit" asp-page-handler="Reject" class="btn btn-danger">
+                                            <i class="bi bi-x-circle"></i> Reject
+                                        </button>
+                                    </div>
+                                </form>
+                            }
+                            else
+                            {
+                                <div class="alert alert-secondary mb-0">
+                                    Status: <strong>@request.MyApprovalStatus</strong>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            <h5><i class="bi bi-info-circle"></i> No Pending Requests</h5>
+            <p class="mb-0">There are currently no annual leave requests pending your approval.</p>
+        </div>
+    }
+
+    <div class="alert alert-secondary mt-4">
+        <h6><i class="bi bi-info-circle"></i> Approval Authority:</h6>
+        <ul class="mb-0">
+            <li><strong>Dean/Vice-Dean:</strong> Can approve annual leaves for employees in their department</li>
+            <li><strong>President:</strong> Can approve annual leaves for Deans and Vice-Deans</li>
+            <li>Replacement employee must be from the same department and not on leave</li>
+        </ul>
+    </div>
+</div>

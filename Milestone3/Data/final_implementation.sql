@@ -565,7 +565,9 @@ BEGIN
 	WHERE employee_id = @employee_ID;
 	IF @official_day_off IS NULL
 	BEGIN
-	   PRINT 'Employee not found or official_day_off is NULL for the specified employee.';
+	   PRINT 'Employee not found or official_day_off is NULL for the specified employee.'; 
+	  
+	   
 	END
 	-- Perform delete:
 	-- remove rows for the employee in the current month/year
@@ -584,7 +586,7 @@ BEGIN
 			(A.check_in_time IS NULL AND A.check_out_time IS NULL)
 		  );
 
-
+	
 END;
 GO
 
@@ -2173,3 +2175,15 @@ AS
 
 
 GO
+
+-- added by ST
+CREATE TABLE AdminLog (
+    LogID INT IDENTITY PRIMARY KEY,
+    AdminName NVARCHAR(100),
+    Action NVARCHAR(200),
+    Timestamp DATETIME DEFAULT GETDATE()
+);
+
+
+
+

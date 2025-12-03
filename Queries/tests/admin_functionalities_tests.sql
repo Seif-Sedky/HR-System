@@ -24,10 +24,10 @@ official_day_off,years_of_experience,national_ID,employment_status,type_of_contr
 emergency_contact_name,emergency_contact_phone,annual_balance,accidental_balance,salary,
 hire_date,last_working_date,dept_name)
 VALUES
-('Ali','A','a','1','x','M','Friday',3,'1234567890123456','active','full_time','X','01234567890',20,10,0,'2024-01-01',NULL,'MET'),
-('Omar','B','b','1','x','M','Friday',5,'1234567890123457','resigned','full_time','X','01234567891',20,10,0,'2024-01-01','2024-10-01','MET'),
-('Sara','C','c','1','x','F','Saturday',2,'1234567890123458','active','full_time','X','01234567892',20,10,0,'2024-01-01',NULL,'HR'),
-('Mona','D','d','1','x','F','Sunday',1,'1234567890123459','active','full_time','X','01234567893',20,10,0,'2024-01-01',NULL,'IET');
+('Ali','A','a','1','x','M','Friday',3,'1234567890123456','active','full_time','X','01234567890',20,10,'2024-01-01',NULL,'MET'),
+('Omar','B','b','1','x','M','Friday',5,'1234567890123457','resigned','full_time','X','01234567891',20,10,'2024-01-01','2024-10-01','MET'),
+('Sara','C','c','1','x','F','Saturday',2,'1234567890123458','active','full_time','X','01234567892',20,10,'2024-01-01',NULL,'HR'),
+('Mona','D','d','1','x','F','Sunday',1,'1234567890123459','active','full_time','X','01234567893',20,10,'2024-01-01',NULL,'IET');
 
 
 INSERT INTO Employee_Role VALUES
@@ -73,7 +73,7 @@ VALUES(1,1,3);
 -------------------------------------------------------------
 -- HOLIDAY FOR Remove_Holiday
 -------------------------------------------------------------
-INSERT INTO Holiday(name,from_date,to_date)
+INSERT INTO Holiday(holiday_name,from_date,to_date)
 VALUES('TestHoliday','2024-11-20','2024-11-21');
 
 
@@ -83,8 +83,16 @@ VALUES('TestHoliday','2024-11-20','2024-11-21');
 -------------------------------------------------------------
 INSERT INTO Attendance(emp_ID,date,check_in_time,check_out_time,status)
 VALUES
+(1,'2025-12-6',NULL,NULL,'absent'),
+(1,'2025-12-13',NULL,NULL,'absent'),
+(15,'2025-12-3',NULL,NULL,'absent'),
+(15,'2025-12-10',NULL,NULL,'absent'),
 (1,'2024-11-20',NULL,NULL,'absent'),
 (1,'2024-11-21',NULL,NULL,'absent'),
+(2,'2024-11-20',NULL,NULL,'absent'),
+(2,'2024-11-21',NULL,NULL,'absent'),
+(2,'2024-11-20',NULL,NULL,'absent'),
+(2,'2024-11-21',NULL,NULL,'absent'),
 (1,'2024-11-22',NULL,NULL,'absent'),
 (1,'2024-11-01',NULL,NULL,'absent'),
 (1,'2024-11-08',NULL,NULL,'absent'),
@@ -97,7 +105,8 @@ VALUES
 INSERT INTO Attendance(emp_ID,date,check_in_time,check_out_time,status)
 VALUES (1,'2025-11-14',NULL,NULL,'absent');
 
-
+INSERT INTO Attendance(emp_ID,date,check_in_time,check_out_time,status)
+VALUES (1,'2025-11-29',NULL,NULL,'absent');
 
 -------------------------------------------------------------
 -- RUN REQUIRED PROCEDURES IN ORDER
@@ -139,3 +148,6 @@ SELECT * FROM Attendance WHERE emp_ID=1;
 PRINT '---- RUN Replace_employee ----';
 EXEC Replace_employee 1,3,'2024-11-25','2024-11-27';
 SELECT * FROM Employee_Replace_Employee;
+
+
+exec Create_Holiday ;
