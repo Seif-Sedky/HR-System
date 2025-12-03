@@ -20,3 +20,66 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+
+/* Cms Colors */
+
+:root {
+    /* Your University Palette */
+    --uni-bg: #F7F9FA; /* Bright Snow - Main Background */
+    --uni-blue: #243B55; /* Deep Space Blue - Sidebar/Headings */
+    --uni-gold: #F7B924; /* Sunflower Gold - Accents/Warnings */
+    --uni-red: #D92550; /* Amaranth - Errors/Delete Buttons */
+    --uni-green: #3AC47D; /* Emerald - Success/Save Buttons */
+}
+
+/* Global Background */
+body {
+    background-color: var(--uni-bg);
+    color: var(--uni-blue); /* Default text color is now your Deep Blue */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* --- Reusable Utility Classes --- */
+
+/* Buttons */
+.btn-uni-blue {
+    background-color: var(--uni-blue);
+    color: white;
+    border: none;
+}
+
+    .btn-uni-blue:hover {
+        background-color: #1b2d42; /* Slightly darker for hover effect */
+        color: white;
+    }
+
+.btn-uni-green {
+    background-color: var(--uni-green);
+    color: white;
+    border: none;
+}
+
+.btn-uni-red {
+    background-color: var(--uni-red);
+    color: white;
+    border: none;
+}
+
+/* Text Colors */
+.text-uni-blue {
+    color: var(--uni-blue);
+}
+
+.text-uni-gold {
+    color: var(--uni-gold);
+}
+
+.text-uni-red {
+    color: var(--uni-red);
+}
+
+.text-uni-green {
+    color: var(--uni-green);
+}
+
