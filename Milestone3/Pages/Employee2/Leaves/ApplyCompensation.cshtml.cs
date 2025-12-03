@@ -45,7 +45,7 @@ namespace Milestone3.Pages.Employee2.Leaves
         {
             try
             {
-                int employeeId = 1; // TODO: Replace with logged-in user ID from session
+                int employeeId = 3; // TODO: Replace with logged-in user ID from session
 
                 await _db.ExecuteNonQuery("Submit_compensation",
                     new SqlParameter("@employee_ID", employeeId),
@@ -78,7 +78,7 @@ namespace Milestone3.Pages.Employee2.Leaves
         {
             try
             {
-                int employeeId = 1; // TODO: Replace with logged-in user ID
+                int employeeId = 3; // TODO: Replace with logged-in user ID
                 
                 // Get employees from the same department who are not on leave
                 var result = await _db.ExecuteQuery(@"
@@ -111,7 +111,7 @@ namespace Milestone3.Pages.Employee2.Leaves
         {
             try
             {
-                int employeeId = 1; // TODO: Replace with logged-in user ID
+                int employeeId = 3; // TODO: Replace with logged-in user ID
                 
                 // Get recent attendance records to help user select valid original workday
                 var result = await _db.ExecuteQuery(@"

@@ -41,7 +41,7 @@ namespace Milestone3.Pages.Employee2.Evaluation
         {
             try
             {
-                int deanId = 1; // TODO: Replace with logged-in Dean ID from session
+                int deanId = 11; // TODO: Replace with logged-in Dean ID from session
 
                 // Validate rating
                 if (Rating < 1 || Rating > 5)
@@ -73,7 +73,7 @@ namespace Milestone3.Pages.Employee2.Evaluation
                 
                 // Clear form
                 ModelState.Clear();
-                Rating = 3; // Default to middle rating
+                Rating = 5; // Default to middle rating
                 Comment = "";
             }
             catch (Exception ex)
@@ -90,7 +90,7 @@ namespace Milestone3.Pages.Employee2.Evaluation
         {
             try
             {
-                int deanId = 1; // TODO: Replace with logged-in user ID
+                int deanId = 11; // TODO: Replace with logged-in user ID
                 
                 // Get Dean's role and department
                 var roleResult = await _db.ExecuteQuery(@"
