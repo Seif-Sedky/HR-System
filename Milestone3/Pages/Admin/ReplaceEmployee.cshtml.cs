@@ -14,6 +14,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace Milestone3.Pages.Admin
 {
@@ -36,14 +37,29 @@ namespace Milestone3.Pages.Admin
 
             try
             {
-                await _db.ExecuteQuery(
-                    "EXEC Replace_employee @Emp1_ID, @Emp2_ID, @from_date, @to_date",
-                    new SqlParameter("@Emp1_ID", emp1Id),
-                    new SqlParameter("@Emp2_ID", emp2Id),
-                    new SqlParameter("@from_date", fromDate),
-                    new SqlParameter("@to_date", toDate));
+                DataTable dt = await _db.ExecuteStoredProcedure(
+                   "Replace_employee",
+                   new SqlParameter("@Emp1_ID", emp1Id),
+                   new SqlParameter("@Emp2_ID", emp2Id),
+                   new SqlParameter("@from_date", fromDate),
+                   new SqlParameter("@to_date", toDate)
+                );
 
-                TempData["Success"] = "Employee replacement completed.";
+                if (dt.Rows.Count > 0)
+                {
+                    string status = dt.Rows[0]["Status"].ToString();
+                    string message = dt.Rows[0]["Message"].ToString();
+
+                    if (status == "SUCCESS")
+                        TempData["Success"] = message;
+                    else
+                        TempData["Error"] = message;
+                }
+                else
+                {
+                    TempData["Error"] = "No message returned from SQL.";
+                }
+                return Page();
             }
             catch (Exception ex)
             {

@@ -29,9 +29,16 @@ namespace Milestone3.Pages.Admin
 
         public async Task<IActionResult> OnPostAsync(int employeeId)
         {
-            if (employeeId <= 0)
+            var existsDt = await _db.ExecuteQuery(
+                "SELECT 1 FROM dbo.Employee WHERE employee_id = @Employee_ID",
+                new SqlParameter("@Employee_ID", employeeId)
+            );
+
+
+
+            if (employeeId <= 0 || existsDt.Rows.Count == 0)
             {
-                TempData["Error"] = "Employee ID must be positive.";
+                TempData["Error"] = "Employee ID must be positive and exist in the employees table.";
                 return Page();
             }
 
