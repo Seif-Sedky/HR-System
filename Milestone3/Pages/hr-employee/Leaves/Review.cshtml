@@ -1,174 +1,292 @@
 ﻿@page
 @model Milestone3.Pages.hr_employee.Leaves.ReviewModel
 @{
-    ViewData["Title"] = "Leave Requests";
+    ViewData["Title"] = "Leave Review Manager";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="text-primary fw-bold"><i class="fas fa-tasks me-2"></i>Review Requests</h2>
-</div>
+<div class="container-fluid py-3">
+    <!-- Page Header -->
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h2 class="text-primary fw-bold mb-1">
+                <i class="fas fa-tasks me-2"></i>Review Manager
+            </h2>
+            <p class="text-muted mb-0">Bulk processing for leave requests and approval workflows.</p>
+        </div>
+    </div>
 
-<!-- Custom Tabs -->
-<ul class="nav nav-pills mb-4 gap-2" id="leaveTabs">
-    <li class="nav-item">
-        <a class="nav-link active hr-tab-link" href="#" data-target="tab-annual">
-            <i class="fas fa-calendar-check me-2"></i>Annual & Accidental
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link hr-tab-link" href="#" data-target="tab-unpaid">
-            <i class="fas fa-ban me-2"></i>Unpaid Leaves
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link hr-tab-link" href="#" data-target="tab-comp">
-            <i class="fas fa-hourglass-half me-2"></i>Compensation
-        </a>
-    </li>
-</ul>
+    <div class="row g-4">
+        <!-- LEFT COLUMN: Control Panel -->
+        <div class="col-lg-5 col-xl-4">
+            <div class="card border-0 shadow-lg h-100" style="border-radius: 15px; overflow: hidden;">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-sliders-h me-2"></i>Configuration</h5>
+                </div>
+                <div class="card-body p-4 bg-light">
 
-<!-- Tab 1: Annual & Accidental -->
-<div id="tab-annual" class="hr-tab-content" style="display: block;">
-    <div class="card shadow-sm border-0">
-        <div class="card-body">
-            <h5 class="card-title text-secondary mb-3">Pending Annual & Accidental Requests</h5>
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Req ID</th>
-                            <th>Employee</th>
-                            <th>Type</th>
-                            <th>Duration</th>
-                            <th>Dates</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var leave in Model.AnnualAccidentalLeaves)
-                        {
-                            <tr>
-                                <td>#@leave["request_ID"]</td>
-                                <td>
-                                    <div class="fw-bold">@leave["first_name"] @leave["last_name"]</div>
-                                    <small class="text-muted">ID: @leave["emp_ID"]</small>
-                                </td>
-                                <td><span class="badge bg-info text-dark">@leave["type"]</span></td>
-                                <td>@leave["num_days"] Days</td>
-                                <td>@Convert.ToDateTime(leave["start_date"]).ToShortDateString() - @Convert.ToDateTime(leave["end_date"]).ToShortDateString()</td>
-                                <td>
-                                    <form method="post" class="d-flex gap-2">
-                                        <input type="hidden" name="RequestId" value="@leave["request_ID"]" />
-                                        <input type="hidden" name="LeaveType" value="AA" /> <!-- AA = Annual/Accidental -->
-                                        <button type="submit" asp-page-handler="Approve" class="btn btn-sm btn-success"><i class="fas fa-check"></i></button>
-                                        <button type="submit" asp-page-handler="Reject" class="btn btn-sm btn-danger"><i class="fas fa-times"></i></button>
-                                    </form>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-                @if (Model.AnnualAccidentalLeaves.Count == 0)
-                {
-                    <p class="text-center text-muted py-3">No pending requests.</p>
-                }
+                    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                    {
+                        <div class="alert alert-danger shadow-sm border-0 mb-4">
+                            <i class="fas fa-exclamation-triangle me-2"></i> @Model.ErrorMessage
+                        </div>
+                    }
+
+                    <form method="post" id="reviewForm">
+
+                        <!-- Step 1: Type -->
+                        <div class="mb-4">
+                            <label class="form-label text-uppercase fw-bold text-secondary small ls-1">1. Leave Type</label>
+                            <div class="d-grid gap-2">
+                                <input type="radio" class="btn-check" name="SelectedLeaveType" id="typeAA" value="AA" checked>
+                                <label class="btn btn-outline-white bg-white text-start p-3 border shadow-sm type-card" for="typeAA">
+                                    <div class="d-flex align-items-center">
+                                        <div class="icon-box bg-info bg-opacity-10 text-info rounded p-2 me-3">
+                                            <i class="fas fa-calendar-check fa-lg"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-dark">Annual / Accidental</div>
+                                            <div class="small text-muted">Standard leaves</div>
+                                        </div>
+                                    </div>
+                                </label>
+
+                                <input type="radio" class="btn-check" name="SelectedLeaveType" id="typeUnpaid" value="Unpaid">
+                                <label class="btn btn-outline-white bg-white text-start p-3 border shadow-sm type-card" for="typeUnpaid">
+                                    <div class="d-flex align-items-center">
+                                        <div class="icon-box bg-danger bg-opacity-10 text-danger rounded p-2 me-3">
+                                            <i class="fas fa-ban fa-lg"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-dark">Unpaid Leave</div>
+                                            <div class="small text-muted">Financial impact</div>
+                                        </div>
+                                    </div>
+                                </label>
+
+                                <input type="radio" class="btn-check" name="SelectedLeaveType" id="typeComp" value="Comp">
+                                <label class="btn btn-outline-white bg-white text-start p-3 border shadow-sm type-card" for="typeComp">
+                                    <div class="d-flex align-items-center">
+                                        <div class="icon-box bg-warning bg-opacity-10 text-warning rounded p-2 me-3">
+                                            <i class="fas fa-hourglass-half fa-lg"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-dark">Compensation</div>
+                                            <div class="small text-muted">Overtime exchange</div>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Scope -->
+                        <div class="mb-4">
+                            <label class="form-label text-uppercase fw-bold text-secondary small ls-1">2. Target Scope</label>
+                            <select asp-for="SelectedScope" class="form-select form-select-lg shadow-sm border-0" id="scopeSelect" onchange="toggleInputs()">
+                                <option value="All">All Pending</option>
+                                <option value="Department">Specific Department</option>
+                                <option value="Specific">Specific Request ID</option>
+                            </select>
+                        </div>
+
+                        <!-- Step 2b: Conditional Inputs -->
+                        <div id="dynamicInputs" class="mb-4">
+                            <!-- Specific Input -->
+                            <div id="input-specific" class="slide-input" style="display:none;">
+                                <label class="form-label fw-bold">Enter Request ID</label>
+                                <input asp-for="SpecificReqId" type="number" class="form-control form-control-lg shadow-sm" placeholder="e.g. 101" />
+                            </div>
+
+                            <!-- Department Input -->
+                            <div id="input-dept" class="slide-input" style="display:none;">
+                                <label class="form-label fw-bold">Select Department</label>
+                                <select asp-for="SelectedDept" asp-items="Model.Departments" class="form-select form-select-lg shadow-sm">
+                                    <option value="" disabled selected>-- Select --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Action -->
+                        <div class="mb-4">
+                            <label class="form-label text-uppercase fw-bold text-secondary small ls-1">3. Action</label>
+                            <div class="d-flex gap-2">
+                                <input type="radio" class="btn-check" name="SelectedAction" id="actApprove" value="Approve" checked>
+                                <label class="btn btn-outline-success w-50 p-3 shadow-sm fw-bold" for="actApprove">
+                                    <i class="fas fa-magic me-2"></i>Auto Approve
+                                </label>
+
+                                <input type="radio" class="btn-check" name="SelectedAction" id="actReject" value="Reject">
+                                <label class="btn btn-outline-danger w-50 p-3 shadow-sm fw-bold" for="actReject">
+                                    <i class="fas fa-times-circle me-2"></i>Force Reject
+                                </label>
+                            </div>
+                            <div class="small text-muted mt-2">
+                                * Auto Approve runs validation logic. Force Reject overrides logic.
+                            </div>
+                        </div>
+
+                        <hr class="text-muted opacity-25 my-4">
+
+                        <button type="submit" asp-page-handler="Run" class="btn btn-primary w-100 py-3 fw-bold shadow hover-lift">
+                            PROCESS REQUESTS <i class="fas fa-arrow-right ms-2"></i>
+                        </button>
+                    </form>
+                </div>
             </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Results Display -->
+        <div class="col-lg-7 col-xl-8">
+            @if (Model.RunComplete)
+            {
+                <div class="card border-0 shadow-lg h-100" style="border-radius: 15px;">
+                    <div class="card-header bg-success text-white py-3 d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-bold"><i class="fas fa-clipboard-check me-2"></i>Execution Report</h5>
+                        <span class="badge bg-white text-success rounded-pill px-3">Completed</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <!-- Summary Stats -->
+                        <div class="row g-0 border-bottom text-center bg-light">
+                            <div class="col-4 py-4 border-end">
+                                <h2 class="fw-bold text-dark mb-0">@Model.ProcessedCount</h2>
+                                <small class="text-uppercase text-muted fw-bold ls-1">Processed</small>
+                            </div>
+                            <div class="col-4 py-4 border-end">
+                                <h2 class="fw-bold text-success mb-0">@Model.SuccessCount</h2>
+                                <small class="text-uppercase text-muted fw-bold ls-1">Approved</small>
+                            </div>
+                            <div class="col-4 py-4">
+                                <h2 class="fw-bold text-danger mb-0">@Model.RejectedCount</h2>
+                                <small class="text-uppercase text-muted fw-bold ls-1">Rejected</small>
+                            </div>
+                        </div>
+
+                        <!-- Detailed Table -->
+                        <div class="table-responsive">
+                            @if (Model.Results.Count > 0)
+                            {
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="bg-light text-secondary small text-uppercase">
+                                        <tr>
+                                            <th class="ps-4 py-3">Req ID</th>
+                                            <th>Employee</th>
+                                            <th>Type</th>
+                                            <th class="text-end pe-4">Result</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var res in Model.Results)
+                                        {
+                                            <tr>
+                                                <td class="ps-4 fw-bold text-muted">#@res.RequestId</td>
+                                                <td>
+                                                    <div class="fw-bold text-dark">@res.EmployeeName</div>
+                                                </td>
+                                                <td><span class="badge bg-light text-dark border">@res.Type</span></td>
+                                                <td class="text-end pe-4">
+                                                    @if (res.FinalStatus == "Approved")
+                                                    {
+                                                        <span class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-2">
+                                                            <i class="fas fa-check me-1"></i> APPROVED
+                                                        </span>
+                                                    }
+                                                    else if (res.FinalStatus == "Rejected")
+                                                    {
+                                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger px-3 py-2">
+                                                            <i class="fas fa-times me-1"></i> REJECTED
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary px-3 py-2">
+                                                            @res.FinalStatus
+                                                        </span>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                            else
+                            {
+                                <div class="text-center py-5">
+                                    <div class="mb-3 text-muted opacity-25">
+                                        <i class="fas fa-search-minus fa-4x"></i>
+                                    </div>
+                                    <h5 class="text-muted fw-bold">No Changes</h5>
+                                    <p class="text-muted small">Requests matched the scope but no status changes occurred.</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <!-- Empty State -->
+                <div class="card border-0 shadow-sm h-100 d-flex align-items-center justify-content-center bg-light text-center p-5" style="border-radius: 15px; border: 2px dashed #dee2e6 !important;">
+                    <div class="opacity-50">
+                        <i class="fas fa-tasks fa-5x mb-4 text-primary"></i>
+                        <h4 class="text-muted fw-bold">Review Console</h4>
+                        <p class="text-muted" style="max-width: 400px;">
+                            Select a leave category, define the scope, and choose an action to process requests in bulk.
+                        </p>
+                    </div>
+                </div>
+            }
         </div>
     </div>
 </div>
 
-<!-- Tab 2: Unpaid -->
-<div id="tab-unpaid" class="hr-tab-content" style="display: none;">
-    <div class="card shadow-sm border-0">
-        <div class="card-body">
-            <h5 class="card-title text-secondary mb-3">Pending Unpaid Requests</h5>
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Req ID</th>
-                            <th>Employee</th>
-                            <th>Duration</th>
-                            <th>Dates</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var leave in Model.UnpaidLeaves)
-                        {
-                            <tr>
-                                <td>#@leave["request_ID"]</td>
-                                <td>
-                                    <div class="fw-bold">@leave["first_name"] @leave["last_name"]</div>
-                                    <small class="text-muted">ID: @leave["emp_ID"]</small>
-                                </td>
-                                <td>@leave["num_days"] Days</td>
-                                <td>@Convert.ToDateTime(leave["start_date"]).ToShortDateString() - @Convert.ToDateTime(leave["end_date"]).ToShortDateString()</td>
-                                <td>
-                                    <form method="post" class="d-flex gap-2">
-                                        <input type="hidden" name="RequestId" value="@leave["request_ID"]" />
-                                        <input type="hidden" name="LeaveType" value="Unpaid" />
-                                        <button type="submit" asp-page-handler="Approve" class="btn btn-sm btn-success"><i class="fas fa-check"></i></button>
-                                        <button type="submit" asp-page-handler="Reject" class="btn btn-sm btn-danger"><i class="fas fa-times"></i></button>
-                                    </form>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-                @if (Model.UnpaidLeaves.Count == 0)
-                {
-                    <p class="text-center text-muted py-3">No pending requests.</p>
-                }
-            </div>
-        </div>
-    </div>
-</div>
+<style>
+    .ls-1 {
+        letter-spacing: 1px;
+    }
 
-<!-- Tab 3: Compensation -->
-<div id="tab-comp" class="hr-tab-content" style="display: none;">
-    <div class="card shadow-sm border-0">
-        <div class="card-body">
-            <h5 class="card-title text-secondary mb-3">Pending Compensation Requests</h5>
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Req ID</th>
-                            <th>Employee</th>
-                            <th>Reason</th>
-                            <th>Original Day</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var leave in Model.CompLeaves)
-                        {
-                            <tr>
-                                <td>#@leave["request_ID"]</td>
-                                <td>
-                                    <div class="fw-bold">@leave["first_name"] @leave["last_name"]</div>
-                                    <small class="text-muted">ID: @leave["emp_ID"]</small>
-                                </td>
-                                <td>@leave["reason"]</td>
-                                <td>@Convert.ToDateTime(leave["date_of_original_workday"]).ToShortDateString()</td>
-                                <td>
-                                    <form method="post" class="d-flex gap-2">
-                                        <input type="hidden" name="RequestId" value="@leave["request_ID"]" />
-                                        <input type="hidden" name="LeaveType" value="Comp" />
-                                        <button type="submit" asp-page-handler="Approve" class="btn btn-sm btn-success"><i class="fas fa-check"></i></button>
-                                        <button type="submit" asp-page-handler="Reject" class="btn btn-sm btn-danger"><i class="fas fa-times"></i></button>
-                                    </form>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-                @if (Model.CompLeaves.Count == 0)
-                {
-                    <p class="text-center text-muted py-3">No pending requests.</p>
-                }
-            </div>
-        </div>
-    </div>
-</div>
+    /* Custom Radio Cards */
+    .btn-check:checked + .type-card {
+        background-color: #f8f9fa !important;
+        border-color: var(--primary-blue) !important;
+        box-shadow: 0 0 0 2px var(--primary-blue);
+    }
+
+    .hover-lift {
+        transition: transform 0.2s;
+    }
+
+        .hover-lift:hover {
+            transform: translateY(-3px);
+        }
+
+    /* Input Transitions */
+    .slide-input {
+        animation: slideDown 0.3s ease-out;
+    }
+
+    @@keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<script>
+    function toggleInputs() {
+        const val = document.getElementById('scopeSelect').value;
+
+        document.getElementById('input-specific').style.display = 'none';
+        document.getElementById('input-dept').style.display = 'none';
+
+        if (val === 'Specific') document.getElementById('input-specific').style.display = 'block';
+        else if (val === 'Department') document.getElementById('input-dept').style.display = 'block';
+    }
+
+    // Run on load to set correct state
+    document.addEventListener('DOMContentLoaded', toggleInputs);
+</script>
