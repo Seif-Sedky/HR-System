@@ -170,6 +170,7 @@
                                             <th class="ps-4 py-3">Req ID</th>
                                             <th>Employee</th>
                                             <th>Type</th>
+                                            <th>Balance</th> <!-- Added Header -->
                                             <th class="text-end pe-4">Result</th>
                                         </tr>
                                     </thead>
@@ -182,6 +183,19 @@
                                                     <div class="fw-bold text-dark">@res.EmployeeName</div>
                                                 </td>
                                                 <td><span class="badge bg-light text-dark border">@res.Type</span></td>
+                                                
+                                                <!-- Added Balance Column -->
+                                                <td>
+                                                    @if (res.RemainingBalance != "-")
+                                                    {
+                                                        <span class="fw-bold text-dark">@res.RemainingBalance Days</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted small">-</span>
+                                                    }
+                                                </td>
+
                                                 <td class="text-end pe-4">
                                                     @if (res.FinalStatus == "Approved")
                                                     {

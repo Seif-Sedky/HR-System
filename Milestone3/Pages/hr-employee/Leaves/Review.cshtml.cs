@@ -44,6 +44,7 @@ namespace Milestone3.Pages.hr_employee.Leaves
             public string Type { get; set; }
             public string FinalStatus { get; set; }
             public string ActionAttempted { get; set; }
+            public string RemainingBalance { get; set; } // Added for Balance display
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -91,10 +92,13 @@ namespace Milestone3.Pages.hr_employee.Leaves
             foreach (DataRow row in requests.Rows)
             {
                 int reqId = Convert.ToInt32(row["request_ID"]);
+                // We need ID to fetch balance
+                int empId = Convert.ToInt32(row["employee_id"]);
                 string empName = $"{row["first_name"]} {row["last_name"]}";
-                string leaveType = row["type_label"].ToString(); // Helper column from query
+                string leaveType = row["type_label"].ToString(); // "Annual", "Accidental", "Unpaid", etc.
 
                 string finalStatus = "Pending";
+                string balanceDisplay = "-";
 
                 try
                 {
@@ -110,6 +114,7 @@ namespace Milestone3.Pages.hr_employee.Leaves
                     {
                         // Call specific procedure
                         string procName = "";
+                        // Note: Stored Proc "HR_approval_an_acc" handles both Annual and Accidental
                         if (SelectedLeaveType == "AA") procName = "HR_approval_an_acc";
                         else if (SelectedLeaveType == "Unpaid") procName = "HR_approval_unpaid";
                         else if (SelectedLeaveType == "Comp") procName = "HR_approval_comp";
@@ -129,6 +134,20 @@ namespace Milestone3.Pages.hr_employee.Leaves
                         }
                     }
 
+                    // --- NEW LOGIC: Get Remaining Balance for AA types ---
+                    if (leaveType == "Annual" || leaveType == "Accidental")
+                    {
+                        string balQuery = "SELECT annual_balance, accidental_balance FROM Employee WHERE employee_id = @eid";
+                        DataTable balDt = await _db.ExecuteQuery(balQuery, new SqlParameter("@eid", empId));
+                        if (balDt.Rows.Count > 0)
+                        {
+                            if (leaveType == "Annual")
+                                balanceDisplay = balDt.Rows[0]["annual_balance"].ToString();
+                            else if (leaveType == "Accidental")
+                                balanceDisplay = balDt.Rows[0]["accidental_balance"].ToString();
+                        }
+                    }
+
                     // Add to results
                     Results.Add(new ReviewResult
                     {
@@ -136,7 +155,8 @@ namespace Milestone3.Pages.hr_employee.Leaves
                         EmployeeName = empName,
                         Type = leaveType,
                         ActionAttempted = SelectedAction,
-                        FinalStatus = finalStatus
+                        FinalStatus = finalStatus,
+                        RemainingBalance = balanceDisplay
                     });
 
                     if (finalStatus == "Approved") SuccessCount++;
@@ -150,7 +170,8 @@ namespace Milestone3.Pages.hr_employee.Leaves
                         EmployeeName = empName,
                         Type = leaveType,
                         ActionAttempted = SelectedAction,
-                        FinalStatus = "Error"
+                        FinalStatus = "Error",
+                        RemainingBalance = "-"
                     });
                 }
             }
@@ -161,14 +182,17 @@ namespace Milestone3.Pages.hr_employee.Leaves
 
         private string BuildFetchQuery()
         {
-            // Base query joins Leave, Employee. 
-            // We need to join specific leave tables to filter by type correctly.
             string baseSql = "";
 
             if (SelectedLeaveType == "AA")
             {
+                // Modified to select Employee ID and specific type
                 baseSql = @"
-                    SELECT L.request_ID, E.first_name, E.last_name, E.dept_name, 'Annual/Accidental' as type_label
+                    SELECT L.request_ID, E.employee_id, E.first_name, E.last_name, E.dept_name, 
+                    CASE 
+                        WHEN AL.request_ID IS NOT NULL THEN 'Annual' 
+                        ELSE 'Accidental' 
+                    END as type_label
                     FROM Leave L 
                     LEFT JOIN Annual_Leave AL ON L.request_ID = AL.request_ID 
                     LEFT JOIN Accidental_Leave ACL ON L.request_ID = ACL.request_ID
@@ -179,7 +203,7 @@ namespace Milestone3.Pages.hr_employee.Leaves
             else if (SelectedLeaveType == "Unpaid")
             {
                 baseSql = @"
-                    SELECT L.request_ID, E.first_name, E.last_name, E.dept_name, 'Unpaid' as type_label
+                    SELECT L.request_ID, E.employee_id, E.first_name, E.last_name, E.dept_name, 'Unpaid' as type_label
                     FROM Leave L 
                     JOIN Unpaid_Leave UL ON L.request_ID = UL.request_ID
                     JOIN Employee E ON UL.Emp_ID = E.employee_id
@@ -188,7 +212,7 @@ namespace Milestone3.Pages.hr_employee.Leaves
             else if (SelectedLeaveType == "Comp")
             {
                 baseSql = @"
-                    SELECT L.request_ID, E.first_name, E.last_name, E.dept_name, 'Compensation' as type_label
+                    SELECT L.request_ID, E.employee_id, E.first_name, E.last_name, E.dept_name, 'Compensation' as type_label
                     FROM Leave L 
                     JOIN Compensation_Leave CL ON L.request_ID = CL.request_ID
                     JOIN Employee E ON CL.emp_ID = E.employee_id
