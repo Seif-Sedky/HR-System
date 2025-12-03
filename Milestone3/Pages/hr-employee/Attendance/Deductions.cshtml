@@ -38,40 +38,40 @@
                             <label class="form-label text-uppercase fw-bold text-secondary small ls-1">Deduction Type</label>
                             <div class="d-grid gap-2">
                                 <input type="radio" class="btn-check" name="SelectedType" id="typeHours" value="Hours" checked>
-                                <label class="btn btn-outline-white bg-white text-start p-3 border shadow-sm type-card" for="typeHours">
+                                <label class="btn btn-outline-white bg-white text-start p-3 border shadow-sm type-card hover-lift" for="typeHours">
                                     <div class="d-flex align-items-center">
                                         <div class="icon-box bg-info bg-opacity-10 text-info rounded p-2 me-3">
                                             <i class="fas fa-clock fa-lg"></i>
                                         </div>
                                         <div>
                                             <div class="fw-bold text-dark">Missing Hours</div>
-                                            <div class="small text-muted"> < 8 hours work duration</div>
+                                            <div class="small text-muted"> Less Than 8 Hours Work Duration</div>
                                         </div>
                                     </div>
                                 </label>
 
                                 <input type="radio" class="btn-check" name="SelectedType" id="typeDays" value="Days">
-                                <label class="btn btn-outline-white bg-white text-start p-3 border shadow-sm type-card" for="typeDays">
+                                <label class="btn btn-outline-white bg-white text-start p-3 border shadow-sm type-card hover-lift" for="typeDays">
                                     <div class="d-flex align-items-center">
                                         <div class="icon-box bg-warning bg-opacity-10 text-warning rounded p-2 me-3">
                                             <i class="fas fa-calendar-times fa-lg"></i>
                                         </div>
                                         <div>
                                             <div class="fw-bold text-dark">Missing Days</div>
-                                            <div class="small text-muted">Absent without leave</div>
+                                            <div class="small text-muted">Absent Without Leave</div>
                                         </div>
                                     </div>
                                 </label>
 
                                 <input type="radio" class="btn-check" name="SelectedType" id="typeUnpaid" value="Unpaid">
-                                <label class="btn btn-outline-white bg-white text-start p-3 border shadow-sm type-card" for="typeUnpaid">
+                                <label class="btn btn-outline-white bg-white text-start p-3 border shadow-sm type-card hover-lift" for="typeUnpaid">
                                     <div class="d-flex align-items-center">
                                         <div class="icon-box bg-danger bg-opacity-10 text-danger rounded p-2 me-3">
                                             <i class="fas fa-money-bill-wave fa-lg"></i>
                                         </div>
                                         <div>
                                             <div class="fw-bold text-dark">Unpaid Leave</div>
-                                            <div class="small text-muted">Financial deduction</div>
+                                            <div class="small text-muted">Financial Deduction</div>
                                         </div>
                                     </div>
                                 </label>
@@ -81,7 +81,7 @@
                         <!-- Step 2: Scope -->
                         <div class="mb-4">
                             <label class="form-label text-uppercase fw-bold text-secondary small ls-1">Target Scope</label>
-                            <select asp-for="SelectedScope" class="form-select form-select-lg shadow-sm border-0 fs-6" id="scopeSelect" onchange="toggleInputs()">
+                            <select asp-for="SelectedScope" class="form-select form-select-lg shadow-sm border-0 fs-6 hover-lift" id="scopeSelect" onchange="toggleInputs()">
                                 <option value="All">All Employees</option>
                                 <option value="Department">Specific Department</option>
                                 <option value="Specific">Specific Employee ID</option>
@@ -93,14 +93,14 @@
                             <!-- Specific Input -->
                             <div id="input-specific" class="slide-input" style="display:none;">
                                 <label class="form-label fw-bold">Enter Employee ID</label>
-                                <input asp-for="SpecificEmpId" type="number" class="form-control form-control-lg shadow-sm" placeholder="e.g. 101" />
+                                <input asp-for="SpecificEmpId" type="number" class="form-control form-control-lg shadow-sm fs-6" placeholder="e.g. 101" />
                             </div>
 
                             <!-- Department Input -->
                             <div id="input-dept" class="slide-input" style="display:none;">
                                 <label class="form-label fw-bold">Select Department</label>
-                                <select asp-for="SelectedDept" asp-items="Model.Departments" class="form-select form-select-lg shadow-sm">
-                                    <option value="" disabled selected>-- Select --</option>
+                                <select asp-for="SelectedDept" asp-items="Model.Departments" class="form-select form-select-lg shadow-sm fs-6">
+                                    <option value="" disabled selected>Select</option>
                                 </select>
                             </div>
                         </div>
@@ -213,6 +213,26 @@
         border-color: var(--primary-blue) !important;
         box-shadow: 0 0 0 2px var(--primary-blue);
     }
+    /* 1. Aqua for Missing Hours (typeHours) */
+    #typeHours:checked + .type-card {
+        background-color: rgba(13, 202, 240, 0.05) !important;
+        border-color: #0dcaf0 !important;
+        box-shadow: 0 0 0 2px #0dcaf0;
+    }
+
+    /* 2. Gold for Missing Days (typeDays) */
+    #typeDays:checked + .type-card {
+        background-color: rgba(255, 193, 7, 0.05) !important;
+        border-color: #ffc107 !important;
+        box-shadow: 0 0 0 2px #ffc107;
+    }
+
+    /* 3. Red for Unpaid Leave (typeUnpaid) */
+    #typeUnpaid:checked + .type-card {
+        background-color: rgba(220, 53, 69, 0.05) !important;
+        border-color: #dc3545 !important;
+        box-shadow: 0 0 0 2px #dc3545;
+    }
 
     .hover-lift {
         transition: transform 0.2s;
@@ -238,6 +258,53 @@
             transform: translateY(0);
         }
     }
+    /* 1. Base State: Define the speed */
+    .hover-lift {
+        transition: transform 0.2s ease; /* Smoothly animates 'transform' over 0.2 seconds */
+    }
+
+        /* 2. Hover State: Define the movement */
+        .hover-lift:hover {
+            transform: translateY(-3px); /* Moves the element up by 3 pixels */
+        }
+
+    /* --- Custom Aesthetic Select --- */
+    .form-select {
+        /* 1. Base Styling */
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 12px; /* Smooth rounded corners */
+        padding: 12px 20px 12px 15px; /* Extra padding for breathing room */
+        font-weight: 600;
+        color: #495057;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        transition: all 0.3s ease;
+        /* 2. Custom Arrow (requires removing default appearance) */
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        /* Add a custom SVG arrow (Bootstrap blue color) */
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%230d6efd' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 1.25rem center; /* Position the arrow */
+        background-size: 16px 12px; /* Size of the arrow */
+    }
+
+        /* Hover Effect */
+        .form-select:hover {
+            border-color: var(--bs-primary); /* Bootstrap primary blue */
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            background-color: #f8f9fa;
+        }
+
+        /* Focus Effect (when clicked) */
+        .form-select:focus {
+            border-color: var(--bs-primary);
+            box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15); /* Soft blue glow */
+            outline: 0;
+        }
 </style>
 
 <script>
