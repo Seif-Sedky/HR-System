@@ -237,6 +237,43 @@
         .hover-lift:hover {
             transform: translateY(-3px); /* Moves the element up by 3 pixels */
         }
+    /* --- Custom Aesthetic Select --- */
+    .form-select {
+        /* 1. Base Styling */
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 12px; /* Smooth rounded corners */
+        padding: 12px 20px 12px 15px; /* Extra padding for breathing room */
+        font-weight: 600;
+        color: #495057;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        transition: all 0.3s ease;
+        /* 2. Custom Arrow (requires removing default appearance) */
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        /* Add a custom SVG arrow (Bootstrap blue color) */
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%230d6efd' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 1.25rem center; /* Position the arrow */
+        background-size: 16px 12px; /* Size of the arrow */
+    }
+
+        /* Hover Effect */
+        .form-select:hover {
+            border-color: var(--bs-primary); /* Bootstrap primary blue */
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            background-color: #f8f9fa;
+        }
+
+        /* Focus Effect (when clicked) */
+        .form-select:focus {
+            border-color: var(--bs-primary);
+            box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15); /* Soft blue glow */
+            outline: 0;
+        }
 </style>
 
 <script>
