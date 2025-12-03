@@ -39,7 +39,7 @@
                             <div class="d-grid gap-2">
                                 <input type="radio" class="btn-check" name="SelectedLeaveType" id="typeAA" value="AA" checked>
                                 <label class="btn btn-outline-white bg-white text-start p-3 border shadow-sm type-card" for="typeAA">
-                                    <div class="d-flex align-items-center">
+                                    <div class="d-flex align-items-center hover-lift">
                                         <div class="icon-box bg-info bg-opacity-10 text-info rounded p-2 me-3">
                                             <i class="fas fa-calendar-check fa-lg"></i>
                                         </div>
@@ -52,7 +52,7 @@
 
                                 <input type="radio" class="btn-check" name="SelectedLeaveType" id="typeUnpaid" value="Unpaid">
                                 <label class="btn btn-outline-white bg-white text-start p-3 border shadow-sm type-card" for="typeUnpaid">
-                                    <div class="d-flex align-items-center">
+                                    <div class="d-flex align-items-center hover-lift">
                                         <div class="icon-box bg-danger bg-opacity-10 text-danger rounded p-2 me-3">
                                             <i class="fas fa-ban fa-lg"></i>
                                         </div>
@@ -65,7 +65,7 @@
 
                                 <input type="radio" class="btn-check" name="SelectedLeaveType" id="typeComp" value="Comp">
                                 <label class="btn btn-outline-white bg-white text-start p-3 border shadow-sm type-card" for="typeComp">
-                                    <div class="d-flex align-items-center">
+                                    <div class="d-flex align-items-center hover-lift">
                                         <div class="icon-box bg-warning bg-opacity-10 text-warning rounded p-2 me-3">
                                             <i class="fas fa-hourglass-half fa-lg"></i>
                                         </div>
@@ -81,7 +81,7 @@
                         <!-- Step 2: Scope -->
                         <div class="mb-4">
                             <label class="form-label text-uppercase fw-bold text-secondary small ls-1">Target Scope</label>
-                            <select asp-for="SelectedScope" class="form-select form-select-lg shadow-sm border-0 fs-6" id="scopeSelect" onchange="toggleInputs()">
+                            <select asp-for="SelectedScope" class="form-select form-select-lg shadow-sm border-0 fs-6 hover-lift" id="scopeSelect" onchange="toggleInputs()">
                                 <option value="All">All Pending</option>
                                 <option value="Department">Specific Department</option>
                                 <option value="Specific">Specific Request ID</option>
@@ -93,14 +93,14 @@
                             <!-- Specific Input -->
                             <div id="input-specific" class="slide-input" style="display:none;">
                                 <label class="form-label fw-bold">Enter Request ID</label>
-                                <input asp-for="SpecificReqId" type="number" class="form-control form-control-lg shadow-sm" placeholder="e.g. 101" />
+                                <input asp-for="SpecificReqId" type="number" class="form-control form-control-lg shadow-sm fs-6" placeholder="e.g. 101" />
                             </div>
 
                             <!-- Department Input -->
                             <div id="input-dept" class="slide-input" style="display:none;">
                                 <label class="form-label fw-bold">Select Department</label>
-                                <select asp-for="SelectedDept" asp-items="Model.Departments" class="form-select form-select-lg shadow-sm">
-                                    <option value="" disabled selected>-- Select --</option>
+                                <select asp-for="SelectedDept" asp-items="Model.Departments" class="form-select form-select-lg shadow-sm fs-6">
+                                    <option value="" disabled selected>Select</option>
                                 </select>
                             </div>
                         </div>
@@ -109,12 +109,12 @@
                         <div class="mb-4">
                             <label class="form-label text-uppercase fw-bold text-secondary small ls-1">Action</label>
                             <div class="d-flex gap-2">
-                                <input type="radio" class="btn-check" name="SelectedAction" id="actApprove" value="Approve" checked>
+                                <input type="radio" class="btn-check hover-lift" name="SelectedAction" id="actApprove" value="Approve" checked>
                                 <label class="btn btn-outline-success w-50 p-3 shadow-sm fw-bold" for="actApprove">
                                     <i class="fas fa-magic me-2"></i>Auto Approve
                                 </label>
 
-                                <input type="radio" class="btn-check" name="SelectedAction" id="actReject" value="Reject">
+                                <input type="radio" class="btn-check hover-lift" name="SelectedAction" id="actReject" value="Reject">
                                 <label class="btn btn-outline-danger w-50 p-3 shadow-sm fw-bold" for="actReject">
                                     <i class="fas fa-times-circle me-2"></i>Force Reject
                                 </label>
@@ -263,6 +263,38 @@
         border-color: var(--primary-blue) !important;
         box-shadow: 0 0 0 2px var(--primary-blue);
     }
+    /* 1. Aqua for Annual/Accidental (typeAA) */
+    #typeAA:checked + .type-card {
+        background-color: #f0faff !important; /* Light Aqua Tint */
+        border-color: #0dcaf0 !important; /* Aqua Color */
+        box-shadow: 0 0 0 2px #0dcaf0;
+    }
+        /* Optional: Color the little sidebar strip if you are using the previous design */
+        #typeAA:checked + .type-card::before {
+            background: #0dcaf0;
+        }
+
+    /* 2. Gold for Compensation (typeComp) */
+    #typeComp:checked + .type-card {
+        background-color: #fff9e6 !important; /* Light Gold Tint */
+        border-color: #ffc107 !important; /* Gold Color */
+        box-shadow: 0 0 0 2px #ffc107;
+    }
+
+        #typeComp:checked + .type-card::before {
+            background: #ffc107;
+        }
+
+    /* 3. Red for Unpaid (typeUnpaid) */
+    #typeUnpaid:checked + .type-card {
+        background-color: #fff5f5 !important; /* Light Red Tint */
+        border-color: #dc3545 !important; /* Red Color */
+        box-shadow: 0 0 0 2px #dc3545;
+    }
+
+        #typeUnpaid:checked + .type-card::before {
+            background: #dc3545;
+        }
 
     .hover-lift {
         transition: transform 0.2s;
@@ -288,6 +320,44 @@
             transform: translateY(0);
         }
     }
+    /* 1. Base State: Define the speed */
+    .hover-lift {
+        transition: transform 0.2s ease; /* Smoothly animates 'transform' over 0.2 seconds */
+    }
+
+        /* 2. Hover State: Define the movement */
+        .hover-lift:hover {
+            transform: translateY(-3px); /* Moves the element up by 3 pixels */
+        }
+    /* --- Aqua Border Hover --- */
+    .hover-border-aqua {
+        border: 1px solid transparent; /* Ensures border exists without shifting layout */
+        transition: border-color 0.3s ease;
+    }
+
+        .hover-border-aqua:hover {
+            border-color: #0dcaf0 !important; /* Bootstrap Cyan/Info color */
+        }
+
+    /* --- Red Border Hover --- */
+    .hover-border-red {
+        border: 1px solid transparent;
+        transition: border-color 0.3s ease;
+    }
+
+        .hover-border-red:hover {
+            border-color: #dc3545 !important; /* Bootstrap Danger color */
+        }
+
+    /* --- Gold Border Hover --- */
+    .hover-border-gold {
+        border: 1px solid transparent;
+        transition: border-color 0.3s ease;
+    }
+
+        .hover-border-gold:hover {
+            border-color: #ffc107 !important; /* Bootstrap Warning color */
+        }
 </style>
 
 <script>

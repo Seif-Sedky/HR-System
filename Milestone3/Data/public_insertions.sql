@@ -769,3 +769,85 @@ PRINT 'Pending Data Inserted. You can now test the Review Page.'
 
 SELECT * FROM Annual_Leave INNER JOIN Leave l ON l.request_ID = Annual_Leave.request_ID
 SELECT * FROM Employee
+
+
+
+------------------- PAYEROLL TESTS ------------------------
+EXEC clearAllTables
+
+
+
+
+-- 1. Setup Departments
+INSERT INTO Department (name, building_location) VALUES 
+('Computer Science', 'Building C4'),
+('Human Resources', 'Admin Building');
+
+-- 2. Setup Roles (Crucial for Base Salary Calculation)
+-- Rank 1 = High salary, Rank 5 = Lower salary
+INSERT INTO Role (role_name, title, description, rank, base_salary, percentage_YOE, percentage_overtime, annual_balance, accidental_balance) VALUES 
+('Professor', 'Prof.', 'Senior Faculty', 1, 10000.00, 15.00, 20.00, 30, 7),
+('Lecturer', 'Dr.', 'Junior Faculty', 3, 5000.00, 10.00, 15.00, 30, 7),
+('HR Specialist', 'HR', 'Payroll Admin', 4, 4000.00, 5.00, 10.00, 21, 7);
+
+-- 3. Insert Employees
+-- NOTE: 'salary' column is Computed, so we do not insert it.
+INSERT INTO Employee (first_name, last_name, email, password, address, gender, official_day_off, years_of_experience, national_ID, employment_status, type_of_contract, annual_balance, accidental_balance, hire_date, dept_name) VALUES 
+('Alice', 'Wonder', 'alice@uni.edu', '123', '101 Logic Lane', 'F', 'Saturday', 10, '1111111111111111', 'active', 'full_time', 30, 7, '2015-01-01', 'Computer Science'),
+('Bob', 'Builder', 'bob@uni.edu', '123', '202 Tool St', 'M', 'Friday', 2, '2222222222222222', 'active', 'full_time', 30, 7, '2021-06-01', 'Computer Science'),
+('Charlie', 'Check', 'charlie@uni.edu', '123', '303 Payroll Pl', 'M', 'Sunday', 5, '3333333333333333', 'active', 'full_time', 25, 5, '2019-03-15', 'Human Resources');
+
+-- 4. Assign Roles (Links Employee to Salary)
+INSERT INTO Employee_Role (emp_ID, role_name)
+SELECT employee_id, 'Professor' FROM Employee WHERE email = 'alice@uni.edu';
+
+INSERT INTO Employee_Role (emp_ID, role_name)
+SELECT employee_id, 'Lecturer' FROM Employee WHERE email = 'bob@uni.edu';
+
+INSERT INTO Employee_Role (emp_ID, role_name)
+SELECT employee_id, 'HR Specialist' FROM Employee WHERE email = 'charlie@uni.edu';
+
+-- =============================================
+-- SCENARIO SETUP
+-- =============================================
+
+-- Scenario A: Alice (High Salary, No Bonus, Small Deduction)
+-- ---------------------------------------------------------
+DECLARE @AliceID INT = (SELECT employee_id FROM Employee WHERE email = 'alice@uni.edu');
+
+-- Insert a manually calculated deduction (e.g., damaged equipment)
+INSERT INTO Deduction (emp_ID, date, amount, type, status) 
+VALUES (@AliceID, GETDATE(), 150.00, 'missing_hours', 'pending');
+
+
+-- Scenario B: Bob (Medium Salary, HUGE Bonus due to Overtime)
+-- ---------------------------------------------------------
+DECLARE @BobID INT = (SELECT employee_id FROM Employee WHERE email = 'bob@uni.edu');
+
+-- Bob works 10 hours a day for 5 days (2 hours overtime per day = 10 hours total bonus)
+-- Note: Logic requires check_in/out to calculate bonus via dbo.Bonus_amount function
+INSERT INTO Attendance (date, check_in_time, check_out_time, status, emp_ID) VALUES 
+(GETDATE(), '08:00:00', '18:00:00', 'Attended', @BobID), -- 2 hrs OT
+(DATEADD(day, -1, GETDATE()), '08:00:00', '18:00:00', 'Attended', @BobID), -- 2 hrs OT
+(DATEADD(day, -2, GETDATE()), '08:00:00', '18:00:00', 'Attended', @BobID), -- 2 hrs OT
+(DATEADD(day, -3, GETDATE()), '08:00:00', '18:00:00', 'Attended', @BobID), -- 2 hrs OT
+(DATEADD(day, -4, GETDATE()), '08:00:00', '18:00:00', 'Attended', @BobID); -- 2 hrs OT
+
+
+-- Scenario C: Charlie (Lower Salary, Significant Deduction for Absence)
+-- ---------------------------------------------------------
+DECLARE @CharlieID INT = (SELECT employee_id FROM Employee WHERE email = 'charlie@uni.edu');
+
+-- Charlie missed 2 days (deduction logic usually inserts this, but we force it here for preview test)
+INSERT INTO Deduction (emp_ID, date, amount, type, status) 
+VALUES (@CharlieID, GETDATE(), 500.00, 'missing_days', 'pending');
+
+-- No attendance records for Charlie implies potential absence if run through deduction procedures,
+-- but for payroll preview, we just need the deduction record above.
+
+GO
+
+SELECT * FROM Payroll
+
+
+SELECT * FROM Employee

@@ -228,6 +228,15 @@
             transform: translateY(0);
         }
     }
+    /* 1. Base State: Define the speed */
+    .hover-lift {
+        transition: transform 0.2s ease; /* Smoothly animates 'transform' over 0.2 seconds */
+    }
+
+        /* 2. Hover State: Define the movement */
+        .hover-lift:hover {
+            transform: translateY(-3px); /* Moves the element up by 3 pixels */
+        }
 </style>
 
 <script>
