@@ -43,16 +43,50 @@ namespace Milestone3.Pages.Admin
 
             try
             {
-                await _db.ExecuteQuery("EXEC Remove_DayOff @Employee_id",
-                    new SqlParameter("@Employee_id", employeeId));
-                TempData["Success"] = "Unattended Day off of employee " + employeeId+"  in this month have been removed.";
+                //await _db.ExecuteQuery("EXEC Remove_DayOff @Employee_id",
+                //    new SqlParameter("@Employee_id", employeeId));
+
+
+                //var result = await _db.ExecuteQuery("EXEC Remove_DayOff @Employee_id",
+                //     new SqlParameter("@Employee_id", employeeId));
+
+                // if (result.Rows.Count > 0 && result.Rows[0]["Result"].ToString() == "NOT_FOUND")
+                // {
+                //     TempData["Error"] = result.Rows[0]["Message"].ToString();
+                //     return RedirectToPage();
+                // }
+
+                // TempData["Success"] = "Unattended Day off of employee " + employeeId+"  in this month have been removed.";
+                // return RedirectToPage();
+
+                var dt = await _db.ExecuteQuery("EXEC Remove_DayOff @Employee_ID",
+                    new SqlParameter("@Employee_ID", employeeId));
+
+                if (dt.Rows.Count > 0)
+                {
+                    string message = dt.Rows[0]["Message"].ToString();
+                    string status = dt.Rows[0]["Status"].ToString();
+
+                    if (status == "ERROR")
+                        TempData["Error"] = message;
+                    else
+                        TempData["Success"] = message;
+                }
+                else
+                {
+                    TempData["Error"] = "No message returned from SQL.";
+                }
+
                 return RedirectToPage();
+
+
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
-                TempData["Error"] = "Unexpected error occurred " + ex.Message;
+                TempData["Error"] = ex.Message;
                 return RedirectToPage();
             }
+
 
 
         }
