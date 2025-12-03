@@ -1,0 +1,120 @@
+﻿/* Layout */
+.dashboard-container {
+    padding: 2rem 0;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 1rem;
+}
+
+/* --- THE CARDS --- */
+.dash-card {
+    background: white;
+    border: none;
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: all 0.3s ease; /* This makes the movement smooth */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02); /* Very subtle shadow normally */
+    position: relative;
+    overflow: hidden;
+}
+
+    /* The Lift Effect on Hover */
+    .dash-card:hover {
+        transform: translateY(-8px); /* Moves up */
+        box-shadow: 0 12px 24px rgba(0,0,0,0.1); /* Shadow grows */
+    }
+
+/* Color Coding Borders */
+.card-blue {
+    border-top: 5px solid var(--uni-blue);
+}
+
+.card-green {
+    border-top: 5px solid var(--uni-green);
+}
+
+.card-red {
+    border-top: 5px solid var(--uni-red);
+}
+
+.card-gold {
+    border-top: 5px solid var(--uni-gold);
+}
+
+/* --- ICONS --- */
+.icon-wrapper {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+/* Custom Light Backgrounds for Icons (Opacity variants) */
+.bg-blue-light {
+    background-color: rgba(36, 59, 85, 0.1);
+    color: var(--uni-blue);
+}
+
+.bg-green-light {
+    background-color: rgba(58, 196, 125, 0.1);
+    color: var(--uni-green);
+}
+
+.bg-red-light {
+    background-color: rgba(217, 37, 80, 0.1);
+    color: var(--uni-red);
+}
+
+.bg-gold-light {
+    background-color: rgba(247, 185, 36, 0.1);
+    color: var(--uni-gold);
+}
+
+/* --- BUTTONS SPECIFIC TO THIS PAGE --- */
+.btn-outline-uni-blue {
+    color: var(--uni-blue);
+    border-color: var(--uni-blue);
+}
+
+    .btn-outline-uni-blue:hover {
+        background-color: var(--uni-blue);
+        color: white;
+    }
+
+.btn-outline-uni-green {
+    color: var(--uni-green);
+    border-color: var(--uni-green);
+}
+
+    .btn-outline-uni-green:hover {
+        background-color: var(--uni-green);
+        color: white;
+    }
+
+.btn-outline-uni-red {
+    color: var(--uni-red);
+    border-color: var(--uni-red);
+}
+
+    .btn-outline-uni-red:hover {
+        background-color: var(--uni-red);
+        color: white;
+    }
+
+.btn-outline-uni-gold {
+    color: var(--uni-gold);
+    border-color: var(--uni-gold);
+}
+
+    .btn-outline-uni-gold:hover {
+        background-color: var(--uni-gold);
+        color: white;
+    }
