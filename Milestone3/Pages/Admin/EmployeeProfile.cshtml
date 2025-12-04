@@ -1,0 +1,186 @@
+﻿@page "{id:int}"
+@model Milestone3.Pages.Admin.EmployeeProfileModel
+@{
+    ViewData["Title"] = "Employee Profile";
+}
+
+<div class="container py-5">
+
+    <a asp-page="/Admin/PeopleHub" class="text-decoration-none text-muted mb-3 d-inline-block">
+        <i class="fas fa-arrow-left me-1"></i> Back to Directory
+    </a>
+
+    @if (Model.EmployeeData == null)
+    {
+        <div class="alert alert-danger">Employee not found.</div>
+    }
+    else
+    {
+        var emp = Model.EmployeeData.Rows[0];
+
+        <div class="card border-0 shadow-sm mb-4 overflow-hidden rounded-4">
+            <div class="card-body p-0">
+                <div class="bg-uni-blue p-4 text-white d-flex align-items-center">
+                    <div class="bg-white text-uni-blue rounded-circle d-flex align-items-center justify-content-center display-4 fw-bold shadow me-4" style="width: 100px; height: 100px;">
+                        @emp["first_name"].ToString().Substring(0, 1)
+                    </div>
+                    <div>
+                        <h2 class="fw-bold mb-0">@emp["first_name"] @emp["last_name"]</h2>
+                        <p class="mb-2 opacity-75">@emp["email"]</p>
+                        <span class="badge bg-light text-dark text-uppercase tracking-wider">@emp["dept_name"]</span>
+                        <span class="badge bg-warning text-dark text-uppercase tracking-wider ms-2">@emp["employment_status"]</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 rounded-4">
+                    <div class="card-header bg-white fw-bold text-uni-blue py-3 border-bottom">
+                        Personal Information
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item px-0">
+                                <small class="text-muted d-block">Address</small>
+                                <span>@emp["address"]</span>
+                            </li>
+                            <li class="list-group-item px-0">
+                                <small class="text-muted d-block">Gender</small>
+                                <span>@emp["gender"]</span>
+                            </li>
+                            <li class="list-group-item px-0">
+                                <small class="text-muted d-block">Hire Date</small>
+                                <span>@Convert.ToDateTime(emp["hire_date"]).ToString("MMMM dd, yyyy")</span>
+                            </li>
+                            <li class="list-group-item px-0">
+                                <small class="text-muted d-block">Salary</small>
+                                <span class="fw-bold text-success">$@emp["salary"]</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+
+                <div class="card border-0 shadow-sm mb-4 rounded-4">
+                    <div class="card-header bg-white fw-bold text-uni-blue py-3 border-bottom">
+                        Administrative Actions
+                    </div>
+                    <div class="card-body">
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <form method="post" asp-page-handler="UpdateStatus" asp-route-id="@emp["employee_id"]">
+                                    <label class="small text-muted fw-bold mb-2">Status Synchronization</label>
+                                    <button class="btn btn-uni-blue w-100 py-2 shadow-sm">
+                                        <i class="fas fa-sync-alt me-2"></i> Auto-Update Status
+                                    </button>
+                                    <div class="mt-2 text-center">
+                                        <small class="text-muted fst-italic" style="font-size: 0.75rem;">
+                                            *Syncs status based on active leaves
+                                        </small>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="small text-muted fw-bold mb-2">Manpower Management</label>
+                                <button class="btn btn-uni-gold w-100 py-2 shadow-sm fw-bold"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#replaceForm">
+                                    <i class="fas fa-user-friends me-2"></i> Replace Employee
+                                </button>
+                                <div class="mt-2 text-center">
+                                    <small class="text-muted fst-italic" style="font-size: 0.75rem;">
+                                        *Assign a temporary substitute
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="collapse mt-3" id="replaceForm">
+                            <div class="card card-body bg-light border-0 rounded-3 position-relative">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center me-2"
+                                         style="width:32px; height:32px; background-color: var(--uni-gold); color: var(--uni-blue);">
+                                        <i class="fas fa-exchange-alt small"></i>
+                                    </div>
+                                    <h6 class="fw-bold text-uni-blue mb-0">Replace @emp["first_name"]</h6>
+                                </div>
+
+                                <form method="post" asp-page-handler="Replace">
+                                    <div class="mb-3">
+                                        <label class="small fw-bold text-muted">Replacement Employee ID</label>
+                                        <input type="number" name="replacementId" class="form-control" placeholder="e.g. 1024" required />
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col">
+                                            <label class="small fw-bold text-muted">From</label>
+                                            <input type="date" name="fromDate" class="form-control" required />
+                                        </div>
+                                        <div class="col">
+                                            <label class="small fw-bold text-muted">To</label>
+                                            <input type="date" name="toDate" class="form-control" required />
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-uni-blue w-100">
+                                        <i class="fas fa-check-circle me-2"></i> Confirm Assignment
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-header bg-white fw-bold text-uni-blue py-3 border-bottom d-flex justify-content-between">
+                        <span>Performance History</span>
+                        <span class="badge bg-uni-blue">Winter Semesters</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead class="bg-light">
+                                <tr class="text-muted small">
+                                    <th>Sem</th>
+                                    <th>Rating</th>
+                                    <th>Comments</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.EmployeePerformance != null && Model.EmployeePerformance.Rows.Count > 0)
+                                {
+                                    foreach (System.Data.DataRow perf in Model.EmployeePerformance.Rows)
+                                    {
+                                        <tr>
+                                            <td class="fw-bold">@perf["semester"]</td>
+                                            <td>
+                                                <span class="text-warning">
+                                                    @for (int i = 0; i < Convert.ToInt32(perf["rating"]); i++)
+                                                    {
+                                                        <span>★</span>
+                                                    }
+                                                </span>
+                                            </td>
+                                            <td class="text-muted small fst-italic">"@perf["comments"]"</td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr><td colspan="3" class="text-center text-muted py-3">No performance records found.</td></tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    }
+</div>

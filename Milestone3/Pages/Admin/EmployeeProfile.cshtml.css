@@ -1,0 +1,37 @@
+﻿/* --- Background Utilities (Add if not in site.css) --- */
+.bg-uni-blue {
+    background-color: #243B55 !important;
+}
+
+.text-uni-blue {
+    color: #243B55 !important;
+}
+
+.btn-uni-red {
+    background-color: #D92550;
+    color: white;
+    border: none;
+}
+
+.btn-outline-uni-blue {
+    color: #243B55;
+    border-color: #243B55;
+}
+
+    .btn-outline-uni-blue:hover {
+        background-color: #243B55;
+        color: white;
+    }
+
+/* --- Card Tweaks --- */
+.rounded-4 {
+    border-radius: 1rem !important;
+}
+
+.shadow-sm {
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075) !important;
+}
+
+.tracking-wider {
+    letter-spacing: 0.05em;
+}
