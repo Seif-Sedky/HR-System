@@ -4,7 +4,7 @@
     ViewData["Title"] = "Attendance Hub";
 }
 
-<div class="container-fluid py-4">
+@Html.AntiForgeryToken() <div class="container-fluid py-4">
 
     <div class="row mb-4 align-items-center">
         <div class="col">
@@ -12,13 +12,13 @@
             <p class="text-muted mb-0">Manage daily logs, system initiations, and corrections.</p>
         </div>
         <div class="col-auto">
-            <a asp-page="/Admin/PeopleHub" class="btn btn-outline-secondary btn-sm">
+            <a asp-page="/Admin/PeopleHub" class="btn btn-outline-secondary btn-sm shadow-sm">
                 <i class="fas fa-users me-2"></i> Go to People Hub
             </a>
         </div>
     </div>
 
-    <div class="row g-4 mb-4">
+    <div class="row g-4 mb-5">
         <div class="col-md-6">
             <div class="card border-0 shadow-sm h-100 rounded-4 border-start border-4 border-success">
                 <div class="card-body">
@@ -50,115 +50,321 @@
         </div>
     </div>
 
-    <div class="card border-0 shadow-sm mb-4 rounded-4">
-        <div class="card-header bg-white fw-bold text-uni-blue py-3 border-bottom">
-            <i class="fas fa-tools me-2"></i> Employee Corrections
-        </div>
-        <div class="card-body bg-light">
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <form method="post" asp-page-handler="CleanDayOff" class="d-flex gap-2">
-                        <input type="number" name="targetEmpId" class="form-control" placeholder="Emp ID (e.g. 1)" required />
-                        <button class="btn btn-outline-uni-blue text-nowrap">
-                            <i class="fas fa-eraser me-1"></i> Clean Day-Offs
-                        </button>
-                    </form>
-                    <small class="text-muted ms-1">*Remove unattended logs on official day-offs (Current Month)</small>
+    <ul class="nav nav-tabs mb-4" id="attendanceTabs" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active fw-bold px-4" id="logs-tab" data-bs-toggle="tab" data-bs-target="#logs" type="button">
+                <i class="fas fa-list-alt me-2"></i> Daily Logs
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link fw-bold px-4" id="corrections-tab" data-bs-toggle="tab" data-bs-target="#corrections" type="button">
+                <i class="fas fa-tools me-2"></i> Correction Center
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="attendanceTabsContent">
+
+        <div class="tab-pane fade show active" id="logs">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 text-uni-blue fw-bold">Attendance Records</h5>
+                    <div class="btn-group" role="group">
+                        <a asp-page="./AttendanceHub" asp-route-ViewDate="today" asp-route-ActiveTab="logs"
+                           class="btn btn-sm @(Model.ViewDate == "today" ? "btn-uni-blue" : "btn-outline-secondary")">Today</a>
+                        <a asp-page="./AttendanceHub" asp-route-ViewDate="yesterday" asp-route-ActiveTab="logs"
+                           class="btn btn-sm @(Model.ViewDate == "yesterday" ? "btn-uni-blue" : "btn-outline-secondary")">Yesterday</a>
+                    </div>
                 </div>
 
-                <div class="col-md-6">
-                    <form method="post" asp-page-handler="CleanLeaves" class="d-flex gap-2">
-                        <input type="number" name="targetEmpId" class="form-control" placeholder="Emp ID (e.g. 1)" required />
-                        <button class="btn btn-uni-gold text-nowrap fw-bold">
-                            <i class="fas fa-file-signature me-1"></i> Clean Leaves
-                        </button>
-                    </form>
-                    <small class="text-muted ms-1">*Remove logs that conflict with Approved Leaves</small>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="card shadow-sm border-0 rounded-4">
-        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 text-uni-blue fw-bold">Attendance Logs</h5>
-
-            <div class="btn-group" role="group">
-                <a asp-page="./AttendanceHub" asp-route-ViewDate="today"
-                   class="btn btn-sm @(Model.ViewDate == "today" ? "btn-uni-blue" : "btn-outline-secondary")">
-                    Today
-                </a>
-                <a asp-page="./AttendanceHub" asp-route-ViewDate="yesterday"
-                   class="btn btn-sm @(Model.ViewDate == "yesterday" ? "btn-uni-blue" : "btn-outline-secondary")">
-                    Yesterday
-                </a>
-            </div>
-        </div>
-
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="bg-light text-muted small text-uppercase">
-                    <tr>
-                        <th class="ps-4">Log ID</th>
-                        <th>Emp ID</th>
-                        <th>Date</th>
-                        <th>Check In</th>
-                        <th>Check Out</th>
-                        <th>Status</th>
-                        <th class="text-end pe-4">Update</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model.AttendanceRecords != null)
-                    {
-                        foreach (System.Data.DataRow row in Model.AttendanceRecords.Rows)
-                        {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light text-muted small text-uppercase">
                             <tr>
-                                <td class="ps-4 text-muted">#@row["attendance_ID"]</td>
-                                <td class="fw-bold text-uni-blue">@row["emp_ID"]</td>
-                                <td>@Convert.ToDateTime(row["date"]).ToString("MMM dd, yyyy")</td>
-                                <td>@(row["check_in_time"] == DBNull.Value ? "-" : DateTime.Today.Add((TimeSpan)row["check_in_time"]).ToString("hh:mm tt"))</td>
-                                <td>@(row["check_out_time"] == DBNull.Value ? "-" : DateTime.Today.Add((TimeSpan)row["check_out_time"]).ToString("hh:mm tt"))</td>
-                                <td>
-                                    @if (row["status"].ToString() == "Attended")
-                                    {
-                                        <span class="badge bg-success bg-opacity-10 text-success px-3">Attended</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-danger bg-opacity-10 text-danger px-3">Absent</span>
-                                    }
-                                </td>
-                                <td class="text-end pe-4">
-                                    <button class="btn btn-sm btn-link text-uni-blue" type="button" data-bs-toggle="collapse" data-bs-target="#editRow_@row["attendance_ID"]">
-                                        Edit
-                                    </button>
-                                </td>
+                                <th class="ps-4">Log ID</th>
+                                <th>Emp ID</th>
+                                <th>Date</th>
+                                <th>In</th>
+                                <th>Out</th>
+                                <th>Status</th>
+                                <th class="text-end pe-4">Update</th>
                             </tr>
-                            <tr class="collapse bg-light" id="editRow_@row["attendance_ID"]">
-                                <td colspan="7">
-                                    <form method="post" asp-page-handler="UpdateRecord" class="p-3">
-                                        <input type="hidden" name="empId" value="@row["emp_ID"]" />
-                                        <div class="row align-items-end g-3">
-                                            <div class="col-auto">
-                                                <label class="small fw-bold">New Check In</label>
-                                                <input type="time" name="checkIn" class="form-control form-control-sm" required />
+                        </thead>
+                        <tbody>
+                            @if (Model.AttendanceRecords != null)
+                            {
+                                foreach (System.Data.DataRow row in Model.AttendanceRecords.Rows)
+                                {
+                                    <tr>
+                                        <td class="ps-4 text-muted">#@row["attendance_ID"]</td>
+                                        <td class="fw-bold text-uni-blue">@row["emp_ID"]</td>
+                                        <td>@Convert.ToDateTime(row["date"]).ToString("MMM dd")</td>
+                                        <td>@(row["check_in_time"] == DBNull.Value ? "-" : DateTime.Today.Add((TimeSpan)row["check_in_time"]).ToString("hh:mm tt"))</td>
+                                        <td>@(row["check_out_time"] == DBNull.Value ? "-" : DateTime.Today.Add((TimeSpan)row["check_out_time"]).ToString("hh:mm tt"))</td>
+                                        <td>
+                                            @if (row["status"].ToString() == "Attended")
+                                            {
+                                                <span class="badge bg-success bg-opacity-10 text-success">Attended</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger bg-opacity-10 text-danger">Absent</span>
+                                            }
+                                        </td>
+                                        <td class="text-end pe-4">
+                                            <button class="btn btn-sm btn-uni-blue shadow-sm px-3" type="button" data-bs-toggle="collapse" data-bs-target="#editRow_@row["attendance_ID"]">
+                                                <i class="fas fa-pen me-1"></i> Edit
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr class="collapse" id="editRow_@row["attendance_ID"]">
+                                        <td colspan="7" class="p-0 border-bottom">
+                                            <div class="bg-light p-4 shadow-inner">
+                                                <form method="post" asp-page-handler="UpdateRecord">
+                                                    <input type="hidden" name="empId" value="@row["emp_ID"]" />
+
+                                                    <div class="row g-4 align-items-end">
+                                                        <div class="col-md-5">
+                                                            <label class="small fw-bold text-muted mb-1">CHECK IN</label>
+                                                            <div class="input-group shadow-sm">
+                                                                <span class="input-group-text bg-white border-end-0 text-success">
+                                                                    <i class="fas fa-sign-in-alt"></i>
+                                                                </span>
+                                                                <input type="time" name="checkIn" id="in_@row["attendance_ID"]" class="form-control border-start-0 ps-0" required />
+
+                                                                <button type="button" class="btn btn-outline-success fw-bold small" onclick="setNow('in_@row["attendance_ID"]')">
+                                                                    <i class="fas fa-clock me-1"></i> Now
+                                                                </button>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-5">
+                                                            <label class="small fw-bold text-muted mb-1">CHECK OUT</label>
+                                                            <div class="input-group shadow-sm">
+                                                                <span class="input-group-text bg-white border-end-0 text-danger">
+                                                                    <i class="fas fa-sign-out-alt"></i>
+                                                                </span>
+                                                                <input type="time" name="checkOut" id="out_@row["attendance_ID"]" class="form-control border-start-0 ps-0" required />
+
+                                                                <button type="button" class="btn btn-outline-success fw-bold small" onclick="setNow('out_@row["attendance_ID"]')">
+                                                                    <i class="fas fa-clock me-1"></i> Now
+                                                                </button>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-2">
+                                                            <button class="btn btn-uni-blue w-100 shadow-sm fw-bold" style="height: 38px;">
+                                                                <i class="fas fa-save me-2"></i> Save
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </form>
                                             </div>
-                                            <div class="col-auto">
-                                                <label class="small fw-bold">New Check Out</label>
-                                                <input type="time" name="checkOut" class="form-control form-control-sm" required />
-                                            </div>
-                                            <div class="col-auto">
-                                                <button class="btn btn-sm btn-uni-blue">Save Changes</button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </td>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="corrections">
+            <div class="card shadow-sm border-0 rounded-4">
+
+                <div class="card-header bg-white py-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h5 class="mb-0 text-uni-blue fw-bold">Employee Statistics & Actions</h5>
+                            <small class="text-muted">Overview for the current month</small>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-muted"></i></span>
+                                <input type="text" id="statsSearch" class="form-control border-start-0 bg-light"
+                                       placeholder="Search ID, Name, or Dept..." onkeyup="filterStatsTable()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" id="statsTable">
+                        <thead class="bg-light text-muted small text-uppercase">
+                            <tr>
+                                <th class="ps-4">Employee</th>
+                                <th>Department</th>
+                                <th>Attended</th>
+                                <th>Absent</th>
+                                <th class="text-center">Fix Day-Offs</th>
+                                <th class="text-center pe-4">Fix Leaves</th>
                             </tr>
-                        }
-                    }
-                </tbody>
-            </table>
+                        </thead>
+                        <tbody>
+                            @if (Model.StatsList != null)
+                            {
+                                foreach (System.Data.DataRow emp in Model.StatsList.Rows)
+                                {
+                                    <tr>
+                                        <td class="ps-4">
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-circle small me-2" style="width:30px; height:30px; font-size:0.8rem;">
+                                                    @emp["first_name"].ToString().Substring(0, 1)
+                                                </div>
+                                                <div>
+                                                    <div class="fw-bold text-dark">@emp["first_name"] @emp["last_name"]</div>
+                                                    <small class="text-muted">ID: @emp["employee_id"]</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><span class="badge bg-light text-dark border">@emp["dept_name"]</span></td>
+
+                                        <td><span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3">@emp["AttendedCount"] days</span></td>
+                                        <td><span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3">@emp["AbsentCount"] days</span></td>
+
+                                        <td class="text-center">
+                                            <form method="post" asp-page-handler="CleanDayOff" class="d-inline" onsubmit="return handleAjax(event, this)">
+                                                <input type="hidden" name="targetEmpId" value="@emp["employee_id"]" />
+                                                <button class="btn btn-sm btn-uni-green shadow-sm fw-bold text-white px-3" title="Remove attendance on official day-offs">
+                                                    <i class="fas fa-eraser me-1"></i> Clean
+                                                </button>
+                                            </form>
+                                        </td>
+                                        <td class="text-center pe-4">
+                                            <form method="post" asp-page-handler="CleanLeaves" class="d-inline" onsubmit="return handleAjax(event, this)">
+                                                <input type="hidden" name="targetEmpId" value="@emp["employee_id"]" />
+                                                <button class="btn btn-sm btn-uni-gold fw-bold text-dark shadow-sm px-3" title="Remove attendance conflicting with approved leaves">
+                                                    <i class="fas fa-file-signature me-1"></i> Resolve
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+    <div id="ajaxToast" class="toast toast-uni toast-success align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body d-flex align-items-center">
+                <div class="toast-icon"><i class="fas fa-check"></i></div>
+                <div>
+                    <strong class="d-block text-dark">Success</strong>
+                    <span id="ajaxToastMsg" class="text-muted small">Operation completed.</span>
+                </div>
+            </div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
     </div>
 </div>
+
+<script>
+    // 1. Search Logic
+    function filterStatsTable() {
+        var input = document.getElementById("statsSearch");
+        var filter = input.value.toUpperCase();
+        var table = document.getElementById("statsTable");
+        var tr = table.getElementsByTagName("tr");
+        for (var i = 1; i < tr.length; i++) {
+            var tdName = tr[i].getElementsByTagName("td")[0];
+            var tdDept = tr[i].getElementsByTagName("td")[1];
+            if (tdName || tdDept) {
+                var txtName = tdName.textContent || tdName.innerText;
+                var txtDept = tdDept.textContent || tdDept.innerText;
+                if (txtName.toUpperCase().indexOf(filter) > -1 || txtDept.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+
+    // 2. Tab Memory
+    document.addEventListener("DOMContentLoaded", function() {
+        var activeTab = '@Model.ActiveTab';
+        if(activeTab === 'corrections') {
+            new bootstrap.Tab(document.querySelector('#corrections-tab')).show();
+        } else {
+            new bootstrap.Tab(document.querySelector('#logs-tab')).show();
+        }
+    });
+
+    // 3. AJAX Handler (NO RELOAD)
+    async function handleAjax(e, form) {
+        e.preventDefault();
+
+        const btn = form.querySelector('button');
+        const originalContent = btn.innerHTML;
+        const originalClasses = btn.className;
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+        try {
+            const formData = new FormData(form);
+            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: { 'RequestVerificationToken': token }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                document.getElementById('ajaxToastMsg').innerText = data.message;
+                const toast = new bootstrap.Toast(document.getElementById('ajaxToast'));
+                toast.show();
+
+                // DONE STATE:
+                btn.innerHTML = '<i class="fas fa-check"></i> Done';
+                // Remove ALL old colors
+                btn.classList.remove('btn-uni-gold', 'btn-uni-green', 'text-dark', 'text-white');
+                // Force Gray Background + White Text
+                btn.classList.add('btn-secondary', 'text-white');
+
+            } else {
+                alert("Error: " + data.message);
+                btn.innerHTML = originalContent;
+                btn.className = originalClasses;
+                btn.disabled = false;
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Network Error");
+            btn.innerHTML = originalContent;
+            btn.className = originalClasses;
+            btn.disabled = false;
+        }
+        return false;
+    } // <--- THIS CLOSING BRACE WAS MISSING
+
+    // 4. Helper: Set Input to Current Time
+    function setNow(elementId) {
+        console.log("Setting time for:", elementId);
+
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+
+        const input = document.getElementById(elementId);
+        if(input) {
+            input.value = `${hours}:${minutes}`;
+            // Green flash effect
+            input.classList.add("bg-success", "bg-opacity-10");
+            setTimeout(() => input.classList.remove("bg-success", "bg-opacity-10"), 300);
+        } else {
+            console.error("Input not found:", elementId);
+        }
+    }
+</script>
