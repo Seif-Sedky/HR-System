@@ -1,0 +1,142 @@
+﻿@page
+@model Milestone3.Pages.Admin.IndexModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<style>
+    /* Custom Hover Effects for Dashboard Cards */
+    .hub-card {
+        transition: all 0.3s ease;
+        border: none;
+        overflow: hidden;
+        position: relative;
+    }
+
+        .hub-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(36, 59, 85, 0.15) !important;
+        }
+
+    /* Background Icon decoration */
+    .card-bg-icon {
+        position: absolute;
+        right: -20px;
+        bottom: -20px;
+        font-size: 10rem;
+        opacity: 0.05;
+        transform: rotate(-15deg);
+        transition: all 0.3s ease;
+    }
+
+    .hub-card:hover .card-bg-icon {
+        transform: rotate(0deg) scale(1.1);
+        opacity: 0.1;
+    }
+
+    .hero-gradient {
+        background: linear-gradient(135deg, var(--uni-blue) 0%, #1e3c72 100%);
+        color: white;
+    }
+</style>
+
+<div class="container py-5">
+
+    <div class="p-5 mb-5 rounded-4 shadow-sm hero-gradient position-relative overflow-hidden">
+        <div class="position-relative" style="z-index: 2;">
+            <h5 class="text-white-50 text-uppercase fw-bold ls-2">@Model.CurrentDate</h5>
+            <h1 class="display-4 fw-bold mb-2">@Model.Greeting, @Model.AdminName!</h1>
+            <p class="lead text-white-50">Welcome back to your command center. Systems are active.</p>
+        </div>
+        <div class="position-absolute top-0 end-0 bg-white opacity-10 rounded-circle"
+             style="width: 300px; height: 300px; transform: translate(30%, -30%);"></div>
+    </div>
+
+    <div class="row g-4">
+
+        <div class="col-md-4">
+            <a asp-page="/Admin/PeopleHub" class="text-decoration-none">
+                <div class="card h-100 hub-card shadow-sm rounded-4 border-bottom border-5 border-primary">
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="mb-3">
+                            <span class="badge bg-primary bg-opacity-10 text-primary p-2 rounded-3">
+                                <i class="fas fa-users fa-2x"></i>
+                            </span>
+                        </div>
+                        <h3 class="card-title fw-bold text-uni-blue">People Hub</h3>
+                        <p class="text-muted flex-grow-1">Manage employee directories, view profiles, update statuses, and review performance history.</p>
+                        <div class="mt-3 text-primary fw-bold small text-uppercase">
+                            Access Directory <i class="fas fa-arrow-right ms-1"></i>
+                        </div>
+                        <i class="fas fa-users card-bg-icon text-primary"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-4">
+            <a asp-page="/Admin/AttendanceHub" class="text-decoration-none">
+                <div class="card h-100 hub-card shadow-sm rounded-4 border-bottom border-5 border-success">
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="mb-3">
+                            <span class="badge bg-success bg-opacity-10 text-success p-2 rounded-3">
+                                <i class="fas fa-clock fa-2x"></i>
+                            </span>
+                        </div>
+                        <h3 class="card-title fw-bold text-uni-blue">Attendance Hub</h3>
+                        <p class="text-muted flex-grow-1">Track daily logs, initiate records, fix missing hours, and manage time-offs.</p>
+                        <div class="mt-3 text-success fw-bold small text-uppercase">
+                            Manage Logs <i class="fas fa-arrow-right ms-1"></i>
+                        </div>
+                        <i class="fas fa-clock card-bg-icon text-success"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-4">
+            <a asp-page="/Admin/OperationsHub" class="text-decoration-none">
+                <div class="card h-100 hub-card shadow-sm rounded-4 border-bottom border-5 border-warning">
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="mb-3">
+                            <span class="badge bg-warning bg-opacity-10 text-warning p-2 rounded-3">
+                                <i class="fas fa-cogs fa-2x"></i>
+                            </span>
+                        </div>
+                        <h3 class="card-title fw-bold text-uni-blue">Operations Hub</h3>
+                        <p class="text-muted flex-grow-1">Handle holidays, rejected leaves, and perform financial cleanup tasks.</p>
+                        <div class="mt-3 text-warning fw-bold small text-uppercase">
+                            System Tools <i class="fas fa-arrow-right ms-1"></i>
+                        </div>
+                        <i class="fas fa-cogs card-bg-icon text-warning"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card bg-light border-0 rounded-4 p-3">
+                <div class="d-flex justify-content-around align-items-center text-center text-muted">
+                    <div>
+                        <small class="d-block fw-bold text-uppercase" style="font-size: 0.7rem;">System Status</small>
+                        <span class="text-success"><i class="fas fa-circle small me-1"></i> Online</span>
+                    </div>
+                    <div class="vr"></div>
+                    <div>
+                        <small class="d-block fw-bold text-uppercase" style="font-size: 0.7rem;">Database</small>
+                        <span><i class="fas fa-database me-1"></i> Connected</span>
+                    </div>
+                    <div class="vr"></div>
+                    <div>
+                        <small class="d-block fw-bold text-uppercase" style="font-size: 0.7rem;">Security</small>
+                        <span><i class="fas fa-lock me-1"></i> Active</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
