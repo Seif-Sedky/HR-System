@@ -50,7 +50,6 @@
                 </a>
 
                 <!-- 2. Academic Employee Portal -->
-                <!-- Assuming the path will be /Employee/Login -->
                 <a href="/Employee/Login" class="portal-card">
                     <div class="portal-icon" style="background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);">
                         <i class="fas fa-chalkboard-teacher"></i>
@@ -61,7 +60,6 @@
                 </a>
 
                 <!-- 3. Admin Portal -->
-                <!-- Assuming the path will be /Admin/Login -->
                 <a href="/Admin/Login" class="portal-card">
                     <div class="portal-icon" style="background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);">
                         <i class="fas fa-user-shield"></i>
@@ -79,7 +77,7 @@
             <svg class="wave-svg" viewBox="0 0 500 150" preserveAspectRatio="none">
                 <path class="wave-path" d="M0.00,49.98 C149.99,150.00 349.20,-49.98 500.00,49.98 L500.00,150.00 L0.00,150.00 Z">
                     <animate attributeName="d"
-                             dur="10s"
+                             dur="8s"
                              repeatCount="indefinite"
                              values="
                                 M0.00,49.98 C149.99,150.00 349.20,-49.98 500.00,49.98 L500.00,150.00 L0.00,150.00 Z;
@@ -92,21 +90,100 @@
 
     <!-- About Modal -->
     <div class="modal fade" id="aboutModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title fw-bold text-primary">About This Project</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow" style="border-radius: 20px; overflow: hidden;">
+                <div class="modal-header bg-primary text-white border-0 py-3">
+                    <h5 class="modal-title fw-bold"><i class="fas fa-code-branch me-2"></i>Project Credits</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body text-center pb-4">
-                    <i class="fas fa-laptop-code fa-3x text-primary mb-3"></i>
-                    <p class="lead">University Database Management System</p>
-                    <p class="text-muted">
-                        Milestone 3 Implementation using ASP.NET Core Razor Pages.<br>
-                        Designed for efficiency, aesthetics, and robust data handling.
-                    </p>
-                    <hr class="w-50 mx-auto my-3 opacity-25">
-                    <small class="text-muted">© 2025 Database Team</small>
+                <div class="modal-body p-4 bg-light">
+
+                    <!-- Course Info -->
+                    <div class="text-center mb-4">
+                        <h4 class="fw-bold text-dark mb-1">Databases I (CSEN501)</h4>
+                        <p class="text-muted mb-0">Supervised by <strong class="text-primary">Dr. Mervat Abu-Elkheir</strong></p>
+                    </div>
+
+                    <div class="row g-4">
+                        <!-- Left Col: Team -->
+                        <div class="col-md-6 border-end">
+                            <h6 class="text-uppercase text-secondary fw-bold small ls-1 mb-3">Development Team</h6>
+                            <div class="d-flex flex-column gap-3">
+                                <!-- Seif Alaa -->
+                                <div class="d-flex align-items-center bg-white p-2 rounded shadow-sm">
+                                    <div class="rounded-circle bg-info bg-opacity-10 text-info p-2 me-3"><i class="fas fa-user"></i></div>
+                                    <div>
+                                        <div class="fw-bold text-dark" style="font-size: 0.95rem;">Seif Alaa</div>
+                                        <div class="small text-muted"><span class="badge bg-secondary me-1" style="font-size: 0.7em;">BI</span> seif.alaa1231@gmail.com</div>
+                                    </div>
+                                </div>
+                                <!-- Youssef Mostafa -->
+                                <div class="d-flex align-items-center bg-white p-2 rounded shadow-sm">
+                                    <div class="rounded-circle bg-primary bg-opacity-10 text-primary p-2 me-3"><i class="fas fa-user"></i></div>
+                                    <div>
+                                        <div class="fw-bold text-dark" style="font-size: 0.95rem;">Youssef Mostafa</div>
+                                        <div class="small text-muted"><span class="badge bg-secondary me-1" style="font-size: 0.7em;">MET</span> yokimaxwel@gmail.com</div>
+                                    </div>
+                                </div>
+                                <!-- Osama Nassar -->
+                                <div class="d-flex align-items-center bg-white p-2 rounded shadow-sm">
+                                    <div class="rounded-circle bg-success bg-opacity-10 text-success p-2 me-3"><i class="fas fa-user"></i></div>
+                                    <div>
+                                        <div class="fw-bold text-dark" style="font-size: 0.95rem;">Osama Nassar</div>
+                                        <div class="small text-muted"><span class="badge bg-secondary me-1" style="font-size: 0.7em;">MET</span> Osama.nassar@student.guc.edu.eg</div>
+                                    </div>
+                                </div>
+                                <!-- Nayer Bassim -->
+                                <div class="d-flex align-items-center bg-white p-2 rounded shadow-sm">
+                                    <div class="rounded-circle bg-warning bg-opacity-10 text-warning p-2 me-3"><i class="fas fa-user"></i></div>
+                                    <div>
+                                        <div class="fw-bold text-dark" style="font-size: 0.95rem;">Nayer Bassim</div>
+                                        <div class="small text-muted"><span class="badge bg-secondary me-1" style="font-size: 0.7em;">MET</span> nayer.salama@student.guc.edu.eg</div>
+                                    </div>
+                                </div>
+                                <!-- Seif Tawfik -->
+                                <div class="d-flex align-items-center bg-white p-2 rounded shadow-sm">
+                                    <div class="rounded-circle bg-danger bg-opacity-10 text-danger p-2 me-3"><i class="fas fa-user"></i></div>
+                                    <div>
+                                        <div class="fw-bold text-dark" style="font-size: 0.95rem;">Seif Tawfik</div>
+                                        <div class="small text-muted"><span class="badge bg-secondary me-1" style="font-size: 0.7em;">MET</span> seifeldin.tawfik@student.guc.edu.eg</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Col: Project Info -->
+                        <div class="col-md-6">
+                            <h6 class="text-uppercase text-secondary fw-bold small ls-1 mb-3">System Architecture</h6>
+
+                            <div class="mb-3">
+                                <div class="fw-bold text-dark mb-1"><i class="fas fa-layer-group text-primary me-2"></i>Tech Stack</div>
+                                <p class="small text-muted mb-0">
+                                    Built on the robust <strong>ASP.NET Core Razor Pages</strong> framework, utilizing C# for backend logic and <strong>Microsoft SQL Server</strong> for complex data management and stored procedures.
+                                </p>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="fw-bold text-dark mb-1"><i class="fas fa-lightbulb text-warning me-2"></i>Project Vision</div>
+                                <p class="small text-muted mb-0">
+                                    A comprehensive <strong>University HR Management System</strong> designed to digitize administrative workflows. The system integrates:
+                                </p>
+                                <ul class="small text-muted mt-1 ps-3">
+                                    <li>Automated Attendance Tracking & Penalties</li>
+                                    <li>Multi-tier Leave Approval Workflows</li>
+                                    <li>Dynamic Payroll Generation</li>
+                                    <li>Role-based access (HR, Admin, Academic)</li>
+                                </ul>
+                            </div>
+
+                            <div class="mt-4 text-center">
+                                <span class="badge bg-dark px-3 py-2">Milestone 3 Complete</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light border-0 justify-content-center py-3">
+                    <small class="text-muted">© 2025 How The Tables Have Turned Team | German University in Cairo</small>
                 </div>
             </div>
         </div>
