@@ -27,7 +27,10 @@ namespace Milestone3.Pages.Admin
         {
             // Check credentials (Hardcoded as per your requirement)
             if ((adminId == "Yoo" && password == "Yoo is cool") ||
-                (adminId == "Nayer" && password == "Nayer is cool"))
+                (adminId == "Nayer" && password == "Nayer is good") ||
+                (adminId == "Seif" && password == "Seif is both") ||
+                (adminId == "Osama" && password == "Osama is bad") ||
+                (adminId == "Maher" && password == "Maher is cool"))
             {
                 // 1. LOGIN SUCCESS: Set Session Variable
                 HttpContext.Session.SetString("AdminName", adminId);
