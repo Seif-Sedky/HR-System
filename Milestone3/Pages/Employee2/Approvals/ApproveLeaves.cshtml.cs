@@ -20,6 +20,9 @@ namespace Milestone3.Pages.Employee2.Approvals
         public string MessageType { get; set; }
         public string UserRole { get; set; }
         public bool HasAccess { get; set; } = false;
+        
+        [BindProperty]
+        public string ActiveTab { get; set; } = "annual";
 
         public async Task OnGetAsync()
         {
@@ -37,7 +40,7 @@ namespace Milestone3.Pages.Employee2.Approvals
 
             try
             {
-                int upperboardId = 13; // TODO: Replace with logged-in user ID (President/Dean/Vice-Dean)
+                int upperboardId = 15; // TODO: Replace with logged-in user ID (President/Dean/Vice-Dean)
 
                 await _db.ExecuteNonQuery("Upperboard_approve_annual",
                     new SqlParameter("@request_ID", requestId),
@@ -99,7 +102,7 @@ namespace Milestone3.Pages.Employee2.Approvals
 
             try
             {
-                int upperboardId = 13; // TODO: Replace with logged-in user ID
+                int upperboardId = 15; // TODO: Replace with logged-in user ID
 
                 // Update the approval status to rejected
                 await _db.ExecuteQuery(@"
@@ -138,7 +141,7 @@ namespace Milestone3.Pages.Employee2.Approvals
 
             try
             {
-                int upperboardId = 4; // TODO: Replace with logged-in user ID (President/Vice-President)
+                int upperboardId = 15; // TODO: Replace with logged-in user ID (President/Vice-President)
 
                 await _db.ExecuteNonQuery("Upperboard_approve_unpaids",
                     new SqlParameter("@request_ID", requestId),
@@ -199,7 +202,7 @@ namespace Milestone3.Pages.Employee2.Approvals
 
             try
             {
-                int upperboardId = 4; // TODO: Replace with logged-in user ID
+                int upperboardId = 15; // TODO: Replace with logged-in user ID
 
                 // Update the approval status to rejected
                 await _db.ExecuteQuery(@"
@@ -231,7 +234,11 @@ namespace Milestone3.Pages.Employee2.Approvals
         {
             try
             {
-                int upperboardId = 13; // TODO: Replace with logged-in user ID
+                // Clear existing lists to prevent duplicates on page reloads
+                AnnualRequests.Clear();
+                UnpaidRequests.Clear();
+                
+                int upperboardId = 15; // TODO: Replace with logged-in user ID
                 
                 // Get role of current user
                 var roleResult = await _db.ExecuteQuery(@"
@@ -281,7 +288,7 @@ namespace Milestone3.Pages.Employee2.Approvals
             try
             {
                 var result = await _db.ExecuteQuery(@"
-                    SELECT 
+                    SELECT DISTINCT
                         l.request_ID,
                         l.date_of_request,
                         l.start_date,
@@ -311,8 +318,19 @@ namespace Milestone3.Pages.Employee2.Approvals
                     new SqlParameter("@upperboardId", upperboardId)
                 );
 
+                // Use a HashSet to track already processed request IDs
+                var processedRequestIds = new HashSet<int>();
+
                 foreach (DataRow row in result.Rows)
                 {
+                    int requestId = Convert.ToInt32(row["request_ID"]);
+                    
+                    // Skip if this request has already been added
+                    if (processedRequestIds.Contains(requestId))
+                    {
+                        continue;
+                    }
+
                     var startDate = Convert.ToDateTime(row["start_date"]);
                     var endDate = Convert.ToDateTime(row["end_date"]);
                     var replacementId = row["replacement_emp"] != DBNull.Value ? Convert.ToInt32(row["replacement_emp"]) : 0;
@@ -337,7 +355,7 @@ namespace Milestone3.Pages.Employee2.Approvals
 
                     AnnualRequests.Add(new AnnualLeaveRequest
                     {
-                        RequestId = Convert.ToInt32(row["request_ID"]),
+                        RequestId = requestId,
                         EmployeeId = Convert.ToInt32(row["employee_id"]),
                         EmployeeName = $"{row["first_name"]} {row["last_name"]}",
                         Department = employeeDept,
@@ -346,7 +364,7 @@ namespace Milestone3.Pages.Employee2.Approvals
                         EndDate = endDate,
                         NumDays = Convert.ToInt32(row["num_days"]),
                         ContractType = row["type_of_contract"].ToString(),
-                        AnnualBalance = Convert.ToInt32(row["annual_balance"]),
+                        AnnualBalance = row["annual_balance"] != DBNull.Value? Convert.ToInt32(row["annual_balance"]) : 0,
                         ReplacementEmployeeId = replacementId,
                         ReplacementName = row["rep_first_name"] != DBNull.Value 
                             ? $"{row["rep_first_name"]} {row["rep_last_name"]}" 
@@ -357,6 +375,9 @@ namespace Milestone3.Pages.Employee2.Approvals
                         IsReplacementOnLeave = isReplacementOnLeave,
                         IsReplacementSameDepartment = !string.IsNullOrEmpty(replacementDept) && replacementDept == employeeDept
                     });
+                    
+                    // Mark this request ID as processed
+                    processedRequestIds.Add(requestId);
                 }
             }
             catch (Exception ex)

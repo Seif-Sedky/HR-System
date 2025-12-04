@@ -117,9 +117,9 @@ namespace Milestone3.Pages.Employee2.Leaves
                 MessageType = "error";
             }
 
-            await LoadEmployeeInfo();
-            await LoadAvailableEmployees();
-            await LoadMyAttendance();
+
+
+            // Redirect to the same page without the fragment to return to top
             return Page();
         }
 

@@ -193,11 +193,11 @@
     }
 
     .request-header.annual {
-        background: var(--gradient-success);
+            background: var(--gradient-primary);
     }
 
     .request-header.unpaid {
-        background: var(--gradient-warning);
+        background: var(--gradient-primary);
     }
 
     .request-title {
@@ -321,7 +321,7 @@
     }
 
     .validation-list li.success {
-        color: #155724;
+        color: green;
     }
 
     .validation-list li.danger {
@@ -580,18 +580,18 @@
     {
         <!-- Tabs -->
         <div class="modern-tabs">
-            <button class="tab-button active" onclick="switchTab('annual')" id="annual-tab">
+            <button class="tab-button @(Model.ActiveTab == "annual" ? "active" : "")" onclick="switchTab('annual')" id="annual-tab">
                 <i class="bi bi-calendar-check"></i>
                 Annual Leaves
             </button>
-            <button class="tab-button" onclick="switchTab('unpaid')" id="unpaid-tab">
+            <button class="tab-button @(Model.ActiveTab == "unpaid" ? "active" : "")" onclick="switchTab('unpaid')" id="unpaid-tab">
                 <i class="bi bi-calendar-x"></i>
                 Unpaid Leaves
             </button>
         </div>
 
         <!-- Annual Leaves Tab -->
-        <div id="annual-content" class="tab-content active">
+        <div id="annual-content" class="tab-content @(Model.ActiveTab == "annual" ? "active" : "")">
             @if (Model.AnnualRequests.Any())
             {
                 <div class="row">
@@ -656,19 +656,47 @@
                                         <div class="validation-title">Validation Checklist</div>
                                         <ul class="validation-list">
                                             <li class="@(request.FinalStatus.ToLower() == "pending" ? "success" : "muted")">
-                                                <i class="bi bi-@(request.FinalStatus.ToLower() == "pending" ? "check-circle-fill" : "circle")"></i>
+                                                @if (request.FinalStatus.ToLower() == "pending")
+                                                {
+                                                    <i class="bi bi-check-circle-fill"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-dash-circle"></i>
+                                                }
                                                 Request status is 'Pending'
                                             </li>
                                             <li class="@(request.ContractType != "part_time" ? "success" : "danger")">
-                                                <i class="bi bi-@(request.ContractType != "part_time" ? "check-circle-fill" : "x-circle-fill")"></i>
+                                                @if (request.ContractType != "part_time")
+                                                {
+                                                    <i class="bi bi-check-circle-fill"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-x-circle-fill"></i>
+                                                }
                                                 Employee is NOT part-time (@request.ContractType)
                                             </li>
                                             <li class="@(request.IsReplacementOnLeave == false ? "success" : "danger")">
-                                                <i class="bi bi-@(request.IsReplacementOnLeave == false ? "check-circle-fill" : "x-circle-fill")"></i>
+                                                @if (request.IsReplacementOnLeave == false)
+                                                {
+                                                    <i class="bi bi-check-circle-fill"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-x-circle-fill"></i>
+                                                }
                                                 Replacement is NOT on leave
                                             </li>
                                             <li class="@(request.IsReplacementSameDepartment && request.ReplacementEmployeeId != request.EmployeeId ? "success" : "danger")">
-                                                <i class="bi bi-@(request.IsReplacementSameDepartment && request.ReplacementEmployeeId != request.EmployeeId ? "check-circle-fill" : "x-circle-fill")"></i>
+                                                @if (request.IsReplacementSameDepartment && request.ReplacementEmployeeId != request.EmployeeId)
+                                                {
+                                                    <i class="bi bi-check-circle-fill"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-x-circle-fill"></i>
+                                                }
                                                 Replacement from same department & not same employee
                                             </li>
                                         </ul>
@@ -683,6 +711,7 @@
                                             <input type="hidden" name="requestId" value="@request.RequestId" />
                                             <input type="hidden" name="replacementId" value="@request.ReplacementEmployeeId" />
                                             <input type="hidden" name="leaveType" value="annual" />
+                                            <input type="hidden" name="activeTab" value="annual" />
                                             
                                             <div class="action-buttons">
                                                 <button type="submit" asp-page-handler="ApproveAnnual" class="modern-btn success">
@@ -721,7 +750,7 @@
         </div>
 
         <!-- Unpaid Leaves Tab -->
-        <div id="unpaid-content" class="tab-content">
+        <div id="unpaid-content" class="tab-content @(Model.ActiveTab == "unpaid" ? "active" : "")">
             @if (Model.UnpaidRequests.Any())
             {
                 <div class="row">
@@ -814,21 +843,49 @@
                                         <div class="validation-title">Validation Checklist</div>
                                         <ul class="validation-list">
                                             <li class="@(request.FinalStatus.ToLower() == "pending" ? "success" : "muted")">
-                                                <i class="bi bi-@(request.FinalStatus.ToLower() == "pending" ? "check-circle-fill" : "circle")"></i>
+                                                @if (request.FinalStatus.ToLower() == "pending")
+                                                {
+                                                    <i class="bi bi-check-circle-fill"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-dash-circle"></i>
+                                                }
                                                 Request status is 'Pending'
                                             </li>
                                             <li class="@(request.Documents.Any(d => d.Type == "Memo") ? "success" : "danger")">
-                                                <i class="bi bi-@(request.Documents.Any(d => d.Type == "Memo") ? "check-circle-fill" : "x-circle-fill")"></i>
+                                                @if (request.Documents.Any(d => d.Type == "Memo"))
+                                                {
+                                                    <i class="bi bi-check-circle-fill"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-x-circle-fill"></i>
+                                                }
                                                 Has Memo document (@request.Documents.Count(d => d.Type == "Memo") Memo(s))
                                             </li>
                                             <li class="@(request.ContractType != "part_time" ? "success" : "danger")">
-                                                <i class="bi bi-@(request.ContractType != "part_time" ? "check-circle-fill" : "x-circle-fill")"></i>
+                                                @if (request.ContractType != "part_time")
+                                                {
+                                                    <i class="bi bi-check-circle-fill"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-x-circle-fill"></i>
+                                                }
                                                 Employee is NOT part-time (@request.ContractType)
                                             </li>
                                             @if (!string.IsNullOrEmpty(request.EmployeeRole) && (request.EmployeeRole == "Dean" || request.EmployeeRole == "Vice Dean"))
                                             {
                                                 <li class="@(!request.IsCounterpartOnLeave ? "success" : "danger")">
-                                                    <i class="bi bi-@(!request.IsCounterpartOnLeave ? "check-circle-fill" : "x-circle-fill")"></i>
+                                                    @if (!request.IsCounterpartOnLeave)
+                                                    {
+                                                        <i class="bi bi-check-circle-fill"></i>
+                                                    }
+                                                    else
+                                                    {
+                                                        <i class="bi bi-x-circle-fill"></i>
+                                                    }
                                                     @(request.EmployeeRole == "Dean" ? "Vice Dean" : "Dean") is NOT on leave
                                                 </li>
                                             }
@@ -843,6 +900,7 @@
                                         <form method="post">
                                             <input type="hidden" name="requestId" value="@request.RequestId" />
                                             <input type="hidden" name="leaveType" value="unpaid" />
+                                            <input type="hidden" name="activeTab" value="unpaid" />
                                             
                                             <div class="action-buttons">
                                                 <button type="submit" asp-page-handler="ApproveUnpaid" class="modern-btn success">

@@ -851,3 +851,41 @@ SELECT * FROM Payroll
 
 
 SELECT * FROM Employee
+
+Select * from leave
+select * from compensation_leave
+
+SELECT * FROM Performance
+SELECT * FROM Employee_Approve_Leave inner join Unpaid_Leave on Employee_Approve_Leave.leave_ID = Unpaid_Leave.request_ID
+
+SELECT * FROM Employee_Approve_Leave inner join Annual_Leave on Employee_Approve_Leave.leave_ID = Annual_Leave.request_ID
+
+SELECT 
+                        l.request_ID,
+                        l.date_of_request,
+                        l.start_date,
+                        l.end_date,
+                        l.num_days,
+                        l.final_approval_status,
+                        e.employee_id,
+                        e.first_name,
+                        e.last_name,
+                        e.dept_name,
+                        e.type_of_contract,
+                        e.annual_balance,
+                        al.replacement_emp,
+                        rep.first_name as rep_first_name,
+                        rep.last_name as rep_last_name,
+                        rep.employment_status as rep_status,
+                        rep.dept_name as rep_dept,
+                        eal.status as my_approval_status
+                    FROM Leave l
+                    INNER JOIN Annual_Leave al ON l.request_ID = al.request_ID
+                    INNER JOIN Employee e ON al.emp_ID = e.employee_id
+                    LEFT JOIN Employee rep ON al.replacement_emp = rep.employee_id
+                    INNER JOIN Employee_Approve_Leave eal ON eal.leave_ID = l.request_ID
+                    WHERE eal.Emp1_ID = 15
+
+                    ORDER BY l.date_of_request DESC
+
+UPDATE Employee_Approve_Leave SET status = 'pending'
