@@ -1,0 +1,342 @@
+﻿@page
+@model Milestone3.Pages.Employee.MyProfileModel
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="container py-5">
+
+    @if (Model.EmployeeInfo != null)
+    {
+        <div class="card border-0 shadow-sm mb-4 rounded-4 overflow-hidden">
+            <div class="p-5 text-white position-relative" style="background: linear-gradient(135deg, var(--uni-blue) 0%, #1a2d42 100%);">
+
+                <div class="d-flex align-items-center mb-4">
+                    <div class="bg-white text-dark rounded-circle d-flex align-items-center justify-content-center display-3 fw-bold shadow me-4"
+                         style="width: 120px; height: 120px; color: var(--uni-blue) !important; flex-shrink: 0;">
+                        @Model.EmployeeInfo["first_name"].ToString().Substring(0, 1)
+                    </div>
+
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="text-white-50 text-uppercase mb-1 small fw-bold ls-1">Academic Staff Profile</h5>
+                                <h1 class="fw-bold mb-1 text-white">@Model.EmployeeInfo["first_name"] @Model.EmployeeInfo["last_name"]</h1>
+                                <p class="mb-0 opacity-75"><i class="fas fa-envelope me-2"></i>@Model.EmployeeInfo["email"]</p>
+                            </div>
+                            <div class="text-end d-none d-md-block">
+                                <span class="badge bg-white text-dark shadow-sm py-2 px-3 fs-6">
+                                    <i class="fas fa-building me-2 text-muted"></i> @Model.EmployeeInfo["dept_name"]
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-white opacity-25 my-4" />
+
+                <div class="row text-center text-md-start g-3">
+
+                    <div class="col-6 col-md-3 border-end border-white border-opacity-10">
+                        <small class="text-white-50 text-uppercase fw-bold" style="font-size: 0.7rem;">Current Status</small>
+                        <div class="fs-5 fw-bold mt-1">
+                            @if (Model.EmployeeInfo["employment_status"].ToString().ToLower() == "active")
+                            {
+                                <span class="text-success"><i class="fas fa-check-circle me-1"></i> Active</span>
+                            }
+                            else
+                            {
+                                <span class="text-warning"><i class="fas fa-clock me-1"></i> @Model.EmployeeInfo["employment_status"]</span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-md-3 border-end border-white border-opacity-10">
+                        <small class="text-white-50 text-uppercase fw-bold" style="font-size: 0.7rem;">Contract Type</small>
+                        <div class="fs-5 fw-bold mt-1">
+                            <i class="fas fa-file-signature me-2 opacity-50"></i>
+                            @Model.EmployeeInfo["type_of_contract"]
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-md-3 border-end border-white border-opacity-10">
+                        <small class="text-white-50 text-uppercase fw-bold" style="font-size: 0.7rem;">Experience</small>
+                        <div class="fs-5 fw-bold mt-1">
+                            <i class="fas fa-briefcase me-2 opacity-50"></i>
+                            @Model.EmployeeInfo["years_of_experience"] Years
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-md-3">
+                        <small class="text-white-50 text-uppercase fw-bold" style="font-size: 0.7rem;">Member Since</small>
+                        <div class="fs-5 fw-bold mt-1">
+                            <i class="fas fa-calendar-alt me-2 opacity-50"></i>
+                            @Convert.ToDateTime(Model.EmployeeInfo["hire_date"]).ToString("yyyy")
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <ul class="nav nav-tabs mb-4" id="profileTabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active fw-bold px-4" id="performance-tab" data-bs-toggle="tab" data-bs-target="#performance" type="button">
+                    <i class="fas fa-chart-line me-2"></i> Performance
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link fw-bold px-4" id="attendance-tab" data-bs-toggle="tab" data-bs-target="#attendance" type="button">
+                    <i class="fas fa-clock me-2"></i> Attendance
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link fw-bold px-4" id="financials-tab" data-bs-toggle="tab" data-bs-target="#financials" type="button">
+                    <i class="fas fa-wallet me-2"></i> Financials
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link fw-bold px-4" id="requests-tab" data-bs-toggle="tab" data-bs-target="#requests" type="button">
+                    <i class="fas fa-file-alt me-2"></i> Requests
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+
+            <div class="tab-pane fade show active" id="performance">
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold text-uni-blue mb-0">Semester Evaluation</h5>
+                        <form method="get" class="d-flex gap-2">
+                            <input type="hidden" name="ActiveTab" value="performance" />
+                            <input type="text" name="SelectedSemester" value="@Model.SelectedSemester"
+                                   class="form-control form-control-sm text-uppercase" placeholder="e.g. W23" style="width: 100px;">
+                            <button class="btn btn-sm btn-uni-blue">Filter</button>
+                        </form>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4">Record ID</th>
+                                    <th>Semester</th>
+                                    <th>Rating</th>
+                                    <th>Comments</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.PerformanceList?.Rows.Count > 0)
+                                {
+                                    foreach (System.Data.DataRow row in Model.PerformanceList.Rows)
+                                    {
+                                        <tr>
+                                            <td class="ps-4 text-muted">#@row["performance_ID"]</td>
+                                            <td class="fw-bold">@row["semester"]</td>
+                                            <td>
+                                                <span class="text-warning">
+                                                    @for (int i = 0; i < Convert.ToInt32(row["rating"]); i++)
+                                                    {
+                                                        <span>★</span>
+                                                    }
+                                                </span>
+                                                <small class="text-muted">(@row["rating"])</small>
+                                            </td>
+                                            <td class="text-muted">@row["comments"]</td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr><td colspan="4" class="text-center text-muted py-4">No records found for @Model.SelectedSemester.</td></tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="attendance">
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="fw-bold text-uni-blue mb-0">Current Month Log</h5>
+                        <small class="text-muted">Showing attended days (Official days off excluded)</small>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4">Date</th>
+                                    <th>Check In</th>
+                                    <th>Check Out</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.AttendanceList?.Rows.Count > 0)
+                                {
+                                    foreach (System.Data.DataRow row in Model.AttendanceList.Rows)
+                                    {
+                                        <tr>
+                                            <td class="ps-4 fw-bold">@Convert.ToDateTime(row["date"]).ToString("ddd, MMM dd")</td>
+                                            <td>@(row["check_in_time"] != DBNull.Value ? DateTime.Today.Add((TimeSpan)row["check_in_time"]).ToString("hh:mm tt") : "-")</td>
+                                            <td>@(row["check_out_time"] != DBNull.Value ? DateTime.Today.Add((TimeSpan)row["check_out_time"]).ToString("hh:mm tt") : "-")</td>
+                                            <td><span class="badge bg-success bg-opacity-10 text-success">Attended</span></td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr><td colspan="4" class="text-center text-muted py-4">No attendance records found for this month.</td></tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="financials">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm rounded-4 h-100 border-top border-4 border-success">
+                            <div class="card-body">
+                                <h5 class="fw-bold text-uni-blue mb-3">Last Month Payroll</h5>
+                                @if (Model.PayrollData?.Rows.Count > 0)
+                                {
+                                    var pay = Model.PayrollData.Rows[0];
+                                    <h2 class="display-5 fw-bold text-success mb-0">$@pay["final_salary_amount"]</h2>
+                                    <small class="text-muted d-block mb-3">Payment Date: @Convert.ToDateTime(pay["payment_date"]).ToString("MMM dd, yyyy")</small>
+
+                                    <ul class="list-group list-group-flush small">
+                                        <li class="list-group-item d-flex justify-content-between px-0">
+                                            <span>Bonus</span>
+                                            <span class="text-success fw-bold">+$@pay["bonus_amount"]</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between px-0">
+                                            <span>Deductions</span>
+                                            <span class="text-danger fw-bold">-$@pay["deductions_amount"]</span>
+                                        </li>
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <p class="text-muted">No payroll data generated yet.</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-8">
+                        <div class="card border-0 shadow-sm rounded-4 h-100">
+                            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                                <h5 class="fw-bold text-uni-blue mb-0">Deduction History</h5>
+                                <form method="get" class="d-flex align-items-center gap-2">
+                                    <input type="hidden" name="ActiveTab" value="financials" />
+
+                                    <label class="small text-muted">Month:</label>
+                                    <select name="SelectedDeductionMonth" class="form-select form-select-sm" style="width:auto;" onchange="this.form.submit()">
+                                        @for (int i = 1; i <= 12; i++)
+                                        {
+                                            <option value="@i" selected="@(Model.SelectedDeductionMonth == i)">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(i)</option>
+                                        }
+                                    </select>
+                                </form>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table align-middle mb-0">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th class="ps-4">Date</th>
+                                            <th>Type</th>
+                                            <th>Status</th>
+                                            <th class="text-end pe-4">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.DeductionsList?.Rows.Count > 0)
+                                        {
+                                            foreach (System.Data.DataRow row in Model.DeductionsList.Rows)
+                                            {
+                                                <tr>
+                                                    <td class="ps-4">@Convert.ToDateTime(row["date"]).ToString("MMM dd")</td>
+                                                    <td>@row["type"]</td>
+                                                    <td><span class="badge bg-light text-dark border">@row["status"]</span></td>
+                                                    <td class="text-end pe-4 text-danger fw-bold">-$@row["amount"]</td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr><td colspan="4" class="text-center text-muted py-4">No deductions for this month.</td></tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="requests">
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="fw-bold text-uni-blue mb-0">Leave Applications</h5>
+                        <small class="text-muted">Status of requests submitted this month</small>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4">Request ID</th>
+                                    <th>Date of Request</th>
+                                    <th>Current Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.LeaveStatusList?.Rows.Count > 0)
+                                {
+                                    foreach (System.Data.DataRow row in Model.LeaveStatusList.Rows)
+                                    {
+                                        <tr>
+                                            <td class="ps-4 text-muted">#@row["request_ID"]</td>
+                                            <td>@Convert.ToDateTime(row["date_of_request"]).ToString("MMMM dd, yyyy")</td>
+                                            <td>
+                                                @{
+                                                    string status = row["final_approval_status"].ToString();
+                                                    string badgeClass = status == "Approved" ? "bg-success" : status == "Rejected" ? "bg-danger" : "bg-warning text-dark";
+                                                }
+                                                <span class="badge @badgeClass bg-opacity-75 px-3 py-2 rounded-pill">@status</span>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr><td colspan="3" class="text-center text-muted py-4">No leave requests found for this month.</td></tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-danger">User not found. Please Login.</div>
+    }
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var activeTab = '@Model.ActiveTab';
+        if (activeTab) {
+            var tabTrigger = document.querySelector('#' + activeTab + '-tab');
+            if (tabTrigger) {
+                var tab = new bootstrap.Tab(tabTrigger);
+                tab.show();
+            }
+        }
+    });
+</script>
