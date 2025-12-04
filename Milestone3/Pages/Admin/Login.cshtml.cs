@@ -4,27 +4,36 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Http; // Needed for Session
 
 namespace Milestone3.Pages.Admin
 {
     public class LoginModel : PageModel
     {
-      
         [BindProperty]
         public string Message { get; set; }
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
-         
+            // If already logged in, go straight to Dashboard
+            if (!string.IsNullOrEmpty(HttpContext.Session.GetString("AdminName")))
+            {
+                return RedirectToPage("/Admin/Index");
+            }
+            return Page();
         }
 
-        
         public IActionResult OnPost(string adminId, string password)
         {
-          
-            if (adminId == "Yoo" && password == "Yoo is cool")
+            // Check credentials (Hardcoded as per your requirement)
+            if ((adminId == "Yoo" && password == "Yoo is cool") ||
+                (adminId == "Nayer" && password == "Nayer is cool"))
             {
-                return RedirectToPage("/Admin/Dashboard");
+                // 1. LOGIN SUCCESS: Set Session Variable
+                HttpContext.Session.SetString("AdminName", adminId);
+
+                // 2. Redirect to Dashboard
+                return RedirectToPage("/Admin/Index");
             }
             else
             {

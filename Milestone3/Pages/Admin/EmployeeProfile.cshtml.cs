@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Milestone3.Pages.Admin
 {
-    public class EmployeeProfileModel : PageModel
+    public class EmployeeProfileModel : AdminBasePageModel
     {
         private readonly Database _db;
 

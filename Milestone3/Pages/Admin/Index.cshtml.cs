@@ -1,17 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Http; // Needed for Session
 using System;
-using System.Data;
 using System.Threading.Tasks;
 
 namespace Milestone3.Pages.Admin
 {
-    public class IndexModel : PageModel
+    // INHERIT FROM GATEKEEPER (AdminBasePageModel) instead of PageModel
+    public class IndexModel : AdminBasePageModel
     {
         private readonly Database _db;
 
-        public string AdminName { get; set; } = "Admin";
+        public string AdminName { get; set; }
         public string Greeting { get; set; }
         public string CurrentDate { get; set; }
 
@@ -20,29 +20,19 @@ namespace Milestone3.Pages.Admin
             _db = db;
         }
 
-        public async Task OnGetAsync()
+        public void OnGet()
         {
-            // 1. Set Date
+            // 1. Get Name directly from Session (Set in Login page)
+            AdminName = HttpContext.Session.GetString("AdminName");
+
+            // 2. Set Date
             CurrentDate = DateTime.Now.ToString("dddd, MMMM d, yyyy");
 
-            // 2. Set Dynamic Greeting
+            // 3. Set Dynamic Greeting
             var hour = DateTime.Now.Hour;
             if (hour < 12) Greeting = "Good Morning";
             else if (hour < 18) Greeting = "Good Afternoon";
             else Greeting = "Good Evening";
-
-            // 3. Fetch Admin Name (Simulated for ID = 1 until Login is built)
-            // LATER: int id = HttpContext.Session.GetInt32("UserId");
-            int mockId = 1;
-
-            string query = "SELECT first_name FROM Employee WHERE employee_id = @id";
-            SqlParameter[] p = { new SqlParameter("@id", mockId) };
-
-            var dt = await _db.ExecuteQuery(query, p);
-            if (dt.Rows.Count > 0)
-            {
-                AdminName = dt.Rows[0]["first_name"].ToString();
-            }
         }
     }
 }
