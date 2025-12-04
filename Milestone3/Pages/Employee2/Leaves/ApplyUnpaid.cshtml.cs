@@ -44,7 +44,7 @@ namespace Milestone3.Pages.Employee2.Leaves
         {
             try
             {
-                int employeeId = 1; // TODO: Replace with logged-in user ID from session
+                int employeeId = 3; // TODO: Replace with logged-in user ID from session
 
                 await _db.ExecuteNonQuery("Submit_unpaid",
                     new SqlParameter("@employee_ID", employeeId),

@@ -1,29 +1,29 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
 }
 
-
-<<<<<<< HEAD
-/* Cms Colors */
+/* =========================================
+   UNIVERSITY THEME & UTILITIES
+   ========================================= */
 
 :root {
     /* Your University Palette */
@@ -37,37 +37,54 @@ body {
 /* Global Background */
 body {
     background-color: var(--uni-bg);
-    color: var(--uni-blue); /* Default text color is now your Deep Blue */
+    color: var(--uni-blue);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* --- Reusable Utility Classes --- */
+/* --- Buttons --- */
 
-/* Buttons */
+/* FORCE Solid Blue Button */
 .btn-uni-blue {
-    background-color: var(--uni-blue);
-    color: white;
-    border: none;
+    background-color: #243B55 !important;
+    color: white !important;
+    border: 1px solid #243B55;
+    transition: all 0.3s ease;
 }
 
-    .btn-uni-blue:hover {
-        background-color: #1b2d42; /* Slightly darker for hover effect */
-        color: white;
-    }
-
+.btn-uni-blue:hover {
+    background-color: #1b2d42 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(36, 59, 85, 0.2);
+}
+/* --- Green Button (Success/Initiate) --- */
 .btn-uni-green {
-    background-color: var(--uni-green);
-    color: white;
+    background-color: var(--uni-green) !important;
+    color: white !important;
     border: none;
+    transition: all 0.3s ease; /* Adds the smooth animation */
 }
 
+.btn-uni-green:hover {
+    background-color: #2a9d63 !important; /* Slightly darker emerald */
+    transform: translateY(-2px); /* The "Lift" effect */
+    box-shadow: 0 4px 8px rgba(58, 196, 125, 0.4); /* Green shadow glow */
+}
+
+/* --- Red Button (Danger/Delete) --- */
 .btn-uni-red {
-    background-color: var(--uni-red);
-    color: white;
+    background-color: var(--uni-red) !important;
+    color: white !important;
     border: none;
+    transition: all 0.3s ease;
 }
 
-/* Text Colors */
+.btn-uni-red:hover {
+    background-color: #b01e40 !important; /* Slightly darker red */
+    transform: translateY(-2px); /* The "Lift" effect */
+    box-shadow: 0 4px 8px rgba(217, 37, 80, 0.4); /* Red shadow glow */
+}
+
+/* --- Text Colors --- */
 .text-uni-blue {
     color: var(--uni-blue);
 }
@@ -85,22 +102,70 @@ body {
 }
 
 
+/* =========================================
+   MODERN GENERIC TOASTS
+   ========================================= */
+
+.toast-container {
+    z-index: 9999; /* Always on top */
+}
+
+/* Base Toast Styling */
+.toast-uni {
+    background-color: white !important;
+    border-left: 5px solid transparent !important; /* The colored bar on the left */
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
+    border-radius: 8px !important;
+    overflow: hidden;
+}
+
+/* Success Theme */
 .toast-success {
-    background-color: white !important;
-    color: #1e7e34 !important; /* green text */
-    border: 2px solid #28a745 !important; /* solid green border */
-    box-shadow: 0 0 15px rgba(40, 167, 69, 0.3) !important; /* soft green glow */
+    border-left-color: var(--uni-green) !important;
 }
 
-/* ERROR (red) */
+.toast-success .toast-icon {
+    color: var(--uni-green);
+    background-color: rgba(58, 196, 125, 0.1);
+}
+
+/* Error Theme */
 .toast-error {
-    background-color: white !important;
-    color: #b02a37 !important; /* red text */
-    border: 2px solid #dc3545 !important; /* solid red border */
-    box-shadow: 0 0 15px rgba(220, 53, 69, 0.3) !important; /* soft red glow */
+    border-left-color: var(--uni-red) !important;
 }
 
-/* Make close button darker so it’s visible on white */
-.toast .btn-close {
-    filter: invert(40%) !important;
+    .toast-error .toast-icon {
+        color: var(--uni-red);
+        background-color: rgba(217, 37, 80, 0.1);
+    }
+
+/* Icon Circle Styling */
+.toast-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+}
+
+/* Close button tweak */
+.btn-close {
+    font-size: 0.8rem;
+}
+
+
+/* --- Gold Button with Hover Effect --- */
+.btn-uni-gold {
+    background-color: #F7B924 !important; /* var(--uni-gold) */
+    color: #243B55 !important; /* var(--uni-blue) for text */
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-uni-gold:hover {
+    background-color: #e3aa1c !important; /* Slightly darker gold on hover */
+    transform: translateY(-2px); /* <--- THIS MAKES IT SCALE/LIFT */
+    box-shadow: 0 4px 8px rgba(247, 185, 36, 0.4);
 }

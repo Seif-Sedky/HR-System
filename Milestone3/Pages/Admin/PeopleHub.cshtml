@@ -1,0 +1,218 @@
+﻿@page
+@model Milestone3.Pages.Admin.PeopleHubModel
+@{
+    ViewData["Title"] = "People Hub";
+}
+
+<div class="container-fluid py-4">
+
+    <!-- 1. HEADER WIDGETS -->
+    <div class="row mb-4 g-3">
+        <div class="col-12">
+            <h2 class="text-uni-blue fw-bold mb-3">People Operations</h2>
+        </div>
+
+        @if (Model.DepartmentStats != null)
+        {
+            foreach (System.Data.DataRow row in Model.DepartmentStats.Rows)
+            {
+                <div class="col-md-3 col-sm-6">
+                    <div class="card shadow-sm h-100 border-start border-4 border-uni-blue">
+                        <div class="card-body py-3">
+                            <small class="text-muted text-uppercase fw-bold" style="font-size: 0.75rem;">@row["Department"]</small>
+                            <div class="h2 fw-bold text-uni-blue mb-0 mt-1">@row["Number of Employees"]</div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    <!-- 2. TABS NAVIGATION -->
+    <ul class="nav nav-tabs mb-4" id="peopleTabs" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active fw-bold px-4" id="dir-tab" data-bs-toggle="tab" data-bs-target="#directory" type="button">
+                📂 Employee Directory
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link fw-bold px-4" id="perf-tab" data-bs-toggle="tab" data-bs-target="#performance" type="button">
+                📈 Winter Performance
+            </button>
+        </li>
+    </ul>
+
+    <!-- 3. TABS CONTENT -->
+    <div class="tab-content" id="peopleTabsContent">
+
+        <!-- TAB 1: EMPLOYEE DIRECTORY -->
+        <div class="tab-pane fade show active" id="directory">
+            <div class="card shadow-sm border-0">
+
+                <!-- Search Toolbar -->
+                <div class="card-header bg-white py-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-muted">🔍</i></span>
+                                <input type="text" id="employeeSearch" class="form-control border-start-0 bg-light" placeholder="Search by name, email, or ID..." onkeyup="filterTable()">
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <small class="text-muted">Showing all employees</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" id="employeeTable">
+                        <thead class="bg-light">
+                            <tr class="text-muted text-uppercase small">
+                                <th class="ps-4">ID</th>
+                                <th>Name</th>
+                                <th>Department</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th class="text-end pe-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Employees != null)
+                            {
+                                foreach (System.Data.DataRow row in Model.Employees.Rows)
+                                {
+                                    <tr>
+                                        <td class="ps-4 text-muted small">#@row["employee_id"]</td>
+
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-circle">
+                                                    @row["first_name"].ToString().Substring(0, 1)
+                                                </div>
+                                                <div>
+                                                    <div class="fw-bold text-dark">@row["first_name"] @row["last_name"]</div>
+                                                    <div class="small text-muted">@row["gender"]</div>
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            <span class="badge bg-white text-dark border shadow-sm px-2 py-1">
+                                                @row["dept_name"]
+                                            </span>
+                                        </td>
+
+                                        <td class="text-muted small">@row["email"]</td>
+
+                                        <td>
+                                            @{
+                                                string status = row["employment_status"].ToString().ToLower();
+                                                string badgeClass = status == "active" ? "bg-green-light text-uni-green" :
+                                                status == "resigned" ? "bg-red-light text-uni-red" : "bg-gold-light text-uni-gold";
+                                            }
+                                            <span class="badge @badgeClass rounded-pill px-3">@row["employment_status"]</span>
+                                        </td>
+
+                                        <td class="text-end pe-4">
+                                            <!-- LINK TO THE NEW PROFILE PAGE -->
+                                            <!-- We pass the ID in the URL: /Admin/EmployeeProfile?id=1 -->
+                                            <a asp-page="/Admin/EmployeeProfile" asp-route-id="@row["employee_id"]"
+                                               class="btn btn-sm btn-uni-blue shadow-sm px-3 fw-bold text-white text-decoration-none">
+                                                <i class="fas fa-user-circle me-1"></i> View Profile
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: PERFORMANCE RECORDS -->
+        <div class="tab-pane fade" id="performance">
+            <div class="card shadow-sm border-0 border-top border-4 border-warning">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 text-uni-gold"> <i class="fas fa-star me-2"></i> Semester Reviews</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped mb-0 align-middle">
+                        <thead class="bg-light">
+                            <tr class="text-muted text-uppercase small">
+                                <th class="ps-4">Record ID</th>
+                                <th>Emp ID</th>
+                                <th>Semester</th>
+                                <th>Rating</th>
+                                <th>Comments</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.PerformanceRecords != null)
+                            {
+                                foreach (System.Data.DataRow row in Model.PerformanceRecords.Rows)
+                                {
+                                    <tr>
+                                        <td class="ps-4 text-muted">#@row["performance_ID"]</td>
+                                        <td class="fw-bold">@row["emp_ID"]</td>
+                                        <td><span class="badge bg-light text-dark border">@row["semester"]</span></td>
+                                        <td>
+                                            @{
+                                                int rating = Convert.ToInt32(row["rating"]);
+                                            }
+                                            <span class="text-warning">
+                                                @for (int i = 0; i < rating; i++)
+                                                {
+                                                    <span>★</span>
+                                                }
+                                                @for (int i = rating; i < 5; i++)
+                                                {
+                                                    <span class="text-muted opacity-25">★</span>
+                                                }
+                                            </span>
+                                            <span class="ms-2 small text-muted">(@rating/5)</span>
+                                        </td>
+                                        <td class="text-muted fst-italic">"@row["comments"]"</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    function filterTable() {
+        var input = document.getElementById("employeeSearch");
+        var filter = input.value.toUpperCase();
+        var table = document.getElementById("employeeTable");
+        var tr = table.getElementsByTagName("tr");
+
+        for (var i = 1; i < tr.length; i++) {
+            // Get ID (index 0), Name (index 1), and Email (index 3)
+            var tdId = tr[i].getElementsByTagName("td")[0];   // <--- Added this
+            var tdName = tr[i].getElementsByTagName("td")[1];
+            var tdEmail = tr[i].getElementsByTagName("td")[3];
+
+            if (tdId || tdName || tdEmail) {
+                // Get text content from all three
+                var txtId = tdId.textContent || tdId.innerText;       // <--- Added this
+                var txtName = tdName.textContent || tdName.innerText;
+                var txtEmail = tdEmail.textContent || tdEmail.innerText;
+
+                // Check if the filter matches ANY of them
+                if (txtId.toUpperCase().indexOf(filter) > -1 ||       // <--- Added this check
+                    txtName.toUpperCase().indexOf(filter) > -1 ||
+                    txtEmail.toUpperCase().indexOf(filter) > -1) {
+
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+</script>
