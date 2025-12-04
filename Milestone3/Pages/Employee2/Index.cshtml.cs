@@ -27,7 +27,7 @@ namespace Milestone3.Pages.Employee2
         {
             try
             {
-                int employeeId = 1; // TODO: Replace with logged-in user ID from session
+                int employeeId = 13; // TODO: Replace with logged-in user ID from session
 
                 // Get employee basic info
                 var empResult = await _db.ExecuteQuery(@"

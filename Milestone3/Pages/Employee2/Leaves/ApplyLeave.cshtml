@@ -1,0 +1,881 @@
+@page
+@model Milestone3.Pages.Employee2.Leaves.ApplyLeaveModel
+@{
+    ViewData["Title"] = "Apply for Leave";
+}
+
+<style>
+    :root {
+        --gradient-primary: linear-gradient(135deg, #1e2fa3 0%, #3a226d 100%);
+        --gradient-success: #21b03e;
+        --gradient-danger: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+        --gradient-warning: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --gradient-info: #4facfe;
+        --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+        --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+        --shadow-lg: 0 8px 24px rgba(0,0,0,0.15);
+    }
+
+    .modern-leave-form {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .page-header {
+        margin-bottom: 2rem;
+    }
+
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        background: white;
+        color: #4a5568;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.875rem;
+        border: 2px solid #e2e8f0;
+        transition: all 0.3s ease;
+        margin-bottom: 1.5rem;
+    }
+
+    .back-button:hover {
+        background: #f7fafc;
+        border-color: #cbd5e0;
+        color: #2d3748;
+        transform: translateX(-4px);
+        text-decoration: none;
+    }
+
+    .back-button i {
+        font-size: 1rem;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+        position: relative;
+        padding-left: 1rem;
+    }
+
+    .page-title::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 4px;
+        height: 32px;
+        background: var(--gradient-primary);
+        border-radius: 2px;
+    }
+
+    .modern-alert {
+        border-radius: 12px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1.5rem;
+        border: none;
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .modern-alert.alert-success {
+        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        color: #155724;
+    }
+
+    .modern-alert.alert-danger {
+        background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+        color: #721c24;
+    }
+
+    .modern-alert.alert-warning {
+        background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+        color: #856404;
+    }
+
+    .modern-alert.alert-info {
+        background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+        color: #0c5460;
+    }
+
+    .balance-panel {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .balance-panel-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .balance-panel-title i {
+        margin-right: 0.75rem;
+        color: #667eea;
+        font-size: 1.25rem;
+    }
+
+    .balance-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .balance-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .balance-item strong {
+        font-size: 0.813rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #6c757d;
+        margin-bottom: 0.5rem;
+    }
+
+    .balance-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        width: fit-content;
+    }
+
+    .balance-badge.primary {
+        background: var(--gradient-primary);
+        color: white;
+    }
+
+    .balance-badge.info {
+        background: var(--gradient-primary);
+        color: white;
+    }
+
+    .balance-badge.secondary {
+        background: #e2e8f0;
+        color: #4a5568;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 16px;
+        padding: 2.5rem;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .leave-type-selector {
+        margin-bottom: 2rem;
+    }
+
+    .modern-select {
+        width: 100%;
+        padding: 1rem 1.25rem;
+        border-radius: 12px;
+        border: 2px solid #e2e8f0;
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #2d3748;
+        background: white;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .modern-select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-divider {
+        height: 1px;
+        background: linear-gradient(to right, transparent, #e2e8f0, transparent);
+        margin: 2rem 0;
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .section-header i {
+        font-size: 1.5rem;
+        margin-right: 0.75rem;
+    }
+
+    .section-header h5 {
+        font-size: 1.375rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .section-header.primary { color: #667eea; }
+    .section-header.warning { color: #f093fb; }
+    .section-header.danger { color: #ee0979; }
+    .section-header.info { color: #4facfe; }
+    .section-header.success { color: #11998e; }
+
+    .modern-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #4a5568;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .modern-input,
+    .modern-textarea,
+    .modern-select-input {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border-radius: 10px;
+        border: 2px solid #e2e8f0;
+        font-size: 0.95rem;
+        color: #2d3748;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .modern-input:focus,
+    .modern-textarea:focus,
+    .modern-select-input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .modern-textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .form-hint {
+        font-size: 0.813rem;
+        color: #718096;
+        margin-top: 0.375rem;
+        display: block;
+    }
+
+    .modern-checkbox {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        border-radius: 10px;
+        background: #f7fafc;
+        border: 2px solid #e2e8f0;
+        transition: all 0.3s ease;
+    }
+
+    .modern-checkbox:hover {
+        background: #edf2f7;
+    }
+
+    .modern-checkbox input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        margin-right: 0.75rem;
+        cursor: pointer;
+    }
+
+    .info-box {
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-top: 1.5rem;
+        border-left: 4px solid;
+    }
+
+    .info-box.primary {
+        background: linear-gradient(135deg, #f0f4ff 0%, #e8eeff 100%);
+        border-color: #667eea;
+    }
+
+    .info-box.warning {
+        background: linear-gradient(135deg, #fff9f0 0%, #ffeed9 100%);
+        border-color: #f093fb;
+    }
+
+    .info-box.danger {
+        background: linear-gradient(135deg, #fff0f3 0%, #ffe8ed 100%);
+        border-color: #ee0979;
+    }
+
+    .info-box.info {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border-color: #4facfe;
+    }
+
+    .info-box.success {
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        border-color: #11998e;
+    }
+
+    .info-box-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .info-box-title i {
+        margin-right: 0.5rem;
+    }
+
+    .info-box ul {
+        margin: 0;
+        padding-left: 1.25rem;
+    }
+
+    .info-box li {
+        color: #4a5568;
+        margin-bottom: 0.5rem;
+        line-height: 1.6;
+        font-size: 0.875rem;
+    }
+
+    .info-box li:last-child {
+        margin-bottom: 0;
+    }
+
+    .attendance-card {
+        background: #f7fafc;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-top: 1.5rem;
+        border: 1px solid #e2e8f0;
+    }
+
+    .attendance-card-header {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .attendance-card-header i {
+        margin-right: 0.5rem;
+        color: #667eea;
+    }
+
+    .modern-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 0.875rem;
+    }
+
+    .modern-table thead th {
+        background: #edf2f7;
+        color: #4a5568;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        padding: 0.75rem 1rem;
+        text-align: left;
+    }
+
+    .modern-table thead th:first-child {
+        border-top-left-radius: 8px;
+    }
+
+    .modern-table thead th:last-child {
+        border-top-right-radius: 8px;
+    }
+
+    .modern-table tbody td {
+        padding: 0.875rem 1rem;
+        color: #2d3748;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .modern-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .modern-table tbody tr:hover {
+        background: #f7fafc;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.75rem;
+        background: #e2e8f0;
+        color: #4a5568;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 2.5rem;
+        padding-top: 2rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .modern-btn {
+        padding: 0.875rem 2rem;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .modern-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+        text-decoration: none;
+    }
+
+    .modern-btn-secondary {
+        background: #e2e8f0;
+        color: #4a5568;
+    }
+
+    .modern-btn-secondary:hover {
+        background: #cbd5e0;
+        color: #2d3748;
+    }
+
+    .modern-btn-primary {
+        background: var(--gradient-primary);
+        color: white;
+    }
+
+    @@media (max-width: 768px) {
+        .modern-leave-form {
+            padding: 1rem;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+        }
+
+        .form-card {
+            padding: 1.5rem;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .modern-btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .balance-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="modern-leave-form">
+<a href="/Employee2" class="back-button">
+    <i class="bi bi-arrow-left"></i>
+    Back to Dashboard
+</a>
+
+<div class="page-header">
+    <h1 class="page-title">Apply for Leave</h1>
+</div>
+
+    @if (!string.IsNullOrEmpty(Model.Message))
+    {
+        var alertClass = Model.MessageType switch
+        {
+            "success" => "success",
+            "warning" => "warning",
+            "info" => "info",
+            _ => "danger"
+        };
+        <div class="modern-alert alert-@alertClass alert-dismissible fade show" role="alert">
+            <span>@Model.Message</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+
+    @if (Model.CurrentEmployee != null)
+    {
+        <div class="balance-panel">
+            <h6 class="balance-panel-title">
+                <i class="bi bi-person-badge"></i>
+                Your Leave Balances
+            </h6>
+            <div class="balance-grid">
+                <div class="balance-item">
+                    <strong>Annual Leave</strong>
+                    <span class="balance-badge primary">@Model.CurrentEmployee.AnnualBalance days</span>
+                </div>
+                <div class="balance-item">
+                    <strong>Accidental Leave</strong>
+                    <span class="balance-badge info">@Model.CurrentEmployee.AccidentalBalance days</span>
+                </div>
+                <div class="balance-item">
+                    <strong>Contract Type</strong>
+                    <span class="balance-badge secondary">@Model.CurrentEmployee.ContractType</span>
+                </div>
+            </div>
+        </div>
+    }
+
+
+    <div class="form-card">
+        <form method="post" id="leaveForm">
+            <!-- Leave Type Selector -->
+            <div class="leave-type-selector">
+                <label class="modern-label">Leave Type <span class="text-danger">*</span></label>
+                <select class="modern-select" id="leaveTypeSelector" onchange="changeLeaveType(this.value)">
+                    <option value="annual" selected="@(Model.LeaveType == "annual" ? "selected" : null)">Annual Leave</option>
+                    <option value="unpaid" selected="@(Model.LeaveType == "unpaid" ? "selected" : null)">Unpaid Leave</option>
+                    <option value="medical" selected="@(Model.LeaveType == "medical" ? "selected" : null)">Medical Leave</option>
+                    <option value="accidental" selected="@(Model.LeaveType == "accidental" ? "selected" : null)">Accidental Leave</option>
+                    <option value="compensation" selected="@(Model.LeaveType == "compensation" ? "selected" : null)">Compensation Leave</option>
+                </select>
+                <input type="hidden" asp-for="LeaveType" id="leaveTypeHidden" />
+            </div>
+
+            <div class="form-divider"></div>
+
+
+                <!-- Annual Leave Form -->
+                @if (Model.LeaveType == "annual")
+                {
+                    <div class="section-header primary">
+                        <i class="bi bi-calendar-check"></i>
+                        <h5>Annual Leave Request</h5>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="modern-label">Start Date <span class="text-danger">*</span></label>
+                            <input type="date" asp-for="StartDate" class="modern-input" required />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="modern-label">End Date <span class="text-danger">*</span></label>
+                            <input type="date" asp-for="EndDate" class="modern-input" required />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="modern-label">Replacement Employee <span class="text-danger">*</span></label>
+                        <select asp-for="ReplacementEmployeeId" class="modern-select-input" required>
+                            <option value="">-- Select Replacement Employee --</option>
+                            @foreach (var emp in Model.AvailableEmployees)
+                            {
+                                <option value="@emp.EmployeeId">@emp.FullName</option>
+                            }
+                        </select>
+                        <small class="form-hint">Select a colleague from your department to cover for you</small>
+                    </div>
+
+                    <div class="info-box primary">
+                        <h6 class="info-box-title">
+                            <i class="bi bi-info-circle"></i>
+                            Annual Leave Information
+                        </h6>
+                        <ul>
+                            <li>Annual leave requires approval from your Dean/Vice-Dean or President</li>
+                            <li>Replacement employee must be from the same department</li>
+                            <li>Current balance: <strong>@Model.CurrentEmployee?.AnnualBalance days</strong></li>
+                        </ul>
+                    </div>
+                }
+
+
+                <!-- Unpaid Leave Form -->
+                @if (Model.LeaveType == "unpaid")
+                {
+                    <div class="section-header warning">
+                        <i class="bi bi-calendar-x"></i>
+                        <h5>Unpaid Leave Request</h5>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="modern-label">Start Date <span class="text-danger">*</span></label>
+                            <input type="date" asp-for="StartDate" class="modern-input" required />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="modern-label">End Date <span class="text-danger">*</span></label>
+                            <input type="date" asp-for="EndDate" class="modern-input" required />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="modern-label">Document Description <span class="text-danger">*</span></label>
+                        <input type="text" asp-for="DocumentDescription" class="modern-input" 
+                               placeholder="e.g., Personal reasons memo" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="modern-label">Document File Name <span class="text-danger">*</span></label>
+                        <input type="text" asp-for="FileName" class="modern-input" 
+                               placeholder="e.g., unpaid_leave_memo.pdf" required />
+                    </div>
+
+                    <div class="info-box warning">
+                        <h6 class="info-box-title">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            Unpaid Leave Information
+                        </h6>
+                        <ul>
+                            <li>Unpaid leave requires approval from Supervisor, President, and HR</li>
+                            <li>A memo document is required for unpaid leave requests</li>
+                            <li>Maximum duration: 30 days</li>
+                            <li>Only available for full-time employees</li>
+                        </ul>
+                    </div>
+                }
+
+
+                <!-- Medical Leave Form -->
+                @if (Model.LeaveType == "medical")
+                {
+                    <div class="section-header danger">
+                        <i class="bi bi-heart-pulse"></i>
+                        <h5>Medical Leave Request</h5>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="modern-label">Start Date <span class="text-danger">*</span></label>
+                            <input type="date" asp-for="StartDate" class="modern-input" required />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="modern-label">End Date <span class="text-danger">*</span></label>
+                            <input type="date" asp-for="EndDate" class="modern-input" required />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="modern-label">Medical Leave Type <span class="text-danger">*</span></label>
+                            <select asp-for="MedicalType" class="modern-select-input" required>
+                                <option value="">-- Select Type --</option>
+                                <option value="sick">Sick Leave</option>
+                                <option value="maternity">Maternity Leave</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="modern-label">Insurance Coverage</label>
+                            <div class="modern-checkbox">
+                                <input type="checkbox" asp-for="InsuranceStatus" />
+                                <label for="InsuranceStatus">I have insurance coverage</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="modern-label">Disability Details (if applicable)</label>
+                        <textarea asp-for="DisabilityDetails" class="modern-textarea" 
+                                  placeholder="Describe any disability or special medical condition"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="modern-label">Medical Document Description <span class="text-danger">*</span></label>
+                        <input type="text" asp-for="DocumentDescription" class="modern-input" 
+                               placeholder="e.g., Doctor's Certificate, Medical Report" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="modern-label">Document File Name <span class="text-danger">*</span></label>
+                        <input type="text" asp-for="FileName" class="modern-input" 
+                               placeholder="e.g., medical_cert_2024.pdf" required />
+                    </div>
+
+                    <div class="info-box danger">
+                        <h6 class="info-box-title">
+                            <i class="bi bi-info-circle"></i>
+                            Medical Leave Information
+                        </h6>
+                        <ul>
+                            <li>Medical leave requires approval from the Medical Doctor</li>
+                            <li>Please ensure you attach the required medical documentation</li>
+                            <li>You will be notified once your request is processed</li>
+                        </ul>
+                    </div>
+                }
+
+
+                <!-- Accidental Leave Form -->
+                @if (Model.LeaveType == "accidental")
+                {
+                    <div class="section-header info">
+                        <i class="bi bi-exclamation-circle"></i>
+                        <h5>Accidental Leave Request</h5>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="modern-label">Start Date <span class="text-danger">*</span></label>
+                            <input type="date" asp-for="StartDate" class="modern-input" required />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="modern-label">End Date <span class="text-danger">*</span></label>
+                            <input type="date" asp-for="EndDate" class="modern-input" required />
+                        </div>
+                    </div>
+
+                    <div class="info-box info">
+                        <h6 class="info-box-title">
+                            <i class="bi bi-info-circle"></i>
+                            Accidental Leave Information
+                        </h6>
+                        <ul>
+                            <li>Accidental leave requires HR approval</li>
+                            <li>For unexpected emergencies and urgent situations</li>
+                            <li>Current balance: <strong>@Model.CurrentEmployee?.AccidentalBalance days</strong></li>
+                            <li>Will be deducted from your accidental leave balance</li>
+                        </ul>
+                    </div>
+                }
+
+
+                <!-- Compensation Leave Form -->
+                @if (Model.LeaveType == "compensation")
+                {
+                    <div class="section-header success">
+                        <i class="bi bi-clock-history"></i>
+                        <h5>Compensation Leave Request</h5>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="modern-label">Compensation Date <span class="text-danger">*</span></label>
+                            <input type="date" asp-for="CompensationDate" class="modern-input" required />
+                            <small class="form-hint">The date you want to take off</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="modern-label">Original Work Day <span class="text-danger">*</span></label>
+                            <input type="date" asp-for="OriginalWorkday" class="modern-input" required />
+                            <small class="form-hint">The day you worked overtime/on day-off</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="modern-label">Reason <span class="text-danger">*</span></label>
+                        <textarea asp-for="Reason" class="modern-textarea" 
+                                  placeholder="Explain why you need compensation leave" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="modern-label">Replacement Employee <span class="text-danger">*</span></label>
+                        <select asp-for="ReplacementEmployeeId" class="modern-select-input" required>
+                            <option value="">-- Select Replacement Employee --</option>
+                            @foreach (var emp in Model.AvailableEmployees)
+                            {
+                                <option value="@emp.EmployeeId">@emp.FullName</option>
+                            }
+                        </select>
+                    </div>
+
+                    @if (Model.MyAttendanceRecords.Any())
+                    {
+                        <div class="attendance-card">
+                            <div class="attendance-card-header">
+                                <i class="bi bi-list-check"></i>
+                                Your Recent Attendance Records
+                            </div>
+                            <div class="table-responsive">
+                                <table class="modern-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Check In</th>
+                                            <th>Check Out</th>
+                                            <th>Duration</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var record in Model.MyAttendanceRecords)
+                                        {
+                                            <tr>
+                                                <td>@record.Date.ToString("MMM dd, yyyy")</td>
+                                                <td>@(record.CheckIn?.ToString("hh\\:mm") ?? "N/A")</td>
+                                                <td>@(record.CheckOut?.ToString("hh\\:mm") ?? "N/A")</td>
+                                                <td>@record.TotalMinutes min</td>
+                                                <td><span class="status-badge">@record.Status</span></td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="info-box success">
+                        <h6 class="info-box-title">
+                            <i class="bi bi-info-circle"></i>
+                            Compensation Leave Information
+                        </h6>
+                        <ul>
+                            <li>Compensation leave requires HR approval</li>
+                            <li>Must be for overtime work or working on your official day off</li>
+                            <li>Provide the exact date you worked extra hours</li>
+                        </ul>
+                    </div>
+                }
+
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <a href="/Employee2" class="modern-btn modern-btn-secondary">Cancel</a>
+                    <button type="submit" class="modern-btn modern-btn-primary">
+                        <i class="bi bi-send"></i>
+                        Submit @(Model.LeaveType == "annual" ? "Annual" : 
+                                 Model.LeaveType == "unpaid" ? "Unpaid" : 
+                                 Model.LeaveType == "medical" ? "Medical" : 
+                                 Model.LeaveType == "accidental" ? "Accidental" : 
+                                 "Compensation") Leave
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Function to change leave type using GET request
+    function changeLeaveType(leaveType) {
+        window.location.href = '?leaveType=' + leaveType + '#leaveForm';
+    }
+
+    // Prevent form resubmission on page refresh
+    if (window.history.replaceState) {
+        window.history.replaceState(null, null, window.location.href);
+    }
+</script>

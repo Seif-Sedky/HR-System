@@ -1,0 +1,909 @@
+@page
+@model Milestone3.Pages.Employee2.Approvals.ApproveLeavesModel
+@{
+    ViewData["Title"] = "Approve Leave Requests";
+}
+
+<style>
+    :root {
+        --gradient-primary: linear-gradient(135deg, #1e2fa3 0%, #3a226d 100%);
+        --gradient-success: #21b03e;
+        --gradient-danger: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+        --gradient-warning: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --gradient-info: #4facfe;
+        --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+        --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+        --shadow-lg: 0 8px 24px rgba(0,0,0,0.15);
+    }
+
+    .modern-approvals {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .page-header {
+        margin-bottom: 2rem;
+    }
+
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        background: white;
+        color: #4a5568;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.875rem;
+        border: 2px solid #e2e8f0;
+        transition: all 0.3s ease;
+        margin-bottom: 1.5rem;
+    }
+
+    .back-button:hover {
+        background: #f7fafc;
+        border-color: #cbd5e0;
+        color: #2d3748;
+        transform: translateX(-4px);
+        text-decoration: none;
+    }
+
+    .back-button i {
+        font-size: 1rem;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+        position: relative;
+        padding-left: 1rem;
+    }
+
+    .page-title::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 4px;
+        height: 32px;
+        background: var(--gradient-primary);
+        border-radius: 2px;
+    }
+
+    .page-subtitle {
+        color: #718096;
+        font-size: 0.95rem;
+        padding-left: 1rem;
+    }
+
+    .modern-alert {
+        border-radius: 12px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1.5rem;
+        border: none;
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .modern-alert.alert-success {
+        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        color: #155724;
+    }
+
+    .modern-alert.alert-danger {
+        background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+        color: #721c24;
+    }
+
+    .modern-alert.alert-warning {
+        background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+        color: #856404;
+    }
+
+    .modern-alert.alert-info {
+        background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+        color: #0c5460;
+    }
+
+    /* Modern Tabs */
+    .modern-tabs {
+        background: white;
+        border-radius: 16px;
+        padding: 0.5rem;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 2rem;
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .tab-button {
+        flex: 1;
+        padding: 1rem 2rem;
+        border: none;
+        background: transparent;
+        color: #718096;
+        font-weight: 600;
+        font-size: 1rem;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .tab-button:hover {
+        background: #f7fafc;
+        color: #4a5568;
+    }
+
+    .tab-button.active {
+        background: var(--gradient-primary);
+        color: white;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .tab-button i {
+        margin-right: 0.5rem;
+        font-size: 1.125rem;
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+        animation: fadeIn 0.3s ease-in;
+    }
+
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Request Cards */
+    .request-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        margin-bottom: 1.5rem;
+    }
+
+    .request-card:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+    }
+
+    .request-header {
+        padding: 1.25rem 1.5rem;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .request-header.annual {
+        background: var(--gradient-success);
+    }
+
+    .request-header.unpaid {
+        background: var(--gradient-warning);
+    }
+
+    .request-title {
+        font-size: 1rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .status-badge {
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(10px);
+        padding: 0.4rem 1rem;
+        border-radius: 50px;
+        font-size: 0.813rem;
+        font-weight: 600;
+    }
+
+    .request-body {
+        padding: 1.5rem;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .info-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .info-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #718096;
+        margin-bottom: 0.25rem;
+    }
+
+    .info-value {
+        font-size: 0.95rem;
+        color: #2d3748;
+        font-weight: 500;
+    }
+
+    .modern-badge {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.813rem;
+        font-weight: 600;
+    }
+
+    .modern-badge.success {
+        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        color: #155724;
+    }
+
+    .modern-badge.danger {
+        background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+        color: #721c24;
+    }
+
+    .modern-badge.warning {
+        background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+        color: #856404;
+    }
+
+    .modern-badge.info {
+        background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+        color: #0c5460;
+    }
+
+    .divider {
+        height: 1px;
+        background: linear-gradient(to right, transparent, #e2e8f0, transparent);
+        margin: 1.5rem 0;
+    }
+
+    .section-title {
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 0.75rem;
+    }
+
+    .validation-box {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border-left: 4px solid #4facfe;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .validation-title {
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 0.75rem;
+    }
+
+    .validation-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .validation-list li {
+        padding: 0.375rem 0;
+        font-size: 0.813rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .validation-list li i {
+        margin-right: 0.5rem;
+        font-size: 0.875rem;
+    }
+
+    .validation-list li.success {
+        color: #155724;
+    }
+
+    .validation-list li.danger {
+        color: #721c24;
+    }
+
+    .validation-list li.muted {
+        color: #6c757d;
+    }
+
+    .validation-note {
+        font-size: 0.75rem;
+        color: #6c757d;
+        margin-top: 0.5rem;
+        display: block;
+    }
+
+    .document-card {
+        background: #f7fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+    }
+
+    .document-info {
+        flex: 1;
+    }
+
+    .document-name {
+        font-weight: 600;
+        color: #2d3748;
+        font-size: 0.875rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .document-name i {
+        color: #667eea;
+    }
+
+    .document-meta {
+        font-size: 0.75rem;
+        color: #718096;
+        margin-top: 0.25rem;
+    }
+
+    .document-type {
+        background: #e2e8f0;
+        color: #4a5568;
+        padding: 0.25rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1rem;
+    }
+
+    .modern-btn {
+        flex: 1;
+        padding: 0.875rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .modern-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .modern-btn.success {
+        background: var(--gradient-success);
+        color: white;
+    }
+
+    .modern-btn.danger {
+        background: var(--gradient-danger);
+        color: white;
+    }
+
+    .modern-btn i {
+        font-size: 1rem;
+    }
+
+    .no-requests {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border-radius: 16px;
+        padding: 3rem 2rem;
+        text-align: center;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .no-requests-icon {
+        font-size: 4rem;
+        color: #4facfe;
+        margin-bottom: 1rem;
+    }
+
+    .no-requests-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+    }
+
+    .no-requests-text {
+        color: #718096;
+        font-size: 0.95rem;
+    }
+
+    .info-panel {
+        background: linear-gradient(135deg, #f6f8fb 0%, #e9f0f7 100%);
+        border-radius: 16px;
+        padding: 1.5rem;
+        border-left: 4px solid #4facfe;
+        margin-top: 2rem;
+    }
+
+    .info-panel-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .info-panel-title i {
+        margin-right: 0.5rem;
+        color: #4facfe;
+    }
+
+    .info-panel ul {
+        margin: 0;
+        padding-left: 1.25rem;
+    }
+
+    .info-panel li {
+        color: #4a5568;
+        margin-bottom: 0.5rem;
+        line-height: 1.6;
+        font-size: 0.875rem;
+    }
+
+    .replacement-info {
+        background: #f7fafc;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .replacement-name {
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    .replacement-status.active {
+        color: #155724;
+    }
+
+    .replacement-status.inactive {
+        color: #721c24;
+    }
+
+    .processed-status {
+        background: linear-gradient(135deg, #f6f8fb 0%, #e9f0f7 100%);
+        border-radius: 10px;
+        padding: 1rem;
+        text-align: center;
+        font-weight: 600;
+        color: #4a5568;
+    }
+
+    @@media (max-width: 768px) {
+        .modern-approvals {
+            padding: 1rem;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+        }
+
+        .modern-tabs {
+            flex-direction: column;
+        }
+
+        .tab-button {
+            padding: 0.875rem 1.5rem;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="modern-approvals">
+<a href="/Employee2" class="back-button">
+    <i class="bi bi-arrow-left"></i>
+    Back to Dashboard
+</a>
+
+<div class="page-header">
+    <h1 class="page-title">Leave Approvals</h1>
+    @if (!string.IsNullOrEmpty(Model.UserRole))
+    {
+        <p class="page-subtitle">Role: @Model.UserRole</p>
+    }
+</div>
+
+    @if (!string.IsNullOrEmpty(Model.Message))
+    {
+        var alertClass = Model.MessageType switch
+        {
+            "success" => "success",
+            "warning" => "warning",
+            "info" => "info",
+            _ => "danger"
+        };
+        <div class="modern-alert alert-@alertClass alert-dismissible fade show" role="alert">
+            <span>@Model.Message</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (!Model.HasAccess)
+    {
+        <div class="modern-alert alert-danger">
+            <div>
+                <h5><i class="bi bi-exclamation-triangle"></i> Access Denied</h5>
+                <p class="mb-0">You cannot access this page unless you are a Dean, Vice Dean, or President.</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Tabs -->
+        <div class="modern-tabs">
+            <button class="tab-button active" onclick="switchTab('annual')" id="annual-tab">
+                <i class="bi bi-calendar-check"></i>
+                Annual Leaves
+            </button>
+            <button class="tab-button" onclick="switchTab('unpaid')" id="unpaid-tab">
+                <i class="bi bi-calendar-x"></i>
+                Unpaid Leaves
+            </button>
+        </div>
+
+        <!-- Annual Leaves Tab -->
+        <div id="annual-content" class="tab-content active">
+            @if (Model.AnnualRequests.Any())
+            {
+                <div class="row">
+                    @foreach (var request in Model.AnnualRequests)
+                    {
+                        <div class="col-lg-6 col-md-12">
+                            <div class="request-card">
+                                <div class="request-header annual">
+                                    <h6 class="request-title">
+                                        Request #@request.RequestId - @request.EmployeeName
+                                    </h6>
+                                    <span class="status-badge">@request.MyApprovalStatus</span>
+                                </div>
+                                <div class="request-body">
+                                    <div class="info-grid">
+                                        <div class="info-item">
+                                            <span class="info-label">Employee ID</span>
+                                            <span class="info-value">@request.EmployeeId</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Department</span>
+                                            <span class="info-value">@request.Department</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Request Date</span>
+                                            <span class="info-value">@request.DateOfRequest.ToString("MMM dd, yyyy")</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Duration</span>
+                                            <span class="info-value">@request.NumDays day(s)</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Start Date</span>
+                                            <span class="info-value">@request.StartDate.ToString("MMM dd, yyyy")</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">End Date</span>
+                                            <span class="info-value">@request.EndDate.ToString("MMM dd, yyyy")</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Contract Type</span>
+                                            <span class="modern-badge info">@request.ContractType</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Annual Balance</span>
+                                            <span class="modern-badge @(request.AnnualBalance >= request.NumDays ? "success" : "danger")">
+                                                @request.AnnualBalance days
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="divider"></div>
+
+                                    <div class="replacement-info">
+                                        <div class="section-title">Replacement Employee</div>
+                                        <div class="replacement-name replacement-status @(request.ReplacementStatus == "active" ? "active" : "inactive")">
+                                            @request.ReplacementName (@request.ReplacementStatus)
+                                        </div>
+                                    </div>
+
+                                    <div class="validation-box">
+                                        <div class="validation-title">Validation Checklist</div>
+                                        <ul class="validation-list">
+                                            <li class="@(request.FinalStatus.ToLower() == "pending" ? "success" : "muted")">
+                                                <i class="bi bi-@(request.FinalStatus.ToLower() == "pending" ? "check-circle-fill" : "circle")"></i>
+                                                Request status is 'Pending'
+                                            </li>
+                                            <li class="@(request.ContractType != "part_time" ? "success" : "danger")">
+                                                <i class="bi bi-@(request.ContractType != "part_time" ? "check-circle-fill" : "x-circle-fill")"></i>
+                                                Employee is NOT part-time (@request.ContractType)
+                                            </li>
+                                            <li class="@(request.IsReplacementOnLeave == false ? "success" : "danger")">
+                                                <i class="bi bi-@(request.IsReplacementOnLeave == false ? "check-circle-fill" : "x-circle-fill")"></i>
+                                                Replacement is NOT on leave
+                                            </li>
+                                            <li class="@(request.IsReplacementSameDepartment && request.ReplacementEmployeeId != request.EmployeeId ? "success" : "danger")">
+                                                <i class="bi bi-@(request.IsReplacementSameDepartment && request.ReplacementEmployeeId != request.EmployeeId ? "check-circle-fill" : "x-circle-fill")"></i>
+                                                Replacement from same department & not same employee
+                                            </li>
+                                        </ul>
+                                        <small class="validation-note">
+                                            <i class="bi bi-info-circle"></i> Auto-validated by stored procedure
+                                        </small>
+                                    </div>
+
+                                    @if (request.MyApprovalStatus.ToLower() == "pending")
+                                    {
+                                        <form method="post">
+                                            <input type="hidden" name="requestId" value="@request.RequestId" />
+                                            <input type="hidden" name="replacementId" value="@request.ReplacementEmployeeId" />
+                                            <input type="hidden" name="leaveType" value="annual" />
+                                            
+                                            <div class="action-buttons">
+                                                <button type="submit" asp-page-handler="ApproveAnnual" class="modern-btn success">
+                                                    <i class="bi bi-check-circle"></i>
+                                                    Auto Approve/Reject
+                                                </button>
+                                                <button type="submit" asp-page-handler="RejectAnnual" class="modern-btn danger">
+                                                    <i class="bi bi-x-circle"></i>
+                                                    Manual Reject
+                                                </button>
+                                            </div>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <div class="processed-status">
+                                            Status: @request.MyApprovalStatus
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="no-requests">
+                    <div class="no-requests-icon">
+                        <i class="bi bi-inbox"></i>
+                    </div>
+                    <h5 class="no-requests-title">No Pending Annual Leaves</h5>
+                    <p class="no-requests-text">There are currently no annual leave requests pending your approval.</p>
+                </div>
+            }
+        </div>
+
+        <!-- Unpaid Leaves Tab -->
+        <div id="unpaid-content" class="tab-content">
+            @if (Model.UnpaidRequests.Any())
+            {
+                <div class="row">
+                    @foreach (var request in Model.UnpaidRequests)
+                    {
+                        <div class="col-lg-6 col-md-12">
+                            <div class="request-card">
+                                <div class="request-header unpaid">
+                                    <h6 class="request-title">
+                                        Request #@request.RequestId - @request.EmployeeName
+                                    </h6>
+                                    <span class="status-badge">@request.MyApprovalStatus</span>
+                                </div>
+                                <div class="request-body">
+                                    <div class="info-grid">
+                                        <div class="info-item">
+                                            <span class="info-label">Employee ID</span>
+                                            <span class="info-value">@request.EmployeeId</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Department</span>
+                                            <span class="info-value">@request.Department</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Request Date</span>
+                                            <span class="info-value">@request.DateOfRequest.ToString("MMM dd, yyyy")</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Duration</span>
+                                            <span class="info-value">@request.NumDays day(s)</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Start Date</span>
+                                            <span class="info-value">@request.StartDate.ToString("MMM dd, yyyy")</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">End Date</span>
+                                            <span class="info-value">@request.EndDate.ToString("MMM dd, yyyy")</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Contract Type</span>
+                                            <span class="modern-badge @(request.ContractType == "full_time" ? "success" : "warning")">@request.ContractType</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <span class="info-label">Annual Balance</span>
+                                            <span class="modern-badge @(request.AnnualBalance == 0 ? "success" : "danger")">
+                                                @request.AnnualBalance days
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="divider"></div>
+
+                                    <div class="section-title">Documents (@request.Documents.Count)</div>
+                                    @if (request.Documents.Any())
+                                    {
+                                        <div class="mb-3">
+                                            @foreach (var doc in request.Documents)
+                                            {
+                                                <div class="document-card">
+                                                    <div class="document-info">
+                                                        <div class="document-name">
+                                                            <i class="bi bi-file-earmark-text"></i>
+                                                            @doc.FileName
+                                                        </div>
+                                                        @if (doc.CreationDate.HasValue)
+                                                        {
+                                                            <div class="document-meta">
+                                                                <i class="bi bi-calendar3"></i> @doc.CreationDate.Value.ToString("MMM dd, yyyy")
+                                                            </div>
+                                                        }
+                                                        @if (!string.IsNullOrEmpty(doc.Description))
+                                                        {
+                                                            <div class="document-meta">@doc.Description</div>
+                                                        }
+                                                    </div>
+                                                    <span class="document-type">@doc.Type</span>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="modern-alert alert-warning mb-3">
+                                            <small>No documents attached</small>
+                                        </div>
+                                    }
+
+                                    <div class="validation-box">
+                                        <div class="validation-title">Validation Checklist</div>
+                                        <ul class="validation-list">
+                                            <li class="@(request.FinalStatus.ToLower() == "pending" ? "success" : "muted")">
+                                                <i class="bi bi-@(request.FinalStatus.ToLower() == "pending" ? "check-circle-fill" : "circle")"></i>
+                                                Request status is 'Pending'
+                                            </li>
+                                            <li class="@(request.Documents.Any(d => d.Type == "Memo") ? "success" : "danger")">
+                                                <i class="bi bi-@(request.Documents.Any(d => d.Type == "Memo") ? "check-circle-fill" : "x-circle-fill")"></i>
+                                                Has Memo document (@request.Documents.Count(d => d.Type == "Memo") Memo(s))
+                                            </li>
+                                            <li class="@(request.ContractType != "part_time" ? "success" : "danger")">
+                                                <i class="bi bi-@(request.ContractType != "part_time" ? "check-circle-fill" : "x-circle-fill")"></i>
+                                                Employee is NOT part-time (@request.ContractType)
+                                            </li>
+                                            @if (!string.IsNullOrEmpty(request.EmployeeRole) && (request.EmployeeRole == "Dean" || request.EmployeeRole == "Vice Dean"))
+                                            {
+                                                <li class="@(!request.IsCounterpartOnLeave ? "success" : "danger")">
+                                                    <i class="bi bi-@(!request.IsCounterpartOnLeave ? "check-circle-fill" : "x-circle-fill")"></i>
+                                                    @(request.EmployeeRole == "Dean" ? "Vice Dean" : "Dean") is NOT on leave
+                                                </li>
+                                            }
+                                        </ul>
+                                        <small class="validation-note">
+                                            <i class="bi bi-info-circle"></i> Auto-validated by stored procedure
+                                        </small>
+                                    </div>
+
+                                    @if (request.MyApprovalStatus.ToLower() == "pending")
+                                    {
+                                        <form method="post">
+                                            <input type="hidden" name="requestId" value="@request.RequestId" />
+                                            <input type="hidden" name="leaveType" value="unpaid" />
+                                            
+                                            <div class="action-buttons">
+                                                <button type="submit" asp-page-handler="ApproveUnpaid" class="modern-btn success">
+                                                    <i class="bi bi-check-circle"></i>
+                                                    Auto Approve/Reject
+                                                </button>
+                                                <button type="submit" asp-page-handler="RejectUnpaid" class="modern-btn danger">
+                                                    <i class="bi bi-x-circle"></i>
+                                                    Manual Reject
+                                                </button>
+                                            </div>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <div class="processed-status">
+                                            Status: @request.MyApprovalStatus
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="no-requests">
+                    <div class="no-requests-icon">
+                        <i class="bi bi-inbox"></i>
+                    </div>
+                    <h5 class="no-requests-title">No Pending Unpaid Leaves</h5>
+                    <p class="no-requests-text">There are currently no unpaid leave requests pending your approval.</p>
+                </div>
+            }
+        </div>
+
+        <!-- Info Panel -->
+        <div class="info-panel">
+            <h3 class="info-panel-title">
+                <i class="bi bi-info-circle-fill"></i>
+                Approval Authority
+            </h3>
+            <ul>
+                <li><strong>Dean/Vice-Dean:</strong> Can approve annual leaves for employees in their department</li>
+                <li><strong>President:</strong> Can approve annual leaves for Deans and Vice-Deans</li>
+                <li><strong>Annual Leaves:</strong> Replacement employee must be from the same department and not on leave</li>
+                <li><strong>Unpaid Leaves:</strong> Only available for full-time employees with zero annual balance</li>
+            </ul>
+        </div>
+    }
+</div>
+
+<script>
+    function switchTab(tabName) {
+        // Remove active class from all tabs and content
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        
+        // Add active class to selected tab and content
+        document.getElementById(tabName + '-tab').classList.add('active');
+        document.getElementById(tabName + '-content').classList.add('active');
+    }
+</script>

@@ -150,9 +150,17 @@ namespace Milestone3.Pages.Employee2.Evaluation
 
                 foreach (DataRow row in result.Rows)
                 {
+                    int employeeId = Convert.ToInt32(row["employee_id"]);
+                    
+                    // Check if employee ID already exists in the list
+                    if (Employees.Any(e => e.EmployeeId == employeeId))
+                    {
+                        continue; // Skip duplicate
+                    }
+
                     Employees.Add(new EmployeeToEvaluate
                     {
-                        EmployeeId = Convert.ToInt32(row["employee_id"]),
+                        EmployeeId = employeeId,
                         FirstName = row["first_name"].ToString(),
                         LastName = row["last_name"].ToString(),
                         Email = row["email"].ToString(),

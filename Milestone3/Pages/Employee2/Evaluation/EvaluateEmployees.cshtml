@@ -1,110 +1,568 @@
-@page
+﻿@page
 @model Milestone3.Pages.Employee2.Evaluation.EvaluateEmployeesModel
 @{
     ViewData["Title"] = "Evaluate Employees";
 }
 
-<div class="container mt-4">
-    <h2 class="mb-4">
-        Evaluate Employees - @Model.DeanDepartment Department
+<style>
+    :root {
+        --gradient-primary: linear-gradient(135deg, #1e2fa3 0%, #3a226d 100%);
+        --gradient-success: #21b03e;
+        --gradient-danger: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+        --gradient-warning: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --gradient-info: #4facfe;
+        --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+        --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+        --shadow-lg: 0 8px 24px rgba(0,0,0,0.15);
+    }
+
+    .modern-evaluation {
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .page-header {
+        margin-bottom: 2rem;
+    }
+
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        background: white;
+        color: #4a5568;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.875rem;
+        border: 2px solid #e2e8f0;
+        transition: all 0.3s ease;
+        margin-bottom: 1.5rem;
+    }
+
+    .back-button:hover {
+        background: #f7fafc;
+        border-color: #cbd5e0;
+        color: #2d3748;
+        transform: translateX(-4px);
+        text-decoration: none;
+    }
+
+    .back-button i {
+        font-size: 1rem;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+        position: relative;
+        padding-left: 1rem;
+    }
+
+    .page-title::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 4px;
+        height: 32px;
+        background: var(--gradient-success);
+        border-radius: 2px;
+    }
+
+    .page-subtitle {
+        color: #718096;
+        font-size: 0.95rem;
+        padding-left: 1rem;
+    }
+
+    .modern-alert {
+        border-radius: 12px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1.5rem;
+        border: none;
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .modern-alert.alert-success {
+        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        color: #155724;
+    }
+
+    .modern-alert.alert-danger {
+        background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+        color: #721c24;
+    }
+
+    .modern-alert.alert-info {
+        background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+        color: #0c5460;
+    }
+
+    .employees-section {
+        background: white;
+        border-radius: 16px;
+
+        box-shadow: var(--shadow-sm);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .section-header {
+        background: var(--gradient-primary);
+
+        color: white;
+        padding: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .employee-count {
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(10px);
+        padding: 0.4rem 1rem;
+        border-radius: 50px;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+
+    .section-body {
+        padding: 0;
+        overflow-x: auto;
+        overflow-y: hidden;
+    }
+
+    .modern-table {
+        width: 100%;
+        margin: 0;
+    }
+
+    .modern-table thead {
+        background: #f7fafc;
+    }
+
+    .modern-table thead th {
+        padding: 1rem 1.5rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #4a5568;
+        border: none;
+    }
+
+    .modern-table tbody td {
+        padding: 1.25rem 1.5rem;
+        border-top: 1px solid #e2e8f0;
+        color: #2d3748;
+        vertical-align: middle;
+    }
+
+    .modern-table tbody tr {
+        transition: all 0.3s ease;
+    }
+
+    .modern-table tbody tr:hover {
+        background: #f7fafc;
+        transform: scale(1.01);
+    }
+
+    .employee-name {
+        font-weight: 600;
+        color: #2d3748;
+        font-size: 0.95rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .employee-email {
+        font-size: 0.813rem;
+        color: #718096;
+    }
+
+    .role-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .modern-badge {
+        display: inline-block;
+        padding: 0.35rem 0.875rem;
+        border-radius: 6px;
+        font-size: 0.813rem;
+        font-weight: 600;
+        width: fit-content;
+    }
+
+    .modern-badge.info {
+        background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+        color: #0c5460;
+    }
+
+    .modern-badge.success {
+        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        color: #155724;
+    }
+
+    .modern-badge.primary {
+        background: linear-gradient(135deg, #cfe2ff 0%, #b6d4fe 100%);
+        color: #084298;
+    }
+
+    .modern-badge.warning {
+        background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+        color: #856404;
+    }
+
+    .modern-badge.danger {
+        background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+        color: #721c24;
+    }
+
+    .modern-badge.dark {
+        background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%);
+        color: #2d3748;
+    }
+
+    .employee-title {
+        font-size: 0.75rem;
+        color: #718096;
+    }
+
+    .rating-display {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .rating-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        width: fit-content;
+    }
+
+    .semester-info {
+        font-size: 0.75rem;
+        color: #718096;
+    }
+
+    .modern-btn {
+        padding: 0.625rem 1.25rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .modern-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .modern-btn.success {
+        background: var(--gradient-success);
+        color: white;
+    }
+
+    .modern-btn i {
+        font-size: 1rem;
+    }
+
+    .evaluation-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        position: sticky;
+        top: 20px;
+    }
+
+    .evaluation-header {
+        background: black;
+        color: white;
+        padding: 1.5rem;
+        border-radius: 16px 16px 0 0;
+    }
+
+    .evaluation-header h5 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 700;
+    }
+
+    .evaluation-body {
+        padding: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .modern-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #4a5568;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .modern-input,
+    .modern-select,
+    .modern-textarea {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border-radius: 10px;
+        border: 2px solid #e2e8f0;
+        font-size: 0.95rem;
+        color: #2d3748;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .modern-input:focus,
+    .modern-select:focus,
+    .modern-textarea:focus {
+        outline: none;
+        border-color: #11998e;
+        box-shadow: 0 0 0 3px rgba(17, 153, 142, 0.1);
+    }
+
+    .modern-input[readonly] {
+        background: #f7fafc;
+        color: #4a5568;
+        cursor: not-allowed;
+    }
+
+    .modern-textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .form-hint {
+        font-size: 0.813rem;
+        color: #718096;
+        margin-top: 0.375rem;
+        display: block;
+    }
+
+    .selected-employee {
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        border-radius: 8px;
+        padding: 0.75rem;
+        margin-top: 0.5rem;
+        font-size: 0.875rem;
+        color: #166534;
+        font-weight: 600;
+    }
+
+    .submit-button {
+        width: 100%;
+        padding: 1rem;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: var(--gradient-success);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .submit-button:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .no-employees {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border-radius: 16px;
+        padding: 3rem 2rem;
+        text-align: center;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .no-employees-icon {
+        font-size: 4rem;
+        color: #4facfe;
+        margin-bottom: 1rem;
+    }
+
+    .no-employees-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+    }
+
+    .no-employees-text {
+        color: #718096;
+        font-size: 0.95rem;
+    }
+
+    @@media (max-width: 1200px) {
+        .evaluation-card {
+            position: relative;
+            top: 0;
+            margin-top: 2rem;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .modern-evaluation {
+            padding: 1rem;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+        }
+
+        .modern-table thead th,
+        .modern-table tbody td {
+            padding: 0.75rem 1rem;
+        }
+
+        .evaluation-body {
+            padding: 1.5rem;
+        }
+    }
+</style>
+
+<div class="modern-evaluation">
+<a href="/Employee2" class="back-button">
+    <i class="bi bi-arrow-left"></i>
+    Back to Dashboard
+</a>
+
+<div class="page-header">
+    <h1 class="page-title">Evaluate Employees</h1>
+    <p class="page-subtitle">
+        @Model.DeanDepartment Department
         @if (!string.IsNullOrEmpty(Model.UserRole))
         {
-            <small class="text-muted">(@Model.UserRole)</small>
+            <span> • @Model.UserRole</span>
         }
-    </h2>
+    </p>
+</div>
 
     @if (!string.IsNullOrEmpty(Model.Message))
     {
-        <div class="alert alert-@(Model.MessageType == "success" ? "success" : "danger") alert-dismissible fade show" role="alert">
-            @Model.Message
+        <div class="modern-alert alert-@(Model.MessageType == "success" ? "success" : "danger") alert-dismissible fade show" role="alert">
+            <span>@Model.Message</span>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
+
 
     @if (Model.Employees.Any())
     {
         <div class="row">
             <!-- Employee List -->
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">Department Employees (@Model.Employees.Count)</h5>
+            <div class="col-lg-8 col-md-12">
+                <div class="employees-section">
+                    <div class="section-header">
+                        <h5 class="section-title">Department Employees</h5>
+                        <span class="employee-count">@Model.Employees.Count</span>
                     </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
+                    <div class="section-body">
+                        <table class="modern-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Role & Title</th>
+  
+                                    <th>Last Evaluation</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var emp in Model.Employees)
+                                {
                                     <tr>
-                                        <th>ID</th>
-                                        <th>Name</th>
-                                        <th>Role</th>
-                                        <th>Experience</th>
-                                        <th>Last Evaluation</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var emp in Model.Employees)
-                                    {
-                                        <tr>
-                                            <td>@emp.EmployeeId</td>
-                                            <td>
-                                                <strong>@emp.FullName</strong><br />
-                                                <small class="text-muted">@emp.Email</small>
-                                            </td>
-                                            <td>
-                                                <span class="badge bg-info">@emp.RoleName</span><br />
-                                                <small>@emp.Title</small>
-                                            </td>
-                                            <td>@emp.YearsOfExperience years</td>
-                                            <td>
-                                                @if (emp.LastRating.HasValue)
-                                                {
-                                                    <span class="badge bg-@GetRatingColor(emp.LastRating.Value)">
-                                                        @emp.LastRating/5
+                                        <td><strong>@emp.EmployeeId</strong></td>
+                                        <td>
+                                            <div class="employee-name">@emp.FullName</div>
+                                            <div class="employee-email">@emp.Email</div>
+                                        </td>
+                                        <td>
+                                            <div class="role-info">
+                                                <span class="modern-badge info">@emp.RoleName</span>
+                                                <span class="employee-title">@emp.Title</span>
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            @if (emp.LastRating.HasValue)
+                                            {
+                                                <div class="rating-display">
+                                                    <span class="modern-badge @GetRatingColor(emp.LastRating.Value)">
+                                                        ⭐ @emp.LastRating/5
                                                     </span>
-                                                    <br />
-                                                    <small class="text-muted">@emp.LastSemester</small>
-                                                }
-                                                else
-                                                {
-                                                    <span class="text-muted">Not evaluated</span>
-                                                }
-                                            </td>
-                                            <td>
-                                                <button type="button" class="btn btn-sm btn-success" 
-                                                        data-bs-toggle="modal" 
-                                                        data-bs-target="#evaluateModal"
-                                                        onclick="selectEmployee(@emp.EmployeeId, '@emp.FullName')">
-                                                    <i class="bi bi-clipboard-check"></i> Evaluate
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
+                                                    <span class="semester-info">@emp.LastSemester</span>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <span class="semester-info">Not evaluated</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <button type="button" class="modern-btn success" 
+                                                    onclick="selectEmployee(@emp.EmployeeId, '@emp.FullName')">
+                                                <i class="bi bi-clipboard-check"></i>
+                                                Evaluate
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
 
             <!-- Evaluation Form -->
-            <div class="col-md-4">
-                <div class="card sticky-top" style="top: 20px;">
-                    <div class="card-header bg-success text-white">
-                        <h5 class="mb-0">Submit Evaluation</h5>
+            <div class="col-lg-4 col-md-12">
+                <div class="evaluation-card">
+                    <div class="evaluation-header">
+                        <h5>Submit Evaluation</h5>
                     </div>
-                    <div class="card-body">
+                    <div class="evaluation-body">
                         <form method="post" asp-page-handler="Evaluate">
-                            <div class="mb-3">
-                                <label for="EmployeeId" class="form-label">Employee ID <span class="text-danger">*</span></label>
-                                <input type="number" asp-for="EmployeeId" class="form-control" id="employeeIdInput" required readonly />
-                                <small id="employeeNameDisplay" class="text-muted"></small>
+                            <div class="form-group">
+                                <label class="modern-label">Employee ID <span class="text-danger">*</span></label>
+                                <input type="number" asp-for="EmployeeId" class="modern-input" id="employeeIdInput" required readonly />
+                                <div id="employeeNameDisplay" class="selected-employee" style="display: none;"></div>
                             </div>
 
-                            <div class="mb-3">
-                                <label for="Semester" class="form-label">Semester <span class="text-danger">*</span></label>
-                                <select asp-for="Semester" class="form-select" required>
+                            <div class="form-group">
+                                <label class="modern-label">Semester <span class="text-danger">*</span></label>
+                                <select asp-for="Semester" class="modern-select" required>
                                     <option value="">-- Select Semester --</option>
                                     <option value="W24">Winter 2024 (W24)</option>
                                     <option value="S24">Spring 2024 (S24)</option>
@@ -115,30 +573,29 @@
                                 </select>
                             </div>
 
-                            <div class="mb-3">
-                                <label for="Rating" class="form-label">Rating (1-5) <span class="text-danger">*</span></label>
-                                <select asp-for="Rating" class="form-select" required>
+                            <div class="form-group">
+                                <label class="modern-label">Rating (1-5) <span class="text-danger">*</span></label>
+                                <select asp-for="Rating" class="modern-select" required>
                                     <option value="">-- Select Rating --</option>
-                                    <option value="1">1 - Poor</option>
-                                    <option value="2">2 - Below Average</option>
-                                    <option value="3">3 - Average</option>
-                                    <option value="4">4 - Good</option>
-                                    <option value="5">5 - Excellent</option>
+                                    <option value="1">⭐ 1 - Poor</option>
+                                    <option value="2">⭐⭐ 2 - Below Average</option>
+                                    <option value="3">⭐⭐⭐ 3 - Average</option>
+                                    <option value="4">⭐⭐⭐⭐ 4 - Good</option>
+                                    <option value="5">⭐⭐⭐⭐⭐ 5 - Excellent</option>
                                 </select>
                             </div>
 
-                            <div class="mb-3">
-                                <label for="Comment" class="form-label">Comment</label>
-                                <textarea asp-for="Comment" class="form-control" rows="4" 
+                            <div class="form-group">
+                                <label class="modern-label">Comment</label>
+                                <textarea asp-for="Comment" class="modern-textarea" 
                                           placeholder="Add evaluation comments (optional)" maxlength="50"></textarea>
-                                <small class="text-muted">Max 50 characters</small>
+                                <small class="form-hint">Maximum 50 characters</small>
                             </div>
 
-                            <div class="d-grid">
-                                <button type="submit" class="btn btn-success">
-                                    <i class="bi bi-check-circle"></i> Submit Evaluation
-                                </button>
-                            </div>
+                            <button type="submit" class="submit-button">
+                                <i class="bi bi-check-circle"></i>
+                                Submit Evaluation
+                            </button>
                         </form>
                     </div>
                 </div>
@@ -147,12 +604,16 @@
     }
     else
     {
-        <div class="alert alert-info">
-            <h5><i class="bi bi-info-circle"></i> No Employees Found</h5>
-            <p class="mb-0">There are currently no active employees in your department to evaluate.</p>
+        <div class="no-employees">
+            <div class="no-employees-icon">
+                <i class="bi bi-people"></i>
+            </div>
+            <h5 class="no-employees-title">No Employees Found</h5>
+            <p class="no-employees-text">There are currently no active employees in your department to evaluate.</p>
         </div>
     }
 </div>
+
 
 @functions {
     string GetRatingColor(int rating)
@@ -164,7 +625,7 @@
             3 => "warning",
             2 => "danger",
             1 => "dark",
-            _ => "secondary"
+            _ => "dark"
         };
     }
 }
@@ -172,8 +633,21 @@
 @section Scripts {
     <script>
         function selectEmployee(empId, empName) {
-            document.getElementById('employeeIdInput').value = empId;
-            document.getElementById('employeeNameDisplay').textContent = 'Selected: ' + empName;
+            const input = document.getElementById('employeeIdInput');
+            const display = document.getElementById('employeeNameDisplay');
+            
+            input.value = empId;
+            display.textContent = '✓ Selected: ' + empName;
+            display.style.display = 'block';
+            
+            // Smooth scroll to form on mobile
+            if (window.innerWidth < 1200) {
+                document.querySelector('.evaluation-card').scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+            }
         }
     </script>
 }
+
