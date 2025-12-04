@@ -1,0 +1,140 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<style>
+    /* --- Modern Card Hover Effects --- */
+    .portal-card {
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: none;
+        overflow: hidden;
+        position: relative;
+        cursor: pointer;
+    }
+
+        .portal-card:hover {
+            transform: translateY(-12px) scale(1.02);
+        }
+
+    /* Icon Animation */
+    .portal-icon-wrapper {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .portal-card:hover .portal-icon-wrapper {
+        transform: rotateY(180deg);
+    }
+
+    /* Background Decoration */
+    .card-deco {
+        position: absolute;
+        top: -30px;
+        right: -30px;
+        font-size: 15rem;
+        opacity: 0.03;
+        transform: rotate(25deg);
+        transition: all 0.5s ease;
+    }
+
+    .portal-card:hover .card-deco {
+        transform: rotate(0deg) scale(1.2);
+        opacity: 0.08;
+    }
+
+    /* Hero Section */
+    .main-hero {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 4rem 2rem;
+        border-radius: 2rem;
+        margin-bottom: 4rem;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+    }
+</style>
+
+<div class="container py-5">
+
+    <!-- HERO SECTION -->
+    <div class="text-center mb-5 pb-3">
+        <h1 class="display-3 fw-bold text-uni-blue mb-3">University Portal</h1>
+        <p class="lead text-muted mx-auto" style="max-width: 600px;">
+            Welcome to the centralized management system. Please select your role to proceed to your secure dashboard.
+        </p>
+    </div>
+
+    <!-- CARDS GRID -->
+    <div class="row g-4 justify-content-center">
+
+        <!-- 1. ADMIN PORTAL -->
+        <div class="col-md-4">
+            <a href="/" class="text-decoration-none">
+                <!-- Placeholder Link -->
+                <div class="card h-100 portal-card shadow-lg p-4 rounded-5 border-bottom border-5 border-primary">
+                    <div class="card-body text-center position-relative z-1">
+                        <div class="portal-icon-wrapper bg-primary bg-opacity-10 text-primary mx-auto">
+                            <i class="fas fa-user-shield fa-2x"></i>
+                        </div>
+                        <h3 class="fw-bold text-uni-blue mb-3">Admin Portal</h3>
+                        <p class="text-muted mb-4">System configuration, employee management, and operational oversight.</p>
+                        <span class="btn btn-outline-primary rounded-pill fw-bold px-4">
+                            Access Dashboard <i class="fas fa-arrow-right ms-2"></i>
+                        </span>
+                    </div>
+                    <!-- Decorative Background Icon -->
+                    <i class="fas fa-user-shield card-deco text-primary"></i>
+                </div>
+            </a>
+        </div>
+
+        <!-- 2. ACADEMIC STAFF -->
+        <div class="col-md-4">
+            <a href="/" class="text-decoration-none">
+                <!-- Placeholder Link -->
+                <div class="card h-100 portal-card shadow-lg p-4 rounded-5 border-bottom border-5 border-success">
+                    <div class="card-body text-center position-relative z-1">
+                        <div class="portal-icon-wrapper bg-success bg-opacity-10 text-success mx-auto">
+                            <i class="fas fa-user-graduate fa-2x"></i>
+                        </div>
+                        <h3 class="fw-bold text-uni-blue mb-3">Academic Staff</h3>
+                        <p class="text-muted mb-4">View performance, manage leave requests, and access payroll data.</p>
+                        <span class="btn btn-outline-success rounded-pill fw-bold px-4">
+                            Login to Profile <i class="fas fa-arrow-right ms-2"></i>
+                        </span>
+                    </div>
+                    <!-- Decorative Background Icon -->
+                    <i class="fas fa-user-graduate card-deco text-success"></i>
+                </div>
+            </a>
+        </div>
+
+        <!-- 3. HR DEPARTMENT -->
+        <div class="col-md-4">
+            <a href="/" class="text-decoration-none">
+                <!-- Placeholder Link -->
+                <div class="card h-100 portal-card shadow-lg p-4 rounded-5 border-bottom border-5 border-warning">
+                    <div class="card-body text-center position-relative z-1">
+                        <div class="portal-icon-wrapper bg-warning bg-opacity-10 text-warning mx-auto">
+                            <i class="fas fa-briefcase fa-2x"></i>
+                        </div>
+                        <h3 class="fw-bold text-uni-blue mb-3">HR Department</h3>
+                        <p class="text-muted mb-4">Payroll processing, leave approvals, and recruitment management.</p>
+                        <span class="btn btn-outline-warning text-dark rounded-pill fw-bold px-4">
+                            Enter HR Hub <i class="fas fa-arrow-right ms-2"></i>
+                        </span>
+                    </div>
+                    <!-- Decorative Background Icon -->
+                    <i class="fas fa-briefcase card-deco text-warning"></i>
+                </div>
+            </a>
+        </div>
+
+    </div>
+</div>

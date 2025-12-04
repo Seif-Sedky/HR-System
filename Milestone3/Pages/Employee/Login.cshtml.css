@@ -1,0 +1,26 @@
+﻿/* Login.cshtml.css */
+
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 85vh;
+}
+
+.login-card {
+    background-color: white;
+    width: 100%;
+    max-width: 420px;
+    padding: 3rem;
+    border-radius: 16px;
+    /* Soft Green Shadow to match Employee Theme */
+    box-shadow: 0 15px 35px rgba(58, 196, 125, 0.15);
+    /* University Green Accent Border */
+    border-top: 6px solid #3AC47D;
+}
+
+/* Make the inputs look modern with Green Focus */
+.form-control:focus {
+    border-color: #3AC47D;
+    box-shadow: 0 0 0 4px rgba(58, 196, 125, 0.1);
+}
