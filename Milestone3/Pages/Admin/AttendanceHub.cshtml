@@ -1,0 +1,164 @@
+﻿@page
+@model Milestone3.Pages.Admin.AttendanceHubModel
+@{
+    ViewData["Title"] = "Attendance Hub";
+}
+
+<div class="container-fluid py-4">
+
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h2 class="text-uni-blue fw-bold">Attendance Operations</h2>
+            <p class="text-muted mb-0">Manage daily logs, system initiations, and corrections.</p>
+        </div>
+        <div class="col-auto">
+            <a asp-page="/Admin/PeopleHub" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-users me-2"></i> Go to People Hub
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100 rounded-4 border-start border-4 border-success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold text-uni-blue mb-0">Daily Setup</h5>
+                        <div class="rounded-circle bg-light p-2 text-success"><i class="fas fa-power-off"></i></div>
+                    </div>
+                    <p class="small text-muted">Creates empty "Absent" records for all active employees for today.</p>
+                    <form method="post" asp-page-handler="Initiate">
+                        <button class="btn btn-uni-green w-100"><i class="fas fa-play me-2"></i> Initiate All for Today</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100 rounded-4 border-start border-4 border-danger">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold text-uni-blue mb-0">System Cleanup</h5>
+                        <div class="rounded-circle bg-light p-2 text-danger"><i class="fas fa-calendar-times"></i></div>
+                    </div>
+                    <p class="small text-muted">Removes attendance records that were generated on Official Holidays.</p>
+                    <form method="post" asp-page-handler="RemoveHolidays">
+                        <button class="btn btn-uni-red w-100"><i class="fas fa-trash-alt me-2"></i> Remove Holiday Records</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4 rounded-4">
+        <div class="card-header bg-white fw-bold text-uni-blue py-3 border-bottom">
+            <i class="fas fa-tools me-2"></i> Employee Corrections
+        </div>
+        <div class="card-body bg-light">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <form method="post" asp-page-handler="CleanDayOff" class="d-flex gap-2">
+                        <input type="number" name="targetEmpId" class="form-control" placeholder="Emp ID (e.g. 1)" required />
+                        <button class="btn btn-outline-uni-blue text-nowrap">
+                            <i class="fas fa-eraser me-1"></i> Clean Day-Offs
+                        </button>
+                    </form>
+                    <small class="text-muted ms-1">*Remove unattended logs on official day-offs (Current Month)</small>
+                </div>
+
+                <div class="col-md-6">
+                    <form method="post" asp-page-handler="CleanLeaves" class="d-flex gap-2">
+                        <input type="number" name="targetEmpId" class="form-control" placeholder="Emp ID (e.g. 1)" required />
+                        <button class="btn btn-uni-gold text-nowrap fw-bold">
+                            <i class="fas fa-file-signature me-1"></i> Clean Leaves
+                        </button>
+                    </form>
+                    <small class="text-muted ms-1">*Remove logs that conflict with Approved Leaves</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 text-uni-blue fw-bold">Attendance Logs</h5>
+
+            <div class="btn-group" role="group">
+                <a asp-page="./AttendanceHub" asp-route-ViewDate="today"
+                   class="btn btn-sm @(Model.ViewDate == "today" ? "btn-uni-blue" : "btn-outline-secondary")">
+                    Today
+                </a>
+                <a asp-page="./AttendanceHub" asp-route-ViewDate="yesterday"
+                   class="btn btn-sm @(Model.ViewDate == "yesterday" ? "btn-uni-blue" : "btn-outline-secondary")">
+                    Yesterday
+                </a>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light text-muted small text-uppercase">
+                    <tr>
+                        <th class="ps-4">Log ID</th>
+                        <th>Emp ID</th>
+                        <th>Date</th>
+                        <th>Check In</th>
+                        <th>Check Out</th>
+                        <th>Status</th>
+                        <th class="text-end pe-4">Update</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.AttendanceRecords != null)
+                    {
+                        foreach (System.Data.DataRow row in Model.AttendanceRecords.Rows)
+                        {
+                            <tr>
+                                <td class="ps-4 text-muted">#@row["attendance_ID"]</td>
+                                <td class="fw-bold text-uni-blue">@row["emp_ID"]</td>
+                                <td>@Convert.ToDateTime(row["date"]).ToString("MMM dd, yyyy")</td>
+                                <td>@(row["check_in_time"] == DBNull.Value ? "-" : DateTime.Today.Add((TimeSpan)row["check_in_time"]).ToString("hh:mm tt"))</td>
+                                <td>@(row["check_out_time"] == DBNull.Value ? "-" : DateTime.Today.Add((TimeSpan)row["check_out_time"]).ToString("hh:mm tt"))</td>
+                                <td>
+                                    @if (row["status"].ToString() == "Attended")
+                                    {
+                                        <span class="badge bg-success bg-opacity-10 text-success px-3">Attended</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger bg-opacity-10 text-danger px-3">Absent</span>
+                                    }
+                                </td>
+                                <td class="text-end pe-4">
+                                    <button class="btn btn-sm btn-link text-uni-blue" type="button" data-bs-toggle="collapse" data-bs-target="#editRow_@row["attendance_ID"]">
+                                        Edit
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr class="collapse bg-light" id="editRow_@row["attendance_ID"]">
+                                <td colspan="7">
+                                    <form method="post" asp-page-handler="UpdateRecord" class="p-3">
+                                        <input type="hidden" name="empId" value="@row["emp_ID"]" />
+                                        <div class="row align-items-end g-3">
+                                            <div class="col-auto">
+                                                <label class="small fw-bold">New Check In</label>
+                                                <input type="time" name="checkIn" class="form-control form-control-sm" required />
+                                            </div>
+                                            <div class="col-auto">
+                                                <label class="small fw-bold">New Check Out</label>
+                                                <input type="time" name="checkOut" class="form-control form-control-sm" required />
+                                            </div>
+                                            <div class="col-auto">
+                                                <button class="btn btn-sm btn-uni-blue">Save Changes</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
