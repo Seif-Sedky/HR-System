@@ -1,0 +1,188 @@
+﻿@page
+@model Milestone3.Pages.Admin.OperationsHubModel
+@{
+    ViewData["Title"] = "Operations Hub";
+}
+
+@Html.AntiForgeryToken()
+
+<div class="container-fluid py-4">
+
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h2 class="text-uni-blue fw-bold">Operations Hub</h2>
+            <p class="text-muted mb-0">Manage holidays, financial cleanups, and medical reports.</p>
+        </div>
+        <div class="col-auto">
+            <a asp-page="/Admin/PeopleHub" class="btn btn-outline-secondary btn-sm shadow-sm">
+                <i class="fas fa-users me-2"></i> Go to People Hub
+            </a>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 mb-4 border-start border-4 border-warning">
+        <div class="card-body d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="fw-bold text-uni-blue mb-1">Financial Cleanup</h5>
+                <p class="text-muted small mb-0">Remove active deductions for employees who have resigned.</p>
+            </div>
+            <form method="post" asp-page-handler="RemoveResignedDeductions" onsubmit="return handleAjax(event, this)">
+                <button class="btn btn-uni-gold fw-bold shadow-sm px-4">
+                    <i class="fas fa-broom me-2"></i> Clean Resigned Deductions
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row g-4">
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="fw-bold text-uni-blue mb-0">
+                        <i class="fas fa-umbrella-beach me-2 text-info"></i> Add Holiday
+                    </h5>
+                </div>
+                <div class="card-body bg-light">
+                    <form method="post" asp-page-handler="AddHoliday">
+                        <div class="mb-3">
+                            <label class="small fw-bold text-muted">Holiday Name</label>
+                            <input type="text" name="name" class="form-control" placeholder="e.g. Winter Break" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="small fw-bold text-muted">Start Date</label>
+                            <input type="date" name="start" class="form-control" required />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="small fw-bold text-muted">End Date</label>
+                            <input type="date" name="end" class="form-control" required />
+                        </div>
+
+                        <button class="btn btn-uni-blue w-100 shadow-sm fw-bold">
+                            <i class="fas fa-plus-circle me-2"></i> Create Holiday
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold text-uni-blue mb-0">Rejected Medical Leaves</h5>
+                    <span class="badge bg-danger bg-opacity-10 text-danger">Alerts</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light text-muted small text-uppercase">
+                            <tr>
+                                <th class="ps-4">Request ID</th>
+                                <th>Emp ID</th>
+                                <th>Type</th>
+                                <th>Disability</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.RejectedMedicalLeaves != null && Model.RejectedMedicalLeaves.Rows.Count > 0)
+                            {
+                                foreach (System.Data.DataRow row in Model.RejectedMedicalLeaves.Rows)
+                                {
+                                    <tr>
+                                        <td class="ps-4 text-muted">#@row["request_ID"]</td>
+                                        <td class="fw-bold text-uni-blue">@row["Emp_ID"]</td>
+                                        <td>
+                                            <span class="badge bg-light text-dark border">@row["type"]</span>
+                                        </td>
+                                        <td class="text-muted small">@row["disability_details"]</td>
+                                        <td><span class="badge bg-danger">Rejected</span></td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted py-5">
+                                        <i class="fas fa-check-circle fa-2x mb-3 text-success opacity-50"></i>
+                                        <p class="mb-0">No rejected medical leaves found.</p>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+    <div id="ajaxToast" class="toast toast-uni toast-success align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body d-flex align-items-center">
+                <div class="toast-icon"><i class="fas fa-check"></i></div>
+                <div>
+                    <strong class="d-block text-dark">Success</strong>
+                    <span id="ajaxToastMsg" class="text-muted small">Operation completed.</span>
+                </div>
+            </div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 3. AJAX Handler (Using your preferred Logic + Styling)
+    async function handleAjax(e, form) {
+        e.preventDefault();
+
+        const btn = form.querySelector('button');
+        const originalContent = btn.innerHTML;
+        const originalClasses = btn.className;
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+        try {
+            const formData = new FormData(form);
+            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: { 'RequestVerificationToken': token }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                document.getElementById('ajaxToastMsg').innerText = data.message;
+                const toast = new bootstrap.Toast(document.getElementById('ajaxToast'));
+                toast.show();
+
+                // DONE STATE (Identical to AttendanceHub)
+                btn.innerHTML = '<i class="fas fa-check"></i> Done';
+                // Remove all specific color classes
+                btn.classList.remove('btn-uni-gold', 'btn-uni-green', 'text-dark', 'text-white', 'fw-bold');
+                // Force Gray Background + White Text
+                btn.classList.add('btn-secondary', 'text-white');
+
+            } else {
+                alert("Error: " + data.message);
+                btn.innerHTML = originalContent;
+                btn.className = originalClasses;
+                btn.disabled = false;
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Network Error");
+            btn.innerHTML = originalContent;
+            btn.className = originalClasses;
+            btn.disabled = false;
+        }
+        return false;
+    }
+</script>
