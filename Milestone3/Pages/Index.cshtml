@@ -1,10 +1,117 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    Layout = null;
+    ViewData["Title"] = "Welcome";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>University Portal</title>
+    <!-- Bootstrap & FontAwesome -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <!-- Custom Landing CSS -->
+    <link rel="stylesheet" href="~/css/landing-page.css" />
+</head>
+<body>
+
+    <!-- About Button (Top Right) -->
+    <button type="button" class="about-trigger" data-bs-toggle="modal" data-bs-target="#aboutModal">
+        <i class="fas fa-info-circle"></i> About
+    </button>
+
+    <div class="landing-wrapper">
+        <!-- Background Shapes -->
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+
+        <!-- Main Content -->
+        <div class="content-layer">
+            <!-- Title with Animation -->
+            <h1 class="system-title">
+                <i class="fas fa-university me-3"></i>University Management System
+            </h1>
+
+            <!-- 3 Portals Grid -->
+            <div class="portal-grid">
+
+                <!-- 1. HR Portal -->
+                <a href="/hr-employee/Login" class="portal-card">
+                    <div class="portal-icon">
+                        <i class="fas fa-users-cog"></i>
+                    </div>
+                    <div class="portal-title">HR Portal</div>
+                    <div class="portal-desc">Manage leaves, payroll, and attendance.</div>
+                    <span class="btn-enter">Login <i class="fas fa-arrow-right ms-2"></i></span>
+                </a>
+
+                <!-- 2. Academic Employee Portal -->
+                <!-- Assuming the path will be /Employee/Login -->
+                <a href="/Employee/Login" class="portal-card">
+                    <div class="portal-icon" style="background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <div class="portal-title">Academic Portal</div>
+                    <div class="portal-desc">View schedules, grades, and personal data.</div>
+                    <span class="btn-enter">Login <i class="fas fa-arrow-right ms-2"></i></span>
+                </a>
+
+                <!-- 3. Admin Portal -->
+                <!-- Assuming the path will be /Admin/Login -->
+                <a href="/Admin/Login" class="portal-card">
+                    <div class="portal-icon" style="background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <div class="portal-title">Admin Portal</div>
+                    <div class="portal-desc">System configuration and user management.</div>
+                    <span class="btn-enter">Login <i class="fas fa-arrow-right ms-2"></i></span>
+                </a>
+
+            </div>
+        </div>
+
+        <!-- Wave Animation (Bottom) -->
+        <div class="wave-container">
+            <svg class="wave-svg" viewBox="0 0 500 150" preserveAspectRatio="none">
+                <path class="wave-path" d="M0.00,49.98 C149.99,150.00 349.20,-49.98 500.00,49.98 L500.00,150.00 L0.00,150.00 Z">
+                    <animate attributeName="d"
+                             dur="10s"
+                             repeatCount="indefinite"
+                             values="
+                                M0.00,49.98 C149.99,150.00 349.20,-49.98 500.00,49.98 L500.00,150.00 L0.00,150.00 Z;
+                                M0.00,49.98 C149.99,-49.98 349.20,150.00 500.00,49.98 L500.00,150.00 L0.00,150.00 Z;
+                                M0.00,49.98 C149.99,150.00 349.20,-49.98 500.00,49.98 L500.00,150.00 L0.00,150.00 Z" />
+                </path>
+            </svg>
+        </div>
+    </div>
+
+    <!-- About Modal -->
+    <div class="modal fade" id="aboutModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold text-primary">About This Project</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center pb-4">
+                    <i class="fas fa-laptop-code fa-3x text-primary mb-3"></i>
+                    <p class="lead">University Database Management System</p>
+                    <p class="text-muted">
+                        Milestone 3 Implementation using ASP.NET Core Razor Pages.<br>
+                        Designed for efficiency, aesthetics, and robust data handling.
+                    </p>
+                    <hr class="w-50 mx-auto my-3 opacity-25">
+                    <small class="text-muted">© 2025 Database Team</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

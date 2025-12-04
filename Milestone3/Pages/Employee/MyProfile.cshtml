@@ -22,12 +22,15 @@
                             <div>
                                 <h5 class="text-white-50 text-uppercase mb-1 small fw-bold ls-1">Academic Staff Profile</h5>
                                 <h1 class="fw-bold mb-1 text-white">@Model.EmployeeInfo["first_name"] @Model.EmployeeInfo["last_name"]</h1>
-                                <p class="mb-0 opacity-75"><i class="fas fa-envelope me-2"></i>@Model.EmployeeInfo["email"]</p>
-                            </div>
-                            <div class="text-end d-none d-md-block">
-                                <span class="badge bg-white text-dark shadow-sm py-2 px-3 fs-6">
-                                    <i class="fas fa-building me-2 text-muted"></i> @Model.EmployeeInfo["dept_name"]
-                                </span>
+
+                                <div class="mt-2">
+                                    <span class="badge bg-warning text-dark shadow-sm py-2 px-3 me-2" style="font-size: 0.9rem;">
+                                        <i class="fas fa-building me-1 opacity-50"></i> @Model.EmployeeInfo["dept_name"]
+                                    </span>
+                                    <span class="badge bg-light text-dark shadow-sm py-2 px-3" style="font-size: 0.9rem;">
+                                        <i class="fas fa-envelope me-1 opacity-50"></i> @Model.EmployeeInfo["email"]
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -39,7 +42,7 @@
 
                     <div class="col-6 col-md-3 border-end border-white border-opacity-10">
                         <small class="text-white-50 text-uppercase fw-bold" style="font-size: 0.7rem;">Current Status</small>
-                        <div class="fs-5 fw-bold mt-1">
+                        <div class="fs-5 fw-bold mt-1 text-capitalize">
                             @if (Model.EmployeeInfo["employment_status"].ToString().ToLower() == "active")
                             {
                                 <span class="text-success"><i class="fas fa-check-circle me-1"></i> Active</span>
@@ -53,16 +56,16 @@
 
                     <div class="col-6 col-md-3 border-end border-white border-opacity-10">
                         <small class="text-white-50 text-uppercase fw-bold" style="font-size: 0.7rem;">Contract Type</small>
-                        <div class="fs-5 fw-bold mt-1">
-                            <i class="fas fa-file-signature me-2 opacity-50"></i>
-                            @Model.EmployeeInfo["type_of_contract"]
+                        <div class="fs-5 fw-bold mt-1 text-capitalize">
+                            <i class="fas fa-file-signature me-2 text-info"></i>
+                            @Model.EmployeeInfo["type_of_contract"].ToString().Replace("_", " ")
                         </div>
                     </div>
 
                     <div class="col-6 col-md-3 border-end border-white border-opacity-10">
                         <small class="text-white-50 text-uppercase fw-bold" style="font-size: 0.7rem;">Experience</small>
                         <div class="fs-5 fw-bold mt-1">
-                            <i class="fas fa-briefcase me-2 opacity-50"></i>
+                            <i class="fas fa-briefcase me-2 text-warning"></i>
                             @Model.EmployeeInfo["years_of_experience"] Years
                         </div>
                     </div>
@@ -70,7 +73,7 @@
                     <div class="col-6 col-md-3">
                         <small class="text-white-50 text-uppercase fw-bold" style="font-size: 0.7rem;">Member Since</small>
                         <div class="fs-5 fw-bold mt-1">
-                            <i class="fas fa-calendar-alt me-2 opacity-50"></i>
+                            <i class="fas fa-calendar-alt me-2 text-success"></i>
                             @Convert.ToDateTime(Model.EmployeeInfo["hire_date"]).ToString("yyyy")
                         </div>
                     </div>
@@ -259,7 +262,9 @@
                                             {
                                                 <tr>
                                                     <td class="ps-4">@Convert.ToDateTime(row["date"]).ToString("MMM dd")</td>
-                                                    <td>@row["type"]</td>
+                                                    <td>
+                                                        <span class="text-capitalize">@row["type"].ToString().Replace("_", " ")</span>
+                                                    </td>
                                                     <td><span class="badge bg-light text-dark border">@row["status"]</span></td>
                                                     <td class="text-end pe-4 text-danger fw-bold">-$@row["amount"]</td>
                                                 </tr>

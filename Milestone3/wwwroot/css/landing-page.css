@@ -1,0 +1,266 @@
+﻿/* Variables for Theme */
+:root {
+    /* Top Section: Soft Cloud White/Blue */
+    --bg-top: #f0f4f8;
+    /* Bottom Section Gradient Colors */
+    --ocean-top: #a6d3ff; /* A bit bluer */
+    --ocean-bottom: #e4dffc; /* Faint pink-blue */
+
+    --glass-bg: rgba(255, 255, 255, 0.65);
+    --glass-border: rgba(255, 255, 255, 0.8);
+    --primary-color: #003366;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* --- 1. The Background Structure --- */
+.landing-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    background: var(--bg-top); /* Top Section Color */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* The Bottom Section (The Water) */
+.wave-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 45vh; /* Takes up ~45% of the screen */
+    /* New Gradient for the Ocean */
+    background: linear-gradient(to bottom, var(--ocean-top), var(--ocean-bottom));
+    z-index: 1;
+}
+
+/* The Wave SVG (The Surface) */
+.wave-svg {
+    position: absolute;
+    bottom: 100%; /* Sits exactly on top of the container */
+    left: 0;
+    width: 100%;
+    /* ANIMATION CHANGE: Made bigger (120px -> 160px) */
+    height: 160px;
+    display: block;
+}
+
+.wave-path {
+    /* COLOR CHANGE: Matches the top of the ocean gradient */
+    fill: var(--ocean-top);
+    opacity: 1;
+}
+
+/* Background Shapes (Floating in the Sky) */
+.shape {
+    position: absolute;
+    filter: blur(60px);
+    z-index: 0;
+    opacity: 0.6;
+    /* ANIMATION CHANGE: Made faster (25s -> 20s) */
+    animation: float 20s infinite ease-in-out;
+}
+
+.shape-1 {
+    top: -10%;
+    left: 10%;
+    width: 400px;
+    height: 400px;
+    background: #e0f2fe;
+    border-radius: 50%;
+}
+
+.shape-2 {
+    top: 20%;
+    right: -5%;
+    width: 300px;
+    height: 300px;
+    background: #dbeafe;
+    border-radius: 50%;
+    animation-delay: -5s;
+}
+
+@keyframes float {
+    0% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+
+    50% {
+        transform: translate(20px, 40px) rotate(10deg);
+    }
+
+    100% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+}
+
+/* --- 2. The Content --- */
+.content-layer {
+    position: relative;
+    z-index: 10; /* Above the waves and background */
+    text-align: center;
+    width: 100%;
+    max-width: 1200px;
+    padding: 20px;
+}
+
+/* Title Transition */
+.system-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    margin-bottom: 60px;
+    letter-spacing: -1px;
+    text-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    opacity: 0;
+    animation: slideDownFade 3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes slideDownFade {
+    from {
+        opacity: 0;
+        transform: translateY(-40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- 3. The Portals (Cards) --- */
+.portal-grid {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeIn 1.2s ease-out 0.4s forwards;
+}
+
+.portal-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 40px 30px;
+    width: 320px;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(0, 51, 102, 0.1);
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--primary-color);
+    position: relative;
+    overflow: hidden;
+}
+
+    .portal-card:hover {
+        transform: translateY(-15px);
+        box-shadow: 0 25px 50px rgba(0, 51, 102, 0.2);
+        background: rgba(255, 255, 255, 0.9);
+        border-color: #fff;
+    }
+
+.portal-icon {
+    width: 90px;
+    height: 90px;
+    margin: 0 auto 25px;
+    background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2.2rem;
+    box-shadow: 0 8px 20px rgba(142, 197, 252, 0.4);
+    transition: transform 0.4s;
+}
+
+.portal-card:hover .portal-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.portal-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.portal-desc {
+    color: #555;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 30px;
+}
+
+.btn-enter {
+    display: inline-flex;
+    align-items: center;
+    padding: 12px 35px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(0, 51, 102, 0.2);
+}
+
+.portal-card:hover .btn-enter {
+    background: #004080;
+    padding-right: 45px; /* Slight expansion effect */
+}
+
+    .portal-card:hover .btn-enter i {
+        transform: translateX(5px);
+    }
+
+.btn-enter i {
+    transition: transform 0.3s;
+}
+
+
+/* --- 4. About Section --- */
+.about-trigger {
+    position: absolute;
+    top: 40px;
+    right: 50px;
+    z-index: 50;
+    color: var(--primary-color);
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0.6;
+    transition: all 0.3s;
+    background: white;
+    border: 1px solid rgba(0,0,0,0.1);
+    padding: 8px 20px;
+    border-radius: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+    .about-trigger:hover {
+        opacity: 1;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
