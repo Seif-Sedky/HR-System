@@ -1,0 +1,56 @@
+﻿/* --- Navigation Tabs --- */
+.nav-tabs {
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.nav-link {
+    color: #6c757d; /* Inactive Text (Grey) */
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding-bottom: 12px;
+    transition: all 0.3s ease;
+    background: transparent !important; /* Removes default white bg */
+}
+
+    /* Active State matches University Blue */
+    .nav-link:hover, .nav-link.active {
+        color: #243B55; /* University Blue */
+        border-bottom: 3px solid #243B55;
+        font-weight: bold;
+    }
+
+/* --- Avatar Circle --- */
+.avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #F7F9FA; /* University BG */
+    color: #243B55; /* University Blue text */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+    border: 1px solid #dee2e6;
+    margin-right: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* --- Soft Background Utilities --- */
+/* These are used for the status badges */
+.bg-green-light {
+    background-color: rgba(58, 196, 125, 0.1);
+}
+
+.bg-red-light {
+    background-color: rgba(217, 37, 80, 0.1);
+}
+
+.bg-gold-light {
+    background-color: rgba(247, 185, 36, 0.1);
+}
+
+/* --- Table Polish --- */
+.table-hover tbody tr:hover {
+    background-color: #fcfcfc;
+}
