@@ -1,0 +1,288 @@
+﻿@page
+@model Milestone3.Pages.hr_employee.Payroll.GenerateModel
+@{
+    ViewData["Title"] = "Generate Payroll";
+}
+
+<div class="container-fluid py-3">
+    <!-- Page Header -->
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h2 class="text-primary fw-bold mb-1">
+                <i class="fas fa-coins me-2"></i>Payroll Generator
+            </h2>
+            <p class="text-muted mb-0">Calculate monthly salaries, bonuses, and deductions.</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- LEFT COLUMN: Configuration -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-lg h-100" style="border-radius: 15px; overflow: hidden;">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-sliders-h me-2"></i>Configuration</h5>
+                </div>
+                <div class="card-body p-4 bg-light">
+
+                    @if (!string.IsNullOrEmpty(Model.Message))
+                    {
+                        <div class="alert alert-@Model.MessageType shadow-sm border-0 mb-4">
+                            @if (Model.MessageType == "success")
+                            {
+                                <i class="fas fa-check-circle me-2"></i>
+                            }
+                            else if (Model.MessageType == "danger")
+                            {
+
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                            }
+                            else
+                            {
+
+                                <i class="fas fa-info-circle me-2"></i>
+                            }
+                            @Model.Message
+                        </div>
+                    }
+
+                    <form method="post" id="payrollForm">
+
+                        <!-- 1. Date Range -->
+                        <div class="mb-4">
+                            <label class="form-label text-uppercase fw-bold text-secondary small ls-1">Period</label>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <label class="small text-muted">From</label>
+                                    <input type="date" asp-for="FromDate" class="form-control shadow-sm" />
+                                </div>
+                                <div class="col-6">
+                                    <label class="small text-muted">To</label>
+                                    <input type="date" asp-for="ToDate" class="form-control shadow-sm" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. Scope -->
+                        <div class="mb-4">
+                            <label class="form-label text-uppercase fw-bold text-secondary small ls-1">Target Scope</label>
+                            <select asp-for="SelectedScope" class="form-select form-select-lg shadow-sm border-0 fs-6" id="scopeSelect" onchange="toggleInputs()">
+                                <option value="All">All Active Employees</option>
+                                <option value="Department">Specific Department</option>
+                                <option value="Specific">Specific Employee ID</option>
+                            </select>
+                        </div>
+
+                        <!-- Conditional Inputs -->
+                        <div id="dynamicInputs" class="mb-4">
+                            <div id="input-specific" class="slide-input" style="display:none;">
+                                <label class="form-label fw-bold">Enter Employee ID</label>
+                                <input asp-for="SpecificEmpId" type="number" class="form-control form-control-lg shadow-sm" placeholder="e.g. 101" />
+                            </div>
+                            <div id="input-dept" class="slide-input" style="display:none;">
+                                <label class="form-label fw-bold">Select Department</label>
+                                <select asp-for="SelectedDept" asp-items="Model.Departments" class="form-select form-select-lg shadow-sm">
+                                    <option value="" disabled selected>-- Select --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <hr class="text-muted opacity-25 my-4">
+
+                        <!-- Actions -->
+                        <div class="d-grid gap-3">
+                            <button type="submit" asp-page-handler="Preview" class="btn btn-info text-white py-3 fw-bold shadow-sm hover-lift">
+                                <i class="fas fa-search me-2"></i>RUN SANDBOX PREVIEW
+                            </button>
+                            @if (Model.IsPreview && !Model.IsFinalized)
+                            {
+                                <button type="submit" asp-page-handler="Generate" class="btn btn-success py-3 fw-bold shadow hover-lift animate__animated animate__pulse animate__infinite">
+                                    <i class="fas fa-check-double me-2"></i>CONFIRM & PROCESS
+                                </button>
+                            }
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Sandbox / Results -->
+        <div class="col-lg-8">
+            @if (Model.IsPreview)
+            {
+                <div class="card border-0 shadow-lg h-100" style="border-radius: 15px;">
+                    <div class="card-header bg-info text-white py-3 d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-bold"><i class="fas fa-vial me-2"></i>Sandbox Simulation</h5>
+                        <span class="badge bg-white text-info rounded-pill px-3">Preview Mode - No Database Changes</span>
+                    </div>
+
+                    <div class="card-body p-0">
+                        <!-- Financial Summary -->
+                        <div class="row g-0 border-bottom text-center bg-light">
+                            <div class="col-md-3 py-4 border-end">
+                                <h3 class="fw-bold text-dark mb-0">@Model.EmployeeCount</h3>
+                                <small class="text-uppercase text-muted fw-bold ls-1">Employees</small>
+                            </div>
+                            <div class="col-md-3 py-4 border-end">
+                                <h3 class="fw-bold text-success mb-0">+$@Model.TotalBonuses.ToString("N0")</h3>
+                                <small class="text-uppercase text-muted fw-bold ls-1">Total Bonuses</small>
+                            </div>
+                            <div class="col-md-3 py-4 border-end">
+                                <h3 class="fw-bold text-danger mb-0">-$@Model.TotalDeductions.ToString("N0")</h3>
+                                <small class="text-uppercase text-muted fw-bold ls-1">Total Deductions</small>
+                            </div>
+                            <div class="col-md-3 py-4 bg-primary bg-opacity-10">
+                                <h3 class="fw-bold text-primary mb-0">$@Model.TotalCashOutflow.ToString("N0")</h3>
+                                <small class="text-uppercase text-muted fw-bold ls-1">Est. Cash Outflow</small>
+                            </div>
+                        </div>
+
+                        <!-- Detailed Table -->
+                        <div class="table-responsive p-0">
+                            <table class="table table-hover align-middle mb-0 table-striped">
+                                <thead class="bg-white text-secondary small text-uppercase sticky-top">
+                                    <tr>
+                                        <th class="ps-4 py-3">Employee</th>
+                                        <th>Department</th>
+                                        <th class="text-end">Base Salary</th>
+                                        <th class="text-end text-success">Bonus</th>
+                                        <th class="text-end text-danger">Deduction</th>
+                                        <th class="text-end pe-4 fw-bold">Net Pay</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var p in Model.PreviewResults)
+                                    {
+                                        <tr>
+                                            <td class="ps-4">
+                                                <div class="fw-bold text-dark">@p.Name</div>
+                                                <small class="text-muted">ID: @p.EmpId</small>
+                                            </td>
+                                            <td><span class="badge bg-light text-dark border">@p.Department</span></td>
+                                            <td class="text-end text-muted">$@p.BaseSalary.ToString("N0")</td>
+                                            <td class="text-end text-success">+$@p.Bonus.ToString("N0")</td>
+                                            <td class="text-end text-danger">-$@p.Deductions.ToString("N0")</td>
+                                            <td class="text-end pe-4 fw-bold text-primary">$@p.NetPay.ToString("N0")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+            else if (Model.IsFinalized)
+            {
+                <div class="card border-0 shadow-lg h-100 bg-success text-white text-center d-flex align-items-center justify-content-center p-5" style="border-radius: 15px;">
+                    <div>
+                        <div class="mb-4">
+                            <i class="fas fa-check-circle fa-6x animate__animated animate__bounceIn"></i>
+                        </div>
+                        <h2 class="fw-bold">Payroll Processed Successfully!</h2>
+                        <p class="lead opacity-75">All records have been committed to the database and deductions finalized.</p>
+                        <a href="/hr-employee/Payroll/Generate" class="btn btn-light text-success fw-bold px-5 mt-3 shadow">Start New Run</a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <!-- Empty State -->
+                <div class="card border-0 shadow-sm h-100 d-flex align-items-center justify-content-center bg-light text-center p-5" style="border-radius: 15px; border: 2px dashed #dee2e6 !important;">
+                    <div class="opacity-50">
+                        <i class="fas fa-money-check-alt fa-5x mb-4 text-primary"></i>
+                        <h4 class="text-muted fw-bold">Ready to Generate</h4>
+                        <p class="text-muted" style="max-width: 400px;">
+                            Configure the period and scope on the left, then run a Sandbox Preview to verify calculations before committing funds.
+                        </p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .ls-1 {
+        letter-spacing: 1px;
+    }
+
+    .hover-lift {
+        transition: transform 0.2s;
+    }
+
+        .hover-lift:hover {
+            transform: translateY(-3px);
+        }
+
+    .slide-input {
+        animation: slideDown 0.3s ease-out;
+    }
+
+    @@keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    /* 1. Base State: Define the speed */
+    .hover-lift {
+        transition: transform 0.2s ease; /* Smoothly animates 'transform' over 0.2 seconds */
+    }
+
+        /* 2. Hover State: Define the movement */
+        .hover-lift:hover {
+            transform: translateY(-3px); /* Moves the element up by 3 pixels */
+        }
+    /* --- Custom Aesthetic Select --- */
+    .form-select {
+        /* 1. Base Styling */
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 12px; /* Smooth rounded corners */
+        padding: 12px 20px 12px 15px; /* Extra padding for breathing room */
+        font-weight: 600;
+        color: #495057;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        transition: all 0.3s ease;
+        /* 2. Custom Arrow (requires removing default appearance) */
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        /* Add a custom SVG arrow (Bootstrap blue color) */
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%230d6efd' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 1.25rem center; /* Position the arrow */
+        background-size: 16px 12px; /* Size of the arrow */
+    }
+
+        /* Hover Effect */
+        .form-select:hover {
+            border-color: var(--bs-primary); /* Bootstrap primary blue */
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            background-color: #f8f9fa;
+        }
+
+        /* Focus Effect (when clicked) */
+        .form-select:focus {
+            border-color: var(--bs-primary);
+            box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15); /* Soft blue glow */
+            outline: 0;
+        }
+</style>
+
+<script>
+    function toggleInputs() {
+        const val = document.getElementById('scopeSelect').value;
+        document.getElementById('input-specific').style.display = 'none';
+        document.getElementById('input-dept').style.display = 'none';
+        if (val === 'Specific') document.getElementById('input-specific').style.display = 'block';
+        else if (val === 'Department') document.getElementById('input-dept').style.display = 'block';
+    }
+    document.addEventListener('DOMContentLoaded', toggleInputs);
+</script>

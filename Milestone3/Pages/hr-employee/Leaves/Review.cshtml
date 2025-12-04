@@ -1,0 +1,413 @@
+﻿@page
+@model Milestone3.Pages.hr_employee.Leaves.ReviewModel
+@{
+    ViewData["Title"] = "Leave Review Manager";
+}
+
+<div class="container-fluid py-3">
+    <!-- Page Header -->
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h2 class="text-primary fw-bold mb-1">
+                <i class="fas fa-tasks me-2"></i>Review Manager
+            </h2>
+            <p class="text-muted mb-0">Bulk processing for leave requests and approval workflows.</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- LEFT COLUMN: Control Panel -->
+        <div class="col-lg-5 col-xl-4">
+            <div class="card border-0 shadow-lg h-100" style="border-radius: 15px; overflow: hidden;">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-sliders-h me-2"></i>Configuration</h5>
+                </div>
+                <div class="card-body p-4 bg-light">
+
+                    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                    {
+                        <div class="alert alert-danger shadow-sm border-0 mb-4">
+                            <i class="fas fa-exclamation-triangle me-2"></i> @Model.ErrorMessage
+                        </div>
+                    }
+
+                    <form method="post" id="reviewForm">
+
+                        <!-- Step 1: Type -->
+                        <div class="mb-4">
+                            <label class="form-label text-uppercase fw-bold text-secondary small ls-1">Leave Type</label>
+                            <div class="d-grid gap-2">
+                                <input type="radio" class="btn-check" name="SelectedLeaveType" id="typeAA" value="AA" checked>
+                                <label class="btn btn-outline-white bg-white text-start p-3 border shadow-sm type-card" for="typeAA">
+                                    <div class="d-flex align-items-center hover-lift">
+                                        <div class="icon-box bg-info bg-opacity-10 text-info rounded p-2 me-3">
+                                            <i class="fas fa-calendar-check fa-lg"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-dark">Annual / Accidental</div>
+                                            <div class="small text-muted">Standard Leaves</div>
+                                        </div>
+                                    </div>
+                                </label>
+
+                                <input type="radio" class="btn-check" name="SelectedLeaveType" id="typeUnpaid" value="Unpaid">
+                                <label class="btn btn-outline-white bg-white text-start p-3 border shadow-sm type-card" for="typeUnpaid">
+                                    <div class="d-flex align-items-center hover-lift">
+                                        <div class="icon-box bg-danger bg-opacity-10 text-danger rounded p-2 me-3">
+                                            <i class="fas fa-ban fa-lg"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-dark">Unpaid Leave</div>
+                                            <div class="small text-muted">Financial Impact</div>
+                                        </div>
+                                    </div>
+                                </label>
+
+                                <input type="radio" class="btn-check" name="SelectedLeaveType" id="typeComp" value="Comp">
+                                <label class="btn btn-outline-white bg-white text-start p-3 border shadow-sm type-card" for="typeComp">
+                                    <div class="d-flex align-items-center hover-lift">
+                                        <div class="icon-box bg-warning bg-opacity-10 text-warning rounded p-2 me-3">
+                                            <i class="fas fa-hourglass-half fa-lg"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-dark">Compensation</div>
+                                            <div class="small text-muted">Overtime Exchange</div>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Scope -->
+                        <div class="mb-4">
+                            <label class="form-label text-uppercase fw-bold text-secondary small ls-1">Target Scope</label>
+                            <select asp-for="SelectedScope" class="form-select form-select-lg shadow-sm border-0 fs-6 hover-lift" id="scopeSelect" onchange="toggleInputs()">
+                                <option value="All">All Pending</option>
+                                <option value="Department">Specific Department</option>
+                                <option value="Specific">Specific Request ID</option>
+                            </select>
+                        </div>
+
+                        <!-- Step 2b: Conditional Inputs -->
+                        <div id="dynamicInputs" class="mb-4">
+                            <!-- Specific Input -->
+                            <div id="input-specific" class="slide-input" style="display:none;">
+                                <label class="form-label fw-bold">Enter Request ID</label>
+                                <input asp-for="SpecificReqId" type="number" class="form-control form-control-lg shadow-sm fs-6" placeholder="e.g. 101" />
+                            </div>
+
+                            <!-- Department Input -->
+                            <div id="input-dept" class="slide-input" style="display:none;">
+                                <label class="form-label fw-bold">Select Department</label>
+                                <select asp-for="SelectedDept" asp-items="Model.Departments" class="form-select form-select-lg shadow-sm fs-6">
+                                    <option value="" disabled selected>Select</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Action -->
+                        <div class="mb-4">
+                            <label class="form-label text-uppercase fw-bold text-secondary small ls-1">Action</label>
+                            <div class="d-flex gap-2">
+                                <input type="radio" class="btn-check hover-lift" name="SelectedAction" id="actApprove" value="Approve" checked>
+                                <label class="btn btn-outline-success w-50 p-3 shadow-sm fw-bold" for="actApprove">
+                                    <i class="fas fa-magic me-2"></i>Auto Approve
+                                </label>
+
+                                <input type="radio" class="btn-check hover-lift" name="SelectedAction" id="actReject" value="Reject">
+                                <label class="btn btn-outline-danger w-50 p-3 shadow-sm fw-bold" for="actReject">
+                                    <i class="fas fa-times-circle me-2"></i>Force Reject
+                                </label>
+                            </div>
+                            <div class="small text-muted mt-2">
+                                * Auto Approve runs validation logic. Force Reject overrides logic.
+                            </div>
+                        </div>
+
+                        <hr class="text-muted opacity-25 my-4">
+
+                        <button type="submit" asp-page-handler="Run" class="btn btn-primary w-100 py-3 fw-bold shadow hover-lift">
+                            PROCESS REQUESTS <i class="fas fa-arrow-right ms-2"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Results Display -->
+        <div class="col-lg-7 col-xl-8">
+            @if (Model.RunComplete)
+            {
+                <div class="card border-0 shadow-lg h-100" style="border-radius: 15px;">
+                    <div class="card-header bg-success text-white py-3 d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-bold"><i class="fas fa-clipboard-check me-2"></i>Execution Report</h5>
+                        <span class="badge bg-white text-success rounded-pill px-3">Completed</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <!-- Summary Stats -->
+                        <div class="row g-0 border-bottom text-center bg-light">
+                            <div class="col-4 py-4 border-end">
+                                <h2 class="fw-bold text-dark mb-0">@Model.ProcessedCount</h2>
+                                <small class="text-uppercase text-muted fw-bold ls-1">Processed</small>
+                            </div>
+                            <div class="col-4 py-4 border-end">
+                                <h2 class="fw-bold text-success mb-0">@Model.SuccessCount</h2>
+                                <small class="text-uppercase text-muted fw-bold ls-1">Approved</small>
+                            </div>
+                            <div class="col-4 py-4">
+                                <h2 class="fw-bold text-danger mb-0">@Model.RejectedCount</h2>
+                                <small class="text-uppercase text-muted fw-bold ls-1">Rejected</small>
+                            </div>
+                        </div>
+
+                        <!-- Detailed Table -->
+                        <div class="table-responsive">
+                            @if (Model.Results.Count > 0)
+                            {
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="bg-light text-secondary small text-uppercase">
+                                        <tr>
+                                            <th class="ps-4 py-3">Req ID</th>
+                                            <th>Employee</th>
+                                            <th>Type</th>
+                                            <th>Balance</th> <!-- Added Header -->
+                                            <th class="text-end pe-4">Result</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var res in Model.Results)
+                                        {
+                                            <tr>
+                                                <td class="ps-4 fw-bold text-muted">#@res.RequestId</td>
+                                                <td>
+                                                    <div class="fw-bold text-dark">@res.EmployeeName</div>
+                                                </td>
+                                                <td><span class="badge bg-light text-dark border">@res.Type</span></td>
+                                                
+                                                <!-- Added Balance Column -->
+                                                <td>
+                                                    @if (res.RemainingBalance != "-")
+                                                    {
+                                                        <span class="fw-bold text-dark">@res.RemainingBalance Days</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted small">-</span>
+                                                    }
+                                                </td>
+
+                                                <td class="text-end pe-4">
+                                                    @if (res.FinalStatus == "Approved")
+                                                    {
+                                                        <span class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-2">
+                                                            <i class="fas fa-check me-1"></i> APPROVED
+                                                        </span>
+                                                    }
+                                                    else if (res.FinalStatus == "Rejected")
+                                                    {
+                                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger px-3 py-2">
+                                                            <i class="fas fa-times me-1"></i> REJECTED
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary px-3 py-2">
+                                                            @res.FinalStatus
+                                                        </span>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                            else
+                            {
+                                <div class="text-center py-5">
+                                    <div class="mb-3 text-muted opacity-25">
+                                        <i class="fas fa-search-minus fa-4x"></i>
+                                    </div>
+                                    <h5 class="text-muted fw-bold">No Changes</h5>
+                                    <p class="text-muted small">Requests matched the scope but no status changes occurred.</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <!-- Empty State -->
+                <div class="card border-0 shadow-sm h-100 d-flex align-items-center justify-content-center bg-light text-center p-5" style="border-radius: 15px; border: 2px dashed #dee2e6 !important;">
+                    <div class="opacity-50">
+                        <i class="fas fa-tasks fa-5x mb-4 text-primary"></i>
+                        <h4 class="text-muted fw-bold">Review Console</h4>
+                        <p class="text-muted" style="max-width: 400px;">
+                            Select a leave category, define the scope, and choose an action to process requests in bulk.
+                        </p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .ls-1 {
+        letter-spacing: 1px;
+    }
+
+    /* Custom Radio Cards */
+    .btn-check:checked + .type-card {
+        background-color: #f8f9fa !important;
+        border-color: var(--primary-blue) !important;
+        box-shadow: 0 0 0 2px var(--primary-blue);
+    }
+    /* 1. Aqua for Annual/Accidental (typeAA) */
+    #typeAA:checked + .type-card {
+        background-color: #f0faff !important; /* Light Aqua Tint */
+        border-color: #0dcaf0 !important; /* Aqua Color */
+        box-shadow: 0 0 0 2px #0dcaf0;
+    }
+        /* Optional: Color the little sidebar strip if you are using the previous design */
+        #typeAA:checked + .type-card::before {
+            background: #0dcaf0;
+        }
+
+    /* 2. Gold for Compensation (typeComp) */
+    #typeComp:checked + .type-card {
+        background-color: #fff9e6 !important; /* Light Gold Tint */
+        border-color: #ffc107 !important; /* Gold Color */
+        box-shadow: 0 0 0 2px #ffc107;
+    }
+
+        #typeComp:checked + .type-card::before {
+            background: #ffc107;
+        }
+
+    /* 3. Red for Unpaid (typeUnpaid) */
+    #typeUnpaid:checked + .type-card {
+        background-color: #fff5f5 !important; /* Light Red Tint */
+        border-color: #dc3545 !important; /* Red Color */
+        box-shadow: 0 0 0 2px #dc3545;
+    }
+
+        #typeUnpaid:checked + .type-card::before {
+            background: #dc3545;
+        }
+
+    .hover-lift {
+        transition: transform 0.2s;
+    }
+
+        .hover-lift:hover {
+            transform: translateY(-3px);
+        }
+
+    /* Input Transitions */
+    .slide-input {
+        animation: slideDown 0.3s ease-out;
+    }
+
+    @@keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    /* 1. Base State: Define the speed */
+    .hover-lift {
+        transition: transform 0.2s ease; /* Smoothly animates 'transform' over 0.2 seconds */
+    }
+
+        /* 2. Hover State: Define the movement */
+        .hover-lift:hover {
+            transform: translateY(-3px); /* Moves the element up by 3 pixels */
+        }
+    /* --- Aqua Border Hover --- */
+    .hover-border-aqua {
+        border: 1px solid transparent; /* Ensures border exists without shifting layout */
+        transition: border-color 0.3s ease;
+    }
+
+        .hover-border-aqua:hover {
+            border-color: #0dcaf0 !important; /* Bootstrap Cyan/Info color */
+        }
+
+    /* --- Red Border Hover --- */
+    .hover-border-red {
+        border: 1px solid transparent;
+        transition: border-color 0.3s ease;
+    }
+
+        .hover-border-red:hover {
+            border-color: #dc3545 !important; /* Bootstrap Danger color */
+        }
+
+    /* --- Gold Border Hover --- */
+    .hover-border-gold {
+        border: 1px solid transparent;
+        transition: border-color 0.3s ease;
+    }
+
+        .hover-border-gold:hover {
+            border-color: #ffc107 !important; /* Bootstrap Warning color */
+        }
+    /* --- Custom Aesthetic Select --- */
+    .form-select {
+        /* 1. Base Styling */
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 12px; /* Smooth rounded corners */
+        padding: 12px 20px 12px 15px; /* Extra padding for breathing room */
+        font-weight: 600;
+        color: #495057;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        transition: all 0.3s ease;
+        /* 2. Custom Arrow (requires removing default appearance) */
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        /* Add a custom SVG arrow (Bootstrap blue color) */
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%230d6efd' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 1.25rem center; /* Position the arrow */
+        background-size: 16px 12px; /* Size of the arrow */
+    }
+
+        /* Hover Effect */
+        .form-select:hover {
+            border-color: var(--bs-primary); /* Bootstrap primary blue */
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            background-color: #f8f9fa;
+        }
+
+        /* Focus Effect (when clicked) */
+        .form-select:focus {
+            border-color: var(--bs-primary);
+            box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15); /* Soft blue glow */
+            outline: 0;
+        }
+</style>
+
+<script>
+    function toggleInputs() {
+        const val = document.getElementById('scopeSelect').value;
+
+        document.getElementById('input-specific').style.display = 'none';
+        document.getElementById('input-dept').style.display = 'none';
+
+        if (val === 'Specific') document.getElementById('input-specific').style.display = 'block';
+        else if (val === 'Department') document.getElementById('input-dept').style.display = 'block';
+    }
+
+    // Run on load to set correct state
+    document.addEventListener('DOMContentLoaded', toggleInputs);
+</script>

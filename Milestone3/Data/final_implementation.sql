@@ -1,5 +1,21 @@
-﻿create DATABASE University_HR_ManagementSystem;
+﻿/*-- Step 1: Switch your session's context to the Master database.
+-- You CANNOT drop a database while your current session is using it.
+USE master;
 GO
+
+-- Step 2: Set the database to SINGLE_USER mode with IMMEDIATE ROLLBACK.
+-- This immediately kills all connections and prevents new ones from connecting.
+ALTER DATABASE [University_HR_ManagementSystem] 
+SET SINGLE_USER 
+WITH ROLLBACK IMMEDIATE;
+GO
+
+-- Step 3: Drop the database now that it is free of connections.
+DROP DATABASE [University_HR_ManagementSystem];
+GO*/
+
+--create DATABASE University_HR_ManagementSystem;
+--GO
 USE University_HR_ManagementSystem;
 GO
 

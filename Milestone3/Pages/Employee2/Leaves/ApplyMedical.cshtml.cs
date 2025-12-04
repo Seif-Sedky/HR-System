@@ -27,7 +27,7 @@ namespace Milestone3.Pages.Employee2.Leaves
         public bool InsuranceStatus { get; set; }
 
         [BindProperty]
-        public string DisabilityDetails { get; set; }
+        public string DisabilityDetails { get; set; } = "N/A";
 
         [BindProperty]
         public string DocumentDescription { get; set; }
@@ -49,7 +49,7 @@ namespace Milestone3.Pages.Employee2.Leaves
         {
             try
             {
-                int employeeId = 1; // TODO: Replace with logged-in user ID from session
+                int employeeId = 4; // TODO: Replace with logged-in user ID from session
 
                 await _db.ExecuteNonQuery("Submit_medical",
                     new SqlParameter("@employee_ID", employeeId),

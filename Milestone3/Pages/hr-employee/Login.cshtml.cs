@@ -27,25 +27,17 @@ namespace Milestone3.Pages.hr_employee
 
         public void OnGet()
         {
-            // Clear any existing error messages on load
             ErrorMessage = "";
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            if (!ModelState.IsValid) return Page();
 
             try
             {
-                // Prepare query to call the scalar function dbo.HRLoginValidation
-                // Note: Functions in SELECT must be called with schema prefix dbo.
                 string query = "SELECT dbo.HRLoginValidation(@id, @pass)";
-
-                SqlParameter[] parameters = new SqlParameter[]
-                {
+                SqlParameter[] parameters = {
                     new SqlParameter("@id", EmployeeID),
                     new SqlParameter("@pass", Password)
                 };
@@ -55,22 +47,20 @@ namespace Milestone3.Pages.hr_employee
                 if (result.Rows.Count > 0 && result.Rows[0][0] != DBNull.Value)
                 {
                     bool isValid = Convert.ToBoolean(result.Rows[0][0]);
-
                     if (isValid)
                     {
-                        // Login Success
-                        // NOTE: In a real app, use HttpContext.Session.SetInt32("UserId", EmployeeID);
-                        // For now, we will redirect to the Dashboard.
+                        // CRITICAL: This line saves the user's ID to memory
+                        HttpContext.Session.SetInt32("UserId", EmployeeID);
                         return RedirectToPage("/hr-employee/Dashboard");
                     }
                 }
 
-                ErrorMessage = "Invalid ID or Password, or you are not an HR employee.";
+                ErrorMessage = "Invalid Credentials or Access Denied.";
                 return Page();
             }
             catch (Exception ex)
             {
-                ErrorMessage = "Database Error: " + ex.Message;
+                ErrorMessage = "Error: " + ex.Message;
                 return Page();
             }
         }

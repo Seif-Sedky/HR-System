@@ -34,7 +34,7 @@ public class ApplyAccidentalModel : PageModel
     {
         try
         {
-            int employeeId = 1; // TODO: Replace with logged-in user ID from session
+            int employeeId = 2; // TODO: Replace with logged-in user ID from session
 
             await _db.ExecuteNonQuery("Submit_accidental",
                 new SqlParameter("@employee_ID", employeeId),
