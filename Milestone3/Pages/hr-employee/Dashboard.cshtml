@@ -9,18 +9,21 @@
     <div class="col-12">
         <div class="card border-0 bg-primary text-white shadow-sm" style="background: linear-gradient(135deg, #003366 0%, #004080 100%);">
             <div class="card-body p-4">
-                <h2 class="fw-bold"><i class="fas fa-hand-sparkles me-2"></i>Welcome back, HR Admin!</h2>
-                <p class="mb-0 opacity-75">Here is what is happening in the university today.</p>
+                <!-- Updated Greeting using Model properties -->
+                <h2 class="fw-bold"><i class="fas fa-hand-sparkles me-2"></i>@Model.TimeGreeting, @Model.FirstName!</h2>
+                <p class="mb-0 opacity-75">@Model.GreetingSubtitle</p>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Stats Cards Row -->
-<div class="row mb-5">
+<div class="row mb-5 align-items-stretch">
+    <!-- Added align-items-stretch for safety -->
     <!-- Active Employees -->
     <div class="col-md-4">
-        <div class="stat-card">
+        <!-- Added h-100 to make height equal to others -->
+        <div class="stat-card h-100">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h6 class="text-muted text-uppercase mb-1">Total Employees</h6>
@@ -30,12 +33,14 @@
                     <i class="fas fa-users fa-2x"></i>
                 </div>
             </div>
+            <!-- Optional: Empty div to mimic spacing if needed, but h-100 handles the box size -->
         </div>
     </div>
 
     <!-- Pending Leaves -->
     <div class="col-md-4">
-        <div class="stat-card" style="border-left-color: #ffc107;">
+        <!-- Added h-100 -->
+        <div class="stat-card h-100" style="border-left-color: #ffc107;">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h6 class="text-muted text-uppercase mb-1">Pending Leaves</h6>
@@ -55,7 +60,8 @@
 
     <!-- Pending Deductions -->
     <div class="col-md-4">
-        <div class="stat-card" style="border-left-color: #dc3545;">
+        <!-- Added h-100 -->
+        <div class="stat-card h-100" style="border-left-color: #dc3545;">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h6 class="text-muted text-uppercase mb-1">Pending Deductions</h6>
@@ -111,6 +117,12 @@
 </div>
 
 <style>
-    .hover-lift { transition: transform 0.2s, box-shadow 0.2s; }
-    .hover-lift:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
+    .hover-lift {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+        }
 </style>
