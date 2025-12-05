@@ -579,6 +579,11 @@ BEGIN
 	IF @official_day_off IS NULL
 	BEGIN
 	   PRINT 'Employee not found or official_day_off is NULL for the specified employee.';
+	   SELECT 
+            'ERROR'  AS Status,
+            'Employee '+CAST(@employee_ID AS VARCHAR(10)) +' not found or official_day_off is NULL for the specified employee.' AS Message;
+        RETURN;
+		-- added bt ST ,
 	END
 	-- Perform delete:
 	-- remove rows for the employee in the current month/year
@@ -596,6 +601,10 @@ BEGIN
 			OR
 			(A.check_in_time IS NULL AND A.check_out_time IS NULL)
 		  );
+	SELECT 
+        'SUCCESS' AS Status,
+        'Day off of employee '+CAST(@employee_ID AS VARCHAR(10)) +' removal completed successfully.' AS Message;
+		-- added bt ST ,
 
 
 END;
@@ -696,15 +705,43 @@ BEGIN
     DECLARE @Emp1Exists BIT = 0;
     DECLARE @Emp2Exists BIT = 0;
     -- Basic validation
-    IF @Emp1_ID IS NULL OR @Emp2_ID IS NULL BEGIN PRINT 'Emp1_ID and Emp2_ID must not be NULL.';RETURN;END
-    IF @from_date IS NULL OR @to_date IS NULL BEGIN PRINT 'from_date and to_date must not be NULL.';RETURN;END
-    IF @from_date > @to_date BEGIN PRINT 'from_date must be less than or equal to to_date.';RETURN; END
-    IF @Emp1_ID = @Emp2_ID BEGIN PRINT 'Emp1_ID and Emp2_ID cannot be the same.';RETURN;END
+	IF @Emp1_ID IS NULL OR @Emp2_ID IS NULL --BEGIN PRINT 'Emp1_ID and Emp2_ID must not be NULL.';RETURN;END   editied by ST
+	BEGIN 
+        SELECT 'ERROR' AS Status, 'Emp1_ID and Emp2_ID must not be NULL.' AS Message;
+        RETURN;
+    END
+
+    IF @from_date IS NULL OR @to_date IS NULL --BEGIN PRINT 'from_date and to_date must not be NULL.';RETURN;END editied by ST
+	 BEGIN 
+        SELECT 'ERROR' AS Status, 'from_date and to_date must not be NULL.' AS Message;
+        RETURN;
+    END
+
+    IF @from_date > @to_date --BEGIN PRINT 'from_date must be less than or equal to to_date.';RETURN; END editied by ST
+	BEGIN 
+        SELECT 'ERROR' AS Status, 'from_date must be less than or equal to to_date.' AS Message;
+        RETURN; 
+    END
+
+    IF @Emp1_ID = @Emp2_ID --BEGIN PRINT 'Emp1_ID and Emp2_ID cannot be the same.';RETURN;END editied by ST
+	 BEGIN 
+        SELECT 'ERROR' AS Status, 'Emp1_ID and Emp2_ID cannot be the same.' AS Message;
+        RETURN;
+    END
     -- Verify employees exist
     IF EXISTS (SELECT 1 FROM Employee WHERE employee_id = @Emp1_ID) SET @Emp1Exists = 1;
     IF EXISTS (SELECT 1 FROM Employee WHERE employee_id = @Emp2_ID) SET @Emp2Exists = 1;
-    IF @Emp1Exists = 0 BEGIN PRINT 'Employee with Emp1_ID not found.'; RETURN;END
-    IF @Emp2Exists = 0 BEGIN PRINT 'Employee with Emp2_ID not found.'; RETURN;END
+    IF @Emp1Exists = 0 --BEGIN PRINT 'Employee with Emp1_ID not found.'; RETURN;END editied by ST
+	BEGIN 
+        SELECT 'ERROR' AS Status, 'Employee with Emp1_ID not found.' AS Message; 
+        RETURN;
+    END
+
+    IF @Emp2Exists = 0 --BEGIN PRINT 'Employee with Emp2_ID not found.'; RETURN;END editied by ST
+	BEGIN 
+        SELECT 'ERROR' AS Status, 'Employee with Emp2_ID not found.' AS Message; 
+        RETURN;
+    END
     --overlap check: prevent Emp2 double-assignment
     IF EXISTS (
         SELECT 1
@@ -712,13 +749,19 @@ BEGIN
         WHERE r.Emp2_ID = @Emp2_ID
           AND NOT (r.to_date < @from_date OR r.from_date > @to_date)
     )
-    BEGIN
-        PRINT 'Replacement employee (Emp2) already has an overlapping replacement period.';
+    --BEGIN
+    --    PRINT 'Replacement employee (Emp2) already has an overlapping replacement period.'; editied by ST
+    --    RETURN;
+    --END
+	BEGIN
+        SELECT 'ERROR' AS Status, 'Replacement employee (Emp2) already has an overlapping replacement period.' AS Message;
         RETURN;
     END
     -- Perform the insertion
     INSERT INTO dbo.Employee_Replace_Employee (Emp1_ID, Emp2_ID, from_date, to_date)
     VALUES (@Emp1_ID, @Emp2_ID, @from_date, @to_date);
+
+	SELECT 'SUCCESS' AS Status, 'Replacement record inserted successfully.' AS Message; -- editied by ST
 END;
 GO
 

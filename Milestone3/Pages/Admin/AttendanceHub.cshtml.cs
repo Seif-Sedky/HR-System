@@ -105,33 +105,108 @@ namespace Milestone3.Pages.Admin
         // 5. Clean Day Offs (AJAX Version)
         public async Task<IActionResult> OnPostCleanDayOffAsync(int targetEmpId)
         {
+            if (targetEmpId <= 0)
+            {
+                
+                return new JsonResult(new
+                {
+                    success = false,
+                    message = "Employee ID must be positive."
+                });
+            }
             try
             {
-                SqlParameter[] p = { new SqlParameter("@employee_ID", targetEmpId) };
-                await _db.ExecuteNonQuery("Remove_DayOff", p);
-                // Return JSON for the JavaScript to handle
-                return new JsonResult(new { success = true, message = $"Day-off conflicts resolved for Employee #{targetEmpId}" });
+                
+                var dt = await _db.ExecuteQuery(
+                    "EXEC Remove_DayOff @Employee_ID",
+                    new SqlParameter("@Employee_ID", targetEmpId)
+                );
+
+                if (dt.Rows.Count > 0)
+                {
+                    string message = dt.Rows[0]["Message"].ToString();
+                    string status = dt.Rows[0]["Status"].ToString();
+
+                    if (status == "ERROR")
+                    {
+                        return new JsonResult(new
+                        {
+                            success = false,
+                            message = message
+                        });
+                    }
+                    else
+                    {
+                        return new JsonResult(new
+                        {
+                            success = true,
+                            message = message
+                        });
+                    }
+                }
+                else
+                {
+                    return new JsonResult(new
+                    {
+                        success = false,
+                        message = "No message returned from SQL."
+                    });
+                }
             }
             catch (Exception ex)
             {
-                return new JsonResult(new { success = false, message = ex.Message });
+                return new JsonResult(new
+                {
+                    success = false,
+                    message = ex.Message
+                });
             }
         }
 
         // 6. Clean Approved Leaves (AJAX Version)
+        
         public async Task<IActionResult> OnPostCleanLeavesAsync(int targetEmpId)
         {
+            // 1. Check if employeeId is positive AND exists (YOUR LOGIC)
+            var existsDt = await _db.ExecuteQuery(
+                "SELECT 1 FROM dbo.Employee WHERE employee_id = @Employee_ID",
+                new SqlParameter("@Employee_ID", targetEmpId)
+            );
+
+            if (targetEmpId <= 0 || existsDt.Rows.Count == 0)
+            {
+                return new JsonResult(new
+                {
+                    success = false,
+                    message = "Employee ID must be positive and exist in the employees table."
+                });
+            }
+
             try
             {
-                SqlParameter[] p = { new SqlParameter("@employee_id", targetEmpId) };
-                await _db.ExecuteNonQuery("Remove_Approved_Leaves", p);
-                // Return JSON for the JavaScript to handle
-                return new JsonResult(new { success = true, message = $"Leave conflicts resolved for Employee #{targetEmpId}" });
+                // 2. Execute stored procedure (YOUR LOGIC)
+                await _db.ExecuteQuery(
+                    "EXEC Remove_Approved_Leaves @Employee_id",
+                    new SqlParameter("@Employee_id", targetEmpId)
+                );
+
+                // 3. JSON success (HIS LOGIC)
+                return new JsonResult(new
+                {
+                    success = true,
+                    message = $"Approved Leaves of Employee {targetEmpId} removed."
+                });
             }
             catch (Exception ex)
             {
-                return new JsonResult(new { success = false, message = ex.Message });
+                // 4. JSON error
+                return new JsonResult(new
+                {
+                    success = false,
+                    message = ex.Message
+                });
             }
         }
+
     }
 }
