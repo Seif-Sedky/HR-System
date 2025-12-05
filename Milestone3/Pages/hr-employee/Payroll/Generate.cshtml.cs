@@ -84,6 +84,14 @@ namespace Milestone3.Pages.hr_employee.Payroll
 
         private async Task RunPayrollLogic(bool isPreview)
         {
+            // --- VALIDATION: Check Dates ---
+            if (FromDate > ToDate)
+            {
+                Message = "Action Failed: The 'To Date' cannot be earlier than the 'From Date'.";
+                MessageType = "danger";
+                return;
+            }
+
             // 1. Fetch Target Employees based on Scope
             string query = "SELECT employee_id, first_name, last_name, dept_name, salary FROM Employee WHERE employment_status = 'active'";
             SqlParameter[] p = null;
