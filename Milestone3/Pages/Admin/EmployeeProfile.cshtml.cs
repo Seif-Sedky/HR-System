@@ -73,6 +73,11 @@ namespace Milestone3.Pages.Admin
         // 3. POST: Replace Employee
         public async Task<IActionResult> OnPostReplaceAsync(int id, int replacementId, DateTime fromDate, DateTime toDate)
         {
+            if (id <= 0)
+            {
+                TempData["Error"] = "Employee IDs must be positive.";
+                return RedirectToPage(new { id = id });
+            }
             try
             {
                 string procedureName = "Replace_employee";
@@ -83,9 +88,24 @@ namespace Milestone3.Pages.Admin
                     new SqlParameter("@to_date", toDate)
                 };
 
-                await _db.ExecuteNonQuery(procedureName, p);
+                DataTable dt = await _db.ExecuteStoredProcedure(procedureName, p);
 
-                TempData["Success"] = "Replacement assigned successfully.";
+                if (dt.Rows.Count > 0)
+                {
+                    string status = dt.Rows[0]["Status"].ToString();
+                    string message = dt.Rows[0]["Message"].ToString();
+
+                    if (status == "SUCCESS")
+                        TempData["Success"] = message;
+                    else
+                        TempData["Error"] = message;
+                }
+                else
+                {
+                    TempData["Error"] = "No message returned from SQL.";
+                }
+                return RedirectToPage(new { id = id });
+
             }
             catch (Exception ex)
             {
