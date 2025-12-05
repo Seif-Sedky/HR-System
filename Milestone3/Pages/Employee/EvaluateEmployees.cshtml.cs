@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
 using System.Data;
 
-namespace Milestone3.Pages.Employee2.Evaluation
+namespace Milestone3.Pages.Employee
 {
     public class EvaluateEmployeesModel : PageModel
     {
@@ -177,7 +177,7 @@ namespace Milestone3.Pages.Employee2.Evaluation
                         HireDate = Convert.ToDateTime(row["hire_date"]),
                         RoleName = row["role_name"] != DBNull.Value ? row["role_name"].ToString() : "N/A",
                         Title = row["title"] != DBNull.Value ? row["title"].ToString() : "N/A",
-                        LastRating = row["last_rating"] != DBNull.Value ? Convert.ToInt32(row["last_rating"]) : (int?)null,
+                        LastRating = row["last_rating"] != DBNull.Value ? Convert.ToInt32(row["last_rating"]) : null,
                         LastSemester = row["last_semester"] != DBNull.Value ? row["last_semester"].ToString() : null
                     });
                 }

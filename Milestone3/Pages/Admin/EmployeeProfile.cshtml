@@ -18,6 +18,7 @@
     {
         var emp = Model.EmployeeData.Rows[0];
 
+        <!-- 1. PROFILE HEADER CARD -->
         <div class="card border-0 shadow-sm mb-4 overflow-hidden rounded-4">
             <div class="card-body p-0">
                 <div class="bg-uni-blue p-4 text-white d-flex align-items-center">
@@ -25,10 +26,17 @@
                         @emp["first_name"].ToString().Substring(0, 1)
                     </div>
                     <div>
-                        <h2 class="fw-bold mb-0">@emp["first_name"] @emp["last_name"]</h2>
+                        <h2 class="fw-bold mb-0">
+                            @emp["first_name"] @emp["last_name"]
+                            <!-- Added ID here -->
+                            <span class="fs-5 opacity-50 ms-2">#@emp["employee_id"]</span>
+                        </h2>
                         <p class="mb-2 opacity-75">@emp["email"]</p>
-                        <span class="badge bg-light text-dark text-uppercase tracking-wider">@emp["dept_name"]</span>
-                        <span class="badge bg-warning text-dark text-uppercase tracking-wider ms-2">@emp["employment_status"]</span>
+
+                        <div class="d-flex gap-2">
+                            <span class="badge bg-light text-dark text-uppercase tracking-wider">@emp["dept_name"]</span>
+                            <span class="badge bg-warning text-dark text-uppercase tracking-wider">@emp["employment_status"]</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -36,34 +44,71 @@
 
         <div class="row g-4">
 
+            <!-- 2. LEFT COLUMN: EXPANDED DETAILS -->
             <div class="col-md-4">
                 <div class="card border-0 shadow-sm h-100 rounded-4">
                     <div class="card-header bg-white fw-bold text-uni-blue py-3 border-bottom">
-                        Personal Information
+                        Employee Details
                     </div>
                     <div class="card-body">
                         <ul class="list-group list-group-flush">
+
+                            <!-- Contract Info -->
+                            <li class="list-group-item px-0 pt-0">
+                                <small class="text-muted d-block fw-bold">Contract Type</small>
+                                <span class="text-capitalize">
+                                    <i class="fas fa-file-contract me-2 text-info"></i>
+                                    @emp["type_of_contract"].ToString().Replace("_", " ")
+                                </span>
+                            </li>
+
                             <li class="list-group-item px-0">
-                                <small class="text-muted d-block">Address</small>
+                                <small class="text-muted d-block fw-bold">Official Day Off</small>
+                                <span>
+                                    <i class="fas fa-calendar-day me-2 text-warning"></i>
+                                    @emp["official_day_off"]
+                                </span>
+                            </li>
+
+                            <li class="list-group-item px-0">
+                                <small class="text-muted d-block fw-bold">Experience</small>
+                                <span>
+                                    <i class="fas fa-briefcase me-2 text-success"></i>
+                                    @emp["years_of_experience"] Years
+                                </span>
+                            </li>
+
+                            <!-- Personal Info -->
+                            <li class="list-group-item px-0">
+                                <small class="text-muted d-block fw-bold">National ID</small>
+                                <span>@emp["national_ID"]</span>
+                            </li>
+
+                            <li class="list-group-item px-0">
+                                <small class="text-muted d-block fw-bold">Address</small>
                                 <span>@emp["address"]</span>
                             </li>
+
                             <li class="list-group-item px-0">
-                                <small class="text-muted d-block">Gender</small>
+                                <small class="text-muted d-block fw-bold">Gender</small>
                                 <span>@emp["gender"]</span>
                             </li>
+
                             <li class="list-group-item px-0">
-                                <small class="text-muted d-block">Hire Date</small>
+                                <small class="text-muted d-block fw-bold">Hire Date</small>
                                 <span>@Convert.ToDateTime(emp["hire_date"]).ToString("MMMM dd, yyyy")</span>
                             </li>
-                            <li class="list-group-item px-0">
-                                <small class="text-muted d-block">Salary</small>
-                                <span class="fw-bold text-success">$@emp["salary"]</span>
+
+                            <li class="list-group-item px-0 pb-0">
+                                <small class="text-muted d-block fw-bold">Current Salary</small>
+                                <span class="fw-bold text-success fs-5">$@emp["salary"]</span>
                             </li>
                         </ul>
                     </div>
                 </div>
             </div>
 
+            <!-- 3. RIGHT COLUMN: ACTIONS & PERFORMANCE -->
             <div class="col-md-8">
 
                 <div class="card border-0 shadow-sm mb-4 rounded-4">

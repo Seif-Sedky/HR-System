@@ -19,8 +19,11 @@
                 <div class="col-md-3 col-sm-6">
                     <div class="card shadow-sm h-100 border-start border-4 border-uni-blue">
                         <div class="card-body py-3">
-                            <small class="text-muted text-uppercase fw-bold" style="font-size: 0.75rem;">@row["Department"]</small>
-                            <div class="h2 fw-bold text-uni-blue mb-0 mt-1">@row["Number of Employees"]</div>
+                            <!-- UPDATED: Much bigger, darker, and clearer Department Title -->
+                            <div class="text-dark text-uppercase fw-bold mb-2" style="font-size: 1.25rem; letter-spacing: 1px;">
+                                @row["Department"]
+                            </div>
+                            <div class="h2 fw-bold text-uni-blue mb-0">@row["Number of Employees"]</div>
                         </div>
                     </div>
                 </div>
@@ -97,6 +100,7 @@
                                         </td>
 
                                         <td>
+                                            <!-- Standardized Badge Size -->
                                             <span class="badge bg-white text-dark border shadow-sm px-2 py-1">
                                                 @row["dept_name"]
                                             </span>
@@ -114,10 +118,10 @@
                                         </td>
 
                                         <td class="text-end pe-4">
-                                            <!-- LINK TO THE NEW PROFILE PAGE -->
-                                            <!-- We pass the ID in the URL: /Admin/EmployeeProfile?id=1 -->
+                                            <!-- UPDATED: Kept rounding (50px) but reverted size to normal (px-3) -->
                                             <a asp-page="/Admin/EmployeeProfile" asp-route-id="@row["employee_id"]"
-                                               class="btn btn-sm btn-uni-blue shadow-sm px-3 fw-bold text-white text-decoration-none">
+                                               class="btn btn-sm btn-uni-blue shadow-sm px-3 text-white text-decoration-none fw-bold"
+                                               style="border-radius: 50px;">
                                                 <i class="fas fa-user-circle me-1"></i> View Profile
                                             </a>
                                         </td>
@@ -184,6 +188,7 @@
 
     </div>
 </div>
+
 <script>
     function filterTable() {
         var input = document.getElementById("employeeSearch");
@@ -193,18 +198,18 @@
 
         for (var i = 1; i < tr.length; i++) {
             // Get ID (index 0), Name (index 1), and Email (index 3)
-            var tdId = tr[i].getElementsByTagName("td")[0];   // <--- Added this
+            var tdId = tr[i].getElementsByTagName("td")[0];
             var tdName = tr[i].getElementsByTagName("td")[1];
             var tdEmail = tr[i].getElementsByTagName("td")[3];
 
             if (tdId || tdName || tdEmail) {
                 // Get text content from all three
-                var txtId = tdId.textContent || tdId.innerText;       // <--- Added this
+                var txtId = tdId.textContent || tdId.innerText;
                 var txtName = tdName.textContent || tdName.innerText;
                 var txtEmail = tdEmail.textContent || tdEmail.innerText;
 
                 // Check if the filter matches ANY of them
-                if (txtId.toUpperCase().indexOf(filter) > -1 ||       // <--- Added this check
+                if (txtId.toUpperCase().indexOf(filter) > -1 ||
                     txtName.toUpperCase().indexOf(filter) > -1 ||
                     txtEmail.toUpperCase().indexOf(filter) > -1) {
 

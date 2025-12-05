@@ -2212,3 +2212,8 @@ AS
 
 
 GO
+
+select e.employee_id, e.password, r.role_name from Employee e Join Employee_Role r
+on e.employee_id = r.emp_ID
+
+select e.employee_id, e.password from employee e ;

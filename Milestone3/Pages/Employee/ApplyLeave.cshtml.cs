@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
 using System.Data;
 
-namespace Milestone3.Pages.Employee2.Leaves
+namespace Milestone3.Pages.Employee
 {
     public class ApplyLeaveModel : PageModel
     {
@@ -317,8 +317,8 @@ namespace Milestone3.Pages.Employee2.Leaves
                     MyAttendanceRecords.Add(new AttendanceRecord
                     {
                         Date = Convert.ToDateTime(row["date"]),
-                        CheckIn = row["check_in_time"] != DBNull.Value ? TimeSpan.Parse(row["check_in_time"].ToString()) : (TimeSpan?)null,
-                        CheckOut = row["check_out_time"] != DBNull.Value ? TimeSpan.Parse(row["check_out_time"].ToString()) : (TimeSpan?)null,
+                        CheckIn = row["check_in_time"] != DBNull.Value ? TimeSpan.Parse(row["check_in_time"].ToString()) : null,
+                        CheckOut = row["check_out_time"] != DBNull.Value ? TimeSpan.Parse(row["check_out_time"].ToString()) : null,
                         TotalMinutes = row["total_duration"] != DBNull.Value ? Convert.ToInt32(row["total_duration"]) : 0,
                         Status = row["status"].ToString()
                     });

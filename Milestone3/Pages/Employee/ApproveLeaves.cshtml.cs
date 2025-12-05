@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
 using System.Data;
 
-namespace Milestone3.Pages.Employee2.Approvals
+namespace Milestone3.Pages.Employee
 {
     public class ApproveLeavesModel : PageModel
     {
@@ -500,7 +500,7 @@ namespace Milestone3.Pages.Employee2.Approvals
                             Description = row["document_description"] != DBNull.Value ? row["document_description"].ToString() : "",
                             FileName = row["file_name"] != DBNull.Value ? row["file_name"].ToString() : "",
                             Type = row["document_type"] != DBNull.Value ? row["document_type"].ToString() : "Memo",
-                            CreationDate = row["creation_date"] != DBNull.Value ? Convert.ToDateTime(row["creation_date"]) : (DateTime?)null
+                            CreationDate = row["creation_date"] != DBNull.Value ? Convert.ToDateTime(row["creation_date"]) : null
                         };
 
                         requestsDict[requestId].Documents.Add(document);
