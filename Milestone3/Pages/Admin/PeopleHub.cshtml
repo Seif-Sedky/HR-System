@@ -6,12 +6,20 @@
 
 <div class="container-fluid py-4">
 
-    <!-- 1. HEADER WIDGETS -->
-    <div class="row mb-4 g-3">
-        <div class="col-12">
-            <h2 class="text-uni-blue fw-bold mb-3">People Operations</h2>
+    <!-- 1. HEADER SECTION -->
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h2 class="text-uni-blue fw-bold mb-0">People Operations</h2>
         </div>
+        <div class="col-auto">
+            <a asp-page="/Admin/Index" class="btn btn-outline-secondary btn-sm shadow-sm">
+                <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
 
+    <!-- 2. STATS WIDGETS -->
+    <div class="row mb-4 g-3">
         @if (Model.DepartmentStats != null)
         {
             foreach (System.Data.DataRow row in Model.DepartmentStats.Rows)
@@ -31,7 +39,7 @@
         }
     </div>
 
-    <!-- 2. TABS NAVIGATION -->
+    <!-- 3. TABS NAVIGATION -->
     <ul class="nav nav-tabs mb-4" id="peopleTabs" role="tablist">
         <li class="nav-item">
             <button class="nav-link active fw-bold px-4" id="dir-tab" data-bs-toggle="tab" data-bs-target="#directory" type="button">
@@ -45,7 +53,7 @@
         </li>
     </ul>
 
-    <!-- 3. TABS CONTENT -->
+    <!-- 4. TABS CONTENT -->
     <div class="tab-content" id="peopleTabsContent">
 
         <!-- TAB 1: EMPLOYEE DIRECTORY -->
@@ -57,7 +65,7 @@
                     <div class="row align-items-center">
                         <div class="col-md-6">
                             <div class="input-group">
-                                <span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-muted">🔍</i></span>
+                                <span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-muted"></i></span>
                                 <input type="text" id="employeeSearch" class="form-control border-start-0 bg-light" placeholder="Search by name, email, or ID..." onkeyup="filterTable()">
                             </div>
                         </div>
