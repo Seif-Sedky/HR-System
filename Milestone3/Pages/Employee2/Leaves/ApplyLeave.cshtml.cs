@@ -78,10 +78,14 @@ namespace Milestone3.Pages.Employee2.Leaves
         {
             // Update the hidden field value to match the selected type
             // This ensures the correct form is displayed after submission
-            
+            if (HttpContext.Session.GetInt32("EmpID") == null)
+            {
+                Response.Redirect("/Employee/Login");
+            }
+
             try
             {
-                int employeeId = 4; // TODO: Replace with logged-in user ID from session
+                int? employeeId = HttpContext.Session.GetInt32("EmpID"); // TODO: Replace with logged-in user ID from session
 
                 switch (LeaveType.ToLower())
                 {
@@ -106,9 +110,19 @@ namespace Milestone3.Pages.Employee2.Leaves
                         break;
                 }
             }
+            catch (SqlException ex) when (ex.Message.Contains("Cannot insert the value NULL into column 'Emp1_ID'"))
+            {
+                Message = "Unable to process leave request: No appropriate approver found for your role/department. Please contact HR or your administrator.";
+                MessageType = "error";
+            }
             catch (SqlException ex) when (ex.Message.Contains("SqlDateTime overflow"))
             {
                 Message = "Please ensure all date fields are filled in correctly.";
+                MessageType = "error";
+            }
+            catch (SqlException ex)
+            {
+                Message = $"Database error: {ex.Message}";
                 MessageType = "error";
             }
             catch (Exception ex)
@@ -123,7 +137,7 @@ namespace Milestone3.Pages.Employee2.Leaves
             return Page();
         }
 
-        private async Task SubmitAnnualLeave(int employeeId)
+        private async Task SubmitAnnualLeave(int? employeeId)
         {
             await _db.ExecuteNonQuery("Submit_annual",
                 new SqlParameter("@employee_ID", employeeId),
@@ -137,7 +151,7 @@ namespace Milestone3.Pages.Employee2.Leaves
             ClearForm();
         }
 
-        private async Task SubmitUnpaidLeave(int employeeId)
+        private async Task SubmitUnpaidLeave(int? employeeId)
         {
             await _db.ExecuteNonQuery("Submit_unpaid",
                 new SqlParameter("@employee_ID", employeeId),
@@ -152,7 +166,7 @@ namespace Milestone3.Pages.Employee2.Leaves
             ClearForm();
         }
 
-        private async Task SubmitMedicalLeave(int employeeId)
+        private async Task SubmitMedicalLeave(int? employeeId)
         {
             await _db.ExecuteNonQuery("Submit_medical",
                 new SqlParameter("@employee_ID", employeeId),
@@ -170,7 +184,7 @@ namespace Milestone3.Pages.Employee2.Leaves
             ClearForm();
         }
 
-        private async Task SubmitAccidentalLeave(int employeeId)
+        private async Task SubmitAccidentalLeave(int? employeeId)
         {
             await _db.ExecuteNonQuery("Submit_accidental",
                 new SqlParameter("@employee_ID", employeeId),
@@ -183,7 +197,7 @@ namespace Milestone3.Pages.Employee2.Leaves
             ClearForm();
         }
 
-        private async Task SubmitCompensationLeave(int employeeId)
+        private async Task SubmitCompensationLeave(int? employeeId)
         {
             await _db.ExecuteNonQuery("Submit_compensation",
                 new SqlParameter("@employee_ID", employeeId),
@@ -214,9 +228,13 @@ namespace Milestone3.Pages.Employee2.Leaves
 
         private async Task LoadEmployeeInfo()
         {
+            if (HttpContext.Session.GetInt32("EmpID") == null)
+            {
+                Response.Redirect("/Employee/Login");
+            }
             try
             {
-                int employeeId = 4; // TODO: Replace with logged-in user ID
+                int? employeeId = HttpContext.Session.GetInt32("EmpID"); // TODO: Replace with logged-in user ID
                 var result = await _db.ExecuteQuery(
                     "SELECT annual_balance, accidental_balance, type_of_contract FROM Employee WHERE employee_id = @empId",
                     new SqlParameter("@empId", employeeId)
@@ -240,9 +258,14 @@ namespace Milestone3.Pages.Employee2.Leaves
 
         private async Task LoadAvailableEmployees()
         {
+            if (HttpContext.Session.GetInt32("EmpID") == null)
+            {
+                Response.Redirect("/Employee/Login");
+            }
+
             try
             {
-                int employeeId = 4; // TODO: Replace with logged-in user ID
+                int? employeeId = HttpContext.Session.GetInt32("EmpID"); // TODO: Replace with logged-in user ID
                 
                 var result = await _db.ExecuteQuery(@"
                     SELECT e.employee_id, e.first_name, e.last_name, e.employment_status
@@ -272,9 +295,13 @@ namespace Milestone3.Pages.Employee2.Leaves
 
         private async Task LoadMyAttendance()
         {
+            if (HttpContext.Session.GetInt32("EmpID") == null)
+            {
+                Response.Redirect("/Employee/Login");
+            }
             try
             {
-                int employeeId = 4; // TODO: Replace with logged-in user ID
+                int? employeeId = HttpContext.Session.GetInt32("EmpID"); // TODO: Replace with logged-in user ID
                 
                 var result = await _db.ExecuteQuery(@"
                     SELECT TOP 10 date, check_in_time, check_out_time, total_duration, status
@@ -303,4 +330,23 @@ namespace Milestone3.Pages.Employee2.Leaves
             }
         }
     }
+
+    public class EmployeeItem
+    {
+        public int EmployeeId { get; set; }
+        public string FullName { get; set; }
+        public string Status { get; set; }
+    }
+
+    public class AttendanceRecord
+    {
+        public DateTime Date { get; set; }
+        public TimeSpan? CheckIn { get; set; }
+        public TimeSpan? CheckOut { get; set; }
+        public int TotalMinutes { get; set; }
+        public string Status { get; set; }
+        public double TotalHours => TotalMinutes / 60.0;
+    }
+
 }
+

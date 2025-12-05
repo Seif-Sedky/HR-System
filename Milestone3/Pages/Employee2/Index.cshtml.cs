@@ -25,9 +25,13 @@ namespace Milestone3.Pages.Employee2
 
         private async Task LoadCurrentEmployeeInfo()
         {
+            if (HttpContext.Session.GetInt32("EmpID") == null)
+            {
+                Response.Redirect("/Employee/Login");
+            }
             try
             {
-                int employeeId = 13; // TODO: Replace with logged-in user ID from session
+                int? employeeId = HttpContext.Session.GetInt32("EmpID"); // TODO: Replace with logged-in user ID from session
 
                 // Get employee basic info
                 var empResult = await _db.ExecuteQuery(@"
@@ -85,5 +89,6 @@ namespace Milestone3.Pages.Employee2
         public int AccidentalBalance { get; set; }
         public string RoleName { get; set; }
         public string Title { get; set; }
+        public string ContractType { get; set; }
     }
 }

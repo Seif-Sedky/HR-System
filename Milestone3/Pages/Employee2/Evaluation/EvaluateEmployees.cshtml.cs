@@ -39,9 +39,13 @@ namespace Milestone3.Pages.Employee2.Evaluation
 
         public async Task<IActionResult> OnPostEvaluateAsync()
         {
+            if (HttpContext.Session.GetInt32("EmpID") == null)
+            {
+                Response.Redirect("/Employee/Login");
+            }
             try
             {
-                int deanId = 11; // TODO: Replace with logged-in Dean ID from session
+                int? deanId = HttpContext.Session.GetInt32("EmpID"); // TODO: Replace with logged-in Dean ID from session
 
                 // Validate rating
                 if (Rating < 1 || Rating > 5)
@@ -88,9 +92,13 @@ namespace Milestone3.Pages.Employee2.Evaluation
 
         private async Task LoadDepartmentEmployees()
         {
+            if (HttpContext.Session.GetInt32("EmpID") == null)
+            {
+                Response.Redirect("/Employee/Login");
+            }
             try
             {
-                int deanId = 11; // TODO: Replace with logged-in user ID
+                int? deanId = HttpContext.Session.GetInt32("EmpID"); // TODO: Replace with logged-in user ID
                 
                 // Get Dean's role and department
                 var roleResult = await _db.ExecuteQuery(@"

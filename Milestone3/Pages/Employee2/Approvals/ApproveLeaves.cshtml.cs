@@ -32,6 +32,11 @@ namespace Milestone3.Pages.Employee2.Approvals
         // Annual Leave Handlers
         public async Task<IActionResult> OnPostApproveAnnualAsync(int requestId, int replacementId)
         {
+
+            if (HttpContext.Session.GetInt32("EmpID") == null)
+            {
+                Response.Redirect("/Employee/Login");
+            }
             await CheckAccessAndLoadRequests();
             if (!HasAccess)
             {
@@ -40,7 +45,7 @@ namespace Milestone3.Pages.Employee2.Approvals
 
             try
             {
-                int upperboardId = 15; // TODO: Replace with logged-in user ID (President/Dean/Vice-Dean)
+                int? upperboardId = HttpContext.Session.GetInt32("EmpID"); // TODO: Replace with logged-in user ID (President/Dean/Vice-Dean)
 
                 await _db.ExecuteNonQuery("Upperboard_approve_annual",
                     new SqlParameter("@request_ID", requestId),
@@ -94,6 +99,11 @@ namespace Milestone3.Pages.Employee2.Approvals
 
         public async Task<IActionResult> OnPostRejectAnnualAsync(int requestId)
         {
+            if (HttpContext.Session.GetInt32("EmpID") == null)
+            {
+                Response.Redirect("/Employee/Login");
+            }
+
             await CheckAccessAndLoadRequests();
             if (!HasAccess)
             {
@@ -102,7 +112,7 @@ namespace Milestone3.Pages.Employee2.Approvals
 
             try
             {
-                int upperboardId = 15; // TODO: Replace with logged-in user ID
+                int? upperboardId = HttpContext.Session.GetInt32("EmpID"); // TODO: Replace with logged-in user ID
 
                 // Update the approval status to rejected
                 await _db.ExecuteQuery(@"
@@ -133,6 +143,10 @@ namespace Milestone3.Pages.Employee2.Approvals
         // Unpaid Leave Handlers
         public async Task<IActionResult> OnPostApproveUnpaidAsync(int requestId)
         {
+            if (HttpContext.Session.GetInt32("EmpID") == null)
+            {
+                Response.Redirect("/Employee/Login");
+            }
             await CheckAccessAndLoadRequests();
             if (!HasAccess)
             {
@@ -141,7 +155,7 @@ namespace Milestone3.Pages.Employee2.Approvals
 
             try
             {
-                int upperboardId = 15; // TODO: Replace with logged-in user ID (President/Vice-President)
+                int? upperboardId = HttpContext.Session.GetInt32("EmpID"); // TODO: Replace with logged-in user ID (President/Vice-President)
 
                 await _db.ExecuteNonQuery("Upperboard_approve_unpaids",
                     new SqlParameter("@request_ID", requestId),
@@ -194,6 +208,12 @@ namespace Milestone3.Pages.Employee2.Approvals
 
         public async Task<IActionResult> OnPostRejectUnpaidAsync(int requestId)
         {
+
+            if (HttpContext.Session.GetInt32("EmpID") == null)
+            {
+                Response.Redirect("/Employee/Login");
+            }
+
             await CheckAccessAndLoadRequests();
             if (!HasAccess)
             {
@@ -202,7 +222,7 @@ namespace Milestone3.Pages.Employee2.Approvals
 
             try
             {
-                int upperboardId = 15; // TODO: Replace with logged-in user ID
+                int? upperboardId = HttpContext.Session.GetInt32("EmpID"); // TODO: Replace with logged-in user ID
 
                 // Update the approval status to rejected
                 await _db.ExecuteQuery(@"
@@ -232,13 +252,18 @@ namespace Milestone3.Pages.Employee2.Approvals
 
         private async Task CheckAccessAndLoadRequests()
         {
+
+            if (HttpContext.Session.GetInt32("EmpID") == null)
+            {
+                Response.Redirect("/Employee/Login");
+            }
             try
             {
                 // Clear existing lists to prevent duplicates on page reloads
                 AnnualRequests.Clear();
                 UnpaidRequests.Clear();
                 
-                int upperboardId = 15; // TODO: Replace with logged-in user ID
+                int? upperboardId = HttpContext.Session.GetInt32("EmpID"); // TODO: Replace with logged-in user ID
                 
                 // Get role of current user
                 var roleResult = await _db.ExecuteQuery(@"
@@ -283,7 +308,7 @@ namespace Milestone3.Pages.Employee2.Approvals
             }
         }
 
-        private async Task LoadAnnualRequests(int upperboardId)
+        private async Task LoadAnnualRequests(int? upperboardId)
         {
             try
             {
@@ -386,7 +411,7 @@ namespace Milestone3.Pages.Employee2.Approvals
             }
         }
 
-        private async Task LoadUnpaidRequests(int upperboardId)
+        private async Task LoadUnpaidRequests(int? upperboardId)
         {
             try
             {
@@ -533,5 +558,56 @@ namespace Milestone3.Pages.Employee2.Approvals
             return false;
         }
     }
+
+    public class AnnualLeaveRequest
+    {
+        public int RequestId { get; set; }
+        public int EmployeeId { get; set; }
+        public string EmployeeName { get; set; }
+        public string Department { get; set; }
+        public DateTime DateOfRequest { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public int NumDays { get; set; }
+        public string ContractType { get; set; }
+        public int AnnualBalance { get; set; }
+        public int ReplacementEmployeeId { get; set; }
+        public string ReplacementName { get; set; }
+        public string ReplacementStatus { get; set; }
+        public string MyApprovalStatus { get; set; }
+        public string FinalStatus { get; set; }
+        public bool IsReplacementOnLeave { get; set; }
+        public bool IsReplacementSameDepartment { get; set; }
+    }
+
+    public class UnpaidLeaveRequest
+    {
+        public int RequestId { get; set; }
+        public int EmployeeId { get; set; }
+        public string EmployeeName { get; set; }
+        public string Department { get; set; }
+        public DateTime DateOfRequest { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public int NumDays { get; set; }
+        public string ContractType { get; set; }
+        public int AnnualBalance { get; set; }
+        public List<DocumentInfo> Documents { get; set; } = new List<DocumentInfo>();
+        public string MyApprovalStatus { get; set; }
+        public string FinalStatus { get; set; }
+        public string EmployeeRole { get; set; }
+        public bool IsCounterpartOnLeave { get; set; }
+    }
+
+    public class DocumentInfo
+    {
+        public int DocumentId { get; set; }
+        public string Description { get; set; }
+        public string FileName { get; set; }
+        public string Type { get; set; }
+        public DateTime? CreationDate { get; set; }
+    }
+
+
 }
 
