@@ -20,7 +20,7 @@ namespace Milestone3.Pages.Admin
         public string ViewDate { get; set; } = "today";
 
         [BindProperty(SupportsGet = true)]
-        public string ActiveTab { get; set; } = "logs"; // Default tab
+        public string ActiveTab { get; set; } = "logs";
 
         public AttendanceHubModel(Database db)
         {
@@ -59,7 +59,6 @@ namespace Milestone3.Pages.Admin
         }
 
         // --- GLOBAL ACTIONS ---
-        // (Redirect to 'logs' tab by default)
 
         public async Task<IActionResult> OnPostInitiateAsync()
         {
@@ -99,75 +98,39 @@ namespace Milestone3.Pages.Admin
             return RedirectToPage(new { ViewDate, ActiveTab = "logs" });
         }
 
-        // --- CORRECTION ACTIONS ---
-        // (Redirect to 'corrections' tab so user stays there)
+        // --- CORRECTION ACTIONS (AJAX) ---
 
-        // 5. Clean Day Offs (AJAX Version)
+        // 5. Clean Day Offs (FIXED)
         public async Task<IActionResult> OnPostCleanDayOffAsync(int targetEmpId)
         {
             if (targetEmpId <= 0)
             {
-                
-                return new JsonResult(new
-                {
-                    success = false,
-                    message = "Employee ID must be positive."
-                });
+                return new JsonResult(new { success = false, message = "Employee ID must be positive." });
             }
+
             try
             {
-                
-                var dt = await _db.ExecuteQuery(
-                    "EXEC Remove_DayOff @Employee_ID",
+                // FIX: REMOVED "EXEC" keyword. Just pass the name.
+                await _db.ExecuteNonQuery(
+                    "Remove_DayOff",
                     new SqlParameter("@Employee_ID", targetEmpId)
                 );
 
-                if (dt.Rows.Count > 0)
+                return new JsonResult(new
                 {
-                    string message = dt.Rows[0]["Message"].ToString();
-                    string status = dt.Rows[0]["Status"].ToString();
-
-                    if (status == "ERROR")
-                    {
-                        return new JsonResult(new
-                        {
-                            success = false,
-                            message = message
-                        });
-                    }
-                    else
-                    {
-                        return new JsonResult(new
-                        {
-                            success = true,
-                            message = message
-                        });
-                    }
-                }
-                else
-                {
-                    return new JsonResult(new
-                    {
-                        success = false,
-                        message = "No message returned from SQL."
-                    });
-                }
+                    success = true,
+                    message = $"Day-off records cleaned for Employee #{targetEmpId}"
+                });
             }
             catch (Exception ex)
             {
-                return new JsonResult(new
-                {
-                    success = false,
-                    message = ex.Message
-                });
+                return new JsonResult(new { success = false, message = "SQL Error: " + ex.Message });
             }
         }
 
-        // 6. Clean Approved Leaves (AJAX Version)
-        
+        // 6. Clean Approved Leaves (FIXED)
         public async Task<IActionResult> OnPostCleanLeavesAsync(int targetEmpId)
         {
-            // 1. Check if employeeId is positive AND exists (YOUR LOGIC)
             var existsDt = await _db.ExecuteQuery(
                 "SELECT 1 FROM dbo.Employee WHERE employee_id = @Employee_ID",
                 new SqlParameter("@Employee_ID", targetEmpId)
@@ -175,22 +138,17 @@ namespace Milestone3.Pages.Admin
 
             if (targetEmpId <= 0 || existsDt.Rows.Count == 0)
             {
-                return new JsonResult(new
-                {
-                    success = false,
-                    message = "Employee ID must be positive and exist in the employees table."
-                });
+                return new JsonResult(new { success = false, message = "Employee ID not found." });
             }
 
             try
             {
-                // 2. Execute stored procedure (YOUR LOGIC)
-                await _db.ExecuteQuery(
-                    "EXEC Remove_Approved_Leaves @Employee_id",
+                // FIX: REMOVED "EXEC" keyword.
+                await _db.ExecuteNonQuery(
+                    "Remove_Approved_Leaves",
                     new SqlParameter("@Employee_id", targetEmpId)
                 );
 
-                // 3. JSON success (HIS LOGIC)
                 return new JsonResult(new
                 {
                     success = true,
@@ -199,34 +157,25 @@ namespace Milestone3.Pages.Admin
             }
             catch (Exception ex)
             {
-                // 4. JSON error
-                return new JsonResult(new
-                {
-                    success = false,
-                    message = ex.Message
-                });
+                return new JsonResult(new { success = false, message = ex.Message });
             }
         }
 
-        // ... inside AttendanceHubModel class ...
-
-        // 7. BULK ACTION: Clean All Day-Offs
+        // 7. BULK ACTION: Clean All Day-Offs (FIXED)
         public async Task<IActionResult> OnPostCleanAllDayOffsAsync()
         {
             try
             {
-                // 1. Get all Employee IDs
                 var empTable = await _db.ExecuteQuery("SELECT employee_id FROM Employee");
                 int count = 0;
 
-                // 2. Loop through every employee
                 foreach (DataRow row in empTable.Rows)
                 {
                     int empId = Convert.ToInt32(row["employee_id"]);
 
-                    // Execute the existing SP for this ID
-                    await _db.ExecuteQuery(
-                        "EXEC Remove_DayOff @Employee_ID",
+                    // FIX: REMOVED "EXEC" keyword.
+                    await _db.ExecuteNonQuery(
+                        "Remove_DayOff",
                         new SqlParameter("@Employee_ID", empId)
                     );
                     count++;
@@ -244,23 +193,21 @@ namespace Milestone3.Pages.Admin
             }
         }
 
-        // 8. BULK ACTION: Clean All Leaves
+        // 8. BULK ACTION: Clean All Leaves (FIXED)
         public async Task<IActionResult> OnPostCleanAllLeavesAsync()
         {
             try
             {
-                // 1. Get all Employee IDs
                 var empTable = await _db.ExecuteQuery("SELECT employee_id FROM Employee");
                 int count = 0;
 
-                // 2. Loop through every employee
                 foreach (DataRow row in empTable.Rows)
                 {
                     int empId = Convert.ToInt32(row["employee_id"]);
 
-                    // Execute the existing SP for this ID
-                    await _db.ExecuteQuery(
-                        "EXEC Remove_Approved_Leaves @Employee_id",
+                    // FIX: REMOVED "EXEC" keyword.
+                    await _db.ExecuteNonQuery(
+                        "Remove_Approved_Leaves",
                         new SqlParameter("@Employee_id", empId)
                     );
                     count++;
@@ -277,6 +224,5 @@ namespace Milestone3.Pages.Admin
                 return new JsonResult(new { success = false, message = "Bulk Error: " + ex.Message });
             }
         }
-
     }
 }
