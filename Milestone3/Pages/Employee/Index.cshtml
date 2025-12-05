@@ -7,10 +7,12 @@
 <style>
     :root {
         --gradient-primary: linear-gradient(135deg, #1e2fa3 0%, #3a226d 100%);
-        --gradient-success: #21b03e;
+        /* CHANGED: Made success a gradient */
+        --gradient-success: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
         --gradient-danger: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
         --gradient-warning: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        --gradient-info: #4facfe;
+        /* CHANGED: Made info a gradient */
+        --gradient-info: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
         --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
         --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
         --shadow-lg: 0 8px 24px rgba(0,0,0,0.15);
@@ -32,16 +34,16 @@
         overflow: hidden;
     }
 
-    .welcome-header::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -10%;
-        width: 300px;
-        height: 300px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 50%;
-    }
+        .welcome-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
 
     .welcome-title {
         font-size: 2rem;
@@ -70,13 +72,13 @@
         position: relative;
     }
 
-    .employee-meta i {
-        margin: 0 0.5rem 0 1rem;
-    }
+        .employee-meta i {
+            margin: 0 0.5rem 0 1rem;
+        }
 
-    .employee-meta i:first-child {
-        margin-left: 0;
-    }
+            .employee-meta i:first-child {
+                margin-left: 0;
+            }
 
     .balance-card {
         background: white;
@@ -88,10 +90,10 @@
         height: 100%;
     }
 
-    .balance-card:hover {
-        transform: translateY(-4px);
-        box-shadow: var(--shadow-md);
-    }
+        .balance-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
 
     .balance-label {
         font-size: 0.813rem;
@@ -109,12 +111,12 @@
         margin: 0;
     }
 
-    .balance-value small {
-        font-size: 1rem;
-        font-weight: 500;
-        color: #a0aec0;
-        margin-left: 0.5rem;
-    }
+        .balance-value small {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #a0aec0;
+            margin-left: 0.5rem;
+        }
 
     .section-title {
         font-size: 1.25rem;
@@ -125,17 +127,17 @@
         padding-left: 1rem;
     }
 
-    .section-title::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 4px;
-        height: 24px;
-        background: var(--gradient-primary);
-        border-radius: 2px;
-    }
+        .section-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 24px;
+            background: var(--gradient-primary);
+            border-radius: 2px;
+        }
 
     .action-card {
         background: white;
@@ -151,33 +153,47 @@
         overflow: hidden;
     }
 
-    .action-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 4px;
-        background: currentColor;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
+        .action-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: currentColor;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
 
-    .action-card:hover {
-        transform: translateY(-6px);
-        box-shadow: var(--shadow-lg);
-        text-decoration: none;
-    }
+        .action-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-lg);
+            text-decoration: none;
+        }
 
-    .action-card:hover::before {
-        opacity: 1;
-    }
+            .action-card:hover::before {
+                opacity: 1;
+            }
 
-    .action-card.primary { color: #667eea; }
-    .action-card.danger { color: #ee0979; }
-    .action-card.warning { color: #f093fb; }
-    .action-card.success { color: #11998e; }
-    .action-card.info { color: #4facfe; }
+        .action-card.primary {
+            color: #667eea;
+        }
+
+        .action-card.danger {
+            color: #ee0979;
+        }
+
+        .action-card.warning {
+            color: #f093fb;
+        }
+
+        .action-card.success {
+            color: #11998e;
+        }
+
+        .action-card.info {
+            color: #4facfe;
+        }
 
     .action-icon {
         width: 64px;
@@ -191,22 +207,22 @@
         position: relative;
     }
 
-    .action-icon::before {
-        content: '';
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        border-radius: 16px;
-        background: currentColor;
-        opacity: 0.1;
-        z-index: 0;
-    }
+        .action-icon::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 16px;
+            background: currentColor;
+            opacity: 0.1;
+            z-index: 0;
+        }
 
-    .action-icon i {
-        position: relative;
-        z-index: 1;
-        color: currentColor;
-    }
+        .action-icon i {
+            position: relative;
+            z-index: 1;
+            color: currentColor;
+        }
 
     .action-title {
         font-size: 1.125rem;
@@ -237,11 +253,25 @@
         color: white;
     }
 
-    .action-card.primary .action-button { background: var(--gradient-primary); }
-    .action-card.danger .action-button { background: var(--gradient-danger); }
-    .action-card.warning .action-button { background: var(--gradient-warning); }
-    .action-card.success .action-button { background: var(--gradient-success); }
-    .action-card.info .action-button { background: var(--gradient-info); }
+    .action-card.primary .action-button {
+        background: var(--gradient-primary);
+    }
+
+    .action-card.danger .action-button {
+        background: var(--gradient-danger);
+    }
+
+    .action-card.warning .action-button {
+        background: var(--gradient-warning);
+    }
+
+    .action-card.success .action-button {
+        background: var(--gradient-success);
+    }
+
+    .action-card.info .action-button {
+        background: var(--gradient-info);
+    }
 
     .action-button:hover {
         transform: scale(1.02);
@@ -265,10 +295,10 @@
         align-items: center;
     }
 
-    .info-panel-title i {
-        margin-right: 0.5rem;
-        color: #4facfe;
-    }
+        .info-panel-title i {
+            margin-right: 0.5rem;
+            color: #4facfe;
+        }
 
     .info-panel ul {
         margin: 0;
@@ -282,9 +312,9 @@
         font-size: 0.9rem;
     }
 
-    .info-panel li:last-child {
-        margin-bottom: 0;
-    }
+        .info-panel li:last-child {
+            margin-bottom: 0;
+        }
 
     .info-panel strong {
         color: #2d3748;
@@ -295,13 +325,13 @@
         .welcome-title {
             font-size: 1.5rem;
         }
-        
+
         .role-badge {
             display: block;
             margin: 1rem 0 0 0;
             text-align: center;
         }
-        
+
         .balance-value {
             font-size: 2rem;
         }
