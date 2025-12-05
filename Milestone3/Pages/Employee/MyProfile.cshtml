@@ -4,7 +4,44 @@
     ViewData["Title"] = "My Profile";
 }
 
+<style>
+    /* Back Button Style */
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        background: white;
+        color: #4a5568;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.875rem;
+        border: 2px solid #e2e8f0;
+        transition: all 0.3s ease;
+        margin-bottom: 1.5rem;
+    }
+
+        .back-button:hover {
+            background: #f7fafc;
+            border-color: #cbd5e0;
+            color: #2d3748;
+            transform: translateX(-4px);
+            text-decoration: none;
+        }
+
+        .back-button i {
+            font-size: 1rem;
+        }
+</style>
+
 <div class="container py-5">
+
+    <!-- Back to Dashboard Button -->
+    <a href="/Employee" class="back-button">
+        <i class="fas fa-arrow-left"></i>
+        Back to Dashboard
+    </a>
 
     @if (Model.EmployeeInfo != null)
     {
