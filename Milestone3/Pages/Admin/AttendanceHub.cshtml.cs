@@ -208,5 +208,75 @@ namespace Milestone3.Pages.Admin
             }
         }
 
+        // ... inside AttendanceHubModel class ...
+
+        // 7. BULK ACTION: Clean All Day-Offs
+        public async Task<IActionResult> OnPostCleanAllDayOffsAsync()
+        {
+            try
+            {
+                // 1. Get all Employee IDs
+                var empTable = await _db.ExecuteQuery("SELECT employee_id FROM Employee");
+                int count = 0;
+
+                // 2. Loop through every employee
+                foreach (DataRow row in empTable.Rows)
+                {
+                    int empId = Convert.ToInt32(row["employee_id"]);
+
+                    // Execute the existing SP for this ID
+                    await _db.ExecuteQuery(
+                        "EXEC Remove_DayOff @Employee_ID",
+                        new SqlParameter("@Employee_ID", empId)
+                    );
+                    count++;
+                }
+
+                return new JsonResult(new
+                {
+                    success = true,
+                    message = $"Bulk Action Complete: Processed day-offs for {count} employees."
+                });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new { success = false, message = "Bulk Error: " + ex.Message });
+            }
+        }
+
+        // 8. BULK ACTION: Clean All Leaves
+        public async Task<IActionResult> OnPostCleanAllLeavesAsync()
+        {
+            try
+            {
+                // 1. Get all Employee IDs
+                var empTable = await _db.ExecuteQuery("SELECT employee_id FROM Employee");
+                int count = 0;
+
+                // 2. Loop through every employee
+                foreach (DataRow row in empTable.Rows)
+                {
+                    int empId = Convert.ToInt32(row["employee_id"]);
+
+                    // Execute the existing SP for this ID
+                    await _db.ExecuteQuery(
+                        "EXEC Remove_Approved_Leaves @Employee_id",
+                        new SqlParameter("@Employee_id", empId)
+                    );
+                    count++;
+                }
+
+                return new JsonResult(new
+                {
+                    success = true,
+                    message = $"Bulk Action Complete: Resolved leaves for {count} employees."
+                });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new { success = false, message = "Bulk Error: " + ex.Message });
+            }
+        }
+
     }
 }

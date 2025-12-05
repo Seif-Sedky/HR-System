@@ -4,20 +4,24 @@
     ViewData["Title"] = "Attendance Hub";
 }
 
-@Html.AntiForgeryToken() <div class="container-fluid py-4">
+@Html.AntiForgeryToken()
+<div class="container-fluid py-4">
 
+    <!-- HEADER SECTION -->
     <div class="row mb-4 align-items-center">
         <div class="col">
             <h2 class="text-uni-blue fw-bold">Attendance Operations</h2>
             <p class="text-muted mb-0">Manage daily logs, system initiations, and corrections.</p>
         </div>
         <div class="col-auto">
-            <a asp-page="/Admin/PeopleHub" class="btn btn-outline-secondary btn-sm shadow-sm">
-                <i class="fas fa-users me-2"></i> Go to People Hub
+            <!-- EDIT: Changed to Back to Dashboard -->
+            <a asp-page="/Admin/Index" class="btn btn-outline-secondary btn-sm shadow-sm">
+                <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
             </a>
         </div>
     </div>
 
+    <!-- DAILY SETUP CARDS -->
     <div class="row g-4 mb-5">
         <div class="col-md-6">
             <div class="card border-0 shadow-sm h-100 rounded-4 border-start border-4 border-success">
@@ -50,6 +54,7 @@
         </div>
     </div>
 
+    <!-- TABS NAVIGATION -->
     <ul class="nav nav-tabs mb-4" id="attendanceTabs" role="tablist">
         <li class="nav-item">
             <button class="nav-link active fw-bold px-4" id="logs-tab" data-bs-toggle="tab" data-bs-target="#logs" type="button">
@@ -63,8 +68,10 @@
         </li>
     </ul>
 
+    <!-- TAB CONTENT -->
     <div class="tab-content" id="attendanceTabsContent">
 
+        <!-- TAB 1: DAILY LOGS -->
         <div class="tab-pane fade show active" id="logs">
             <div class="card shadow-sm border-0 rounded-4">
                 <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
@@ -170,16 +177,38 @@
             </div>
         </div>
 
+        <!-- TAB 2: CORRECTIONS -->
         <div class="tab-pane fade" id="corrections">
             <div class="card shadow-sm border-0 rounded-4">
 
+                <!-- EDIT: Updated Header with Better Spaced Buttons -->
                 <div class="card-header bg-white py-3">
-                    <div class="row align-items-center">
-                        <div class="col-md-6">
-                            <h5 class="mb-0 text-uni-blue fw-bold">Employee Statistics & Actions</h5>
+                    <div class="row align-items-center g-3">
+                        <div class="col-md-4">
+                            <h5 class="mb-0 text-uni-blue fw-bold">Correction Center</h5>
                             <small class="text-muted">Overview for the current month</small>
                         </div>
-                        <div class="col-md-6">
+
+                        <!-- Central Buttons Area -->
+                        <div class="col-md-4">
+                            <div class="d-flex justify-content-center gap-3">
+                                <!-- Clean All Button -->
+                                <form method="post" asp-page-handler="CleanAllDayOffs" class="d-inline" onsubmit="return handleAjax(event, this)">
+                                    <button class="btn btn-outline-success btn-sm fw-bold shadow-sm px-3 rounded-pill">
+                                        <i class="fas fa-magic me-1"></i> Clean All Day-Offs
+                                    </button>
+                                </form>
+
+                                <!-- Resolve All Button -->
+                                <form method="post" asp-page-handler="CleanAllLeaves" class="d-inline" onsubmit="return handleAjax(event, this)">
+                                    <button class="btn btn-outline-warning btn-sm fw-bold text-dark shadow-sm px-3 rounded-pill">
+                                        <i class="fas fa-check-double me-1"></i> Resolve All Leaves
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-muted"></i></span>
                                 <input type="text" id="statsSearch" class="form-control border-start-0 bg-light"
@@ -329,7 +358,7 @@
                 // DONE STATE:
                 btn.innerHTML = '<i class="fas fa-check"></i> Done';
                 // Remove ALL old colors
-                btn.classList.remove('btn-uni-gold', 'btn-uni-green', 'text-dark', 'text-white');
+                btn.classList.remove('btn-uni-gold', 'btn-uni-green', 'btn-outline-success', 'btn-outline-warning', 'text-dark', 'text-white');
                 // Force Gray Background + White Text
                 btn.classList.add('btn-secondary', 'text-white');
 
@@ -347,7 +376,7 @@
             btn.disabled = false;
         }
         return false;
-    } // <--- THIS CLOSING BRACE WAS MISSING
+    }
 
     // 4. Helper: Set Input to Current Time
     function setNow(elementId) {
