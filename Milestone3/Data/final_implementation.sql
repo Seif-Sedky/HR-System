@@ -1,21 +1,8 @@
-﻿/*-- Step 1: Switch your session's context to the Master database.
--- You CANNOT drop a database while your current session is using it.
-USE master;
+﻿---------------- Procedures Create_Holiday and HR_approval_comp are updated----------------------------
+
+
+create DATABASE University_HR_ManagementSystem;
 GO
-
--- Step 2: Set the database to SINGLE_USER mode with IMMEDIATE ROLLBACK.
--- This immediately kills all connections and prevents new ones from connecting.
-ALTER DATABASE [University_HR_ManagementSystem] 
-SET SINGLE_USER 
-WITH ROLLBACK IMMEDIATE;
-GO
-
--- Step 3: Drop the database now that it is free of connections.
-DROP DATABASE [University_HR_ManagementSystem];
-GO*/
-
---create DATABASE University_HR_ManagementSystem;
---GO
 USE University_HR_ManagementSystem;
 GO
 
@@ -454,14 +441,24 @@ GO
 
 
 -- 2.3 d)
-CREATE PROC Create_Holiday
+CREATE or alter PROC Create_Holiday
 AS
-CREATE TABLE Holiday(
-holiday_ID int IDENTITY,
-holiday_name varchar(50),
-from_date date,
-to_date date
-);
+begin
+	IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = 'Holiday')
+	BEGIN
+		CREATE TABLE Holiday(
+			holiday_ID int IDENTITY,
+			holiday_name varchar(50),
+			from_date date,
+			to_date date
+		);
+	END
+	else
+	begin
+		print 'There is already Holiday table in the database'
+	end
+end
+
 GO
 
 
@@ -571,7 +568,6 @@ CREATE OR ALTER PROCEDURE dbo.Remove_DayOff
     @employee_ID INT
 AS
 BEGIN
-	SET NOCOUNT ON;
     DECLARE @official_day_off VARCHAR(50);
     DECLARE @current_year  INT = YEAR(GETDATE());
     DECLARE @current_month INT = MONTH(GETDATE());
@@ -582,13 +578,7 @@ BEGIN
 	WHERE employee_id = @employee_ID;
 	IF @official_day_off IS NULL
 	BEGIN
-	   --PRINT 'Employee not found or official_day_off is NULL for the specified employee.'; 
-	  
-	    SELECT 
-            'ERROR'  AS Status,
-            'Employee '+CAST(@employee_ID AS VARCHAR(10)) +' not found or official_day_off is NULL for the specified employee.' AS Message;
-        RETURN;
-		-- added bt ST ,
+	   PRINT 'Employee not found or official_day_off is NULL for the specified employee.';
 	END
 	-- Perform delete:
 	-- remove rows for the employee in the current month/year
@@ -607,13 +597,9 @@ BEGIN
 			(A.check_in_time IS NULL AND A.check_out_time IS NULL)
 		  );
 
-	 SELECT 
-        'SUCCESS' AS Status,
-        'Day off of employee '+CAST(@employee_ID AS VARCHAR(10)) +' removal completed successfully.' AS Message;
-		-- added bt ST ,
+
 END;
 GO
-
 
 ----------- 2.3 j -------------
 
@@ -710,45 +696,15 @@ BEGIN
     DECLARE @Emp1Exists BIT = 0;
     DECLARE @Emp2Exists BIT = 0;
     -- Basic validation
-    IF @Emp1_ID IS NULL OR @Emp2_ID IS NULL --BEGIN PRINT 'Emp1_ID and Emp2_ID must not be NULL.';RETURN;END   editied by ST
-	BEGIN 
-        SELECT 'ERROR' AS Status, 'Emp1_ID and Emp2_ID must not be NULL.' AS Message;
-        RETURN;
-    END
-
-    IF @from_date IS NULL OR @to_date IS NULL --BEGIN PRINT 'from_date and to_date must not be NULL.';RETURN;END editied by ST
-	 BEGIN 
-        SELECT 'ERROR' AS Status, 'from_date and to_date must not be NULL.' AS Message;
-        RETURN;
-    END
-
-    IF @from_date > @to_date --BEGIN PRINT 'from_date must be less than or equal to to_date.';RETURN; END editied by ST
-	BEGIN 
-        SELECT 'ERROR' AS Status, 'from_date must be less than or equal to to_date.' AS Message;
-        RETURN; 
-    END
-
-    IF @Emp1_ID = @Emp2_ID --BEGIN PRINT 'Emp1_ID and Emp2_ID cannot be the same.';RETURN;END editied by ST
-	 BEGIN 
-        SELECT 'ERROR' AS Status, 'Emp1_ID and Emp2_ID cannot be the same.' AS Message;
-        RETURN;
-    END
-
+    IF @Emp1_ID IS NULL OR @Emp2_ID IS NULL BEGIN PRINT 'Emp1_ID and Emp2_ID must not be NULL.';RETURN;END
+    IF @from_date IS NULL OR @to_date IS NULL BEGIN PRINT 'from_date and to_date must not be NULL.';RETURN;END
+    IF @from_date > @to_date BEGIN PRINT 'from_date must be less than or equal to to_date.';RETURN; END
+    IF @Emp1_ID = @Emp2_ID BEGIN PRINT 'Emp1_ID and Emp2_ID cannot be the same.';RETURN;END
     -- Verify employees exist
     IF EXISTS (SELECT 1 FROM Employee WHERE employee_id = @Emp1_ID) SET @Emp1Exists = 1;
     IF EXISTS (SELECT 1 FROM Employee WHERE employee_id = @Emp2_ID) SET @Emp2Exists = 1;
-    IF @Emp1Exists = 0 --BEGIN PRINT 'Employee with Emp1_ID not found.'; RETURN;END editied by ST
-	BEGIN 
-        SELECT 'ERROR' AS Status, 'Employee with Emp1_ID not found.' AS Message; 
-        RETURN;
-    END
-
-    IF @Emp2Exists = 0 --BEGIN PRINT 'Employee with Emp2_ID not found.'; RETURN;END editied by ST
-	BEGIN 
-        SELECT 'ERROR' AS Status, 'Employee with Emp2_ID not found.' AS Message; 
-        RETURN;
-    END
-
+    IF @Emp1Exists = 0 BEGIN PRINT 'Employee with Emp1_ID not found.'; RETURN;END
+    IF @Emp2Exists = 0 BEGIN PRINT 'Employee with Emp2_ID not found.'; RETURN;END
     --overlap check: prevent Emp2 double-assignment
     IF EXISTS (
         SELECT 1
@@ -756,19 +712,13 @@ BEGIN
         WHERE r.Emp2_ID = @Emp2_ID
           AND NOT (r.to_date < @from_date OR r.from_date > @to_date)
     )
-    --BEGIN
-    --    PRINT 'Replacement employee (Emp2) already has an overlapping replacement period.'; editied by ST
-    --    RETURN;
-    --END
-	BEGIN
-        SELECT 'ERROR' AS Status, 'Replacement employee (Emp2) already has an overlapping replacement period.' AS Message;
+    BEGIN
+        PRINT 'Replacement employee (Emp2) already has an overlapping replacement period.';
         RETURN;
     END
     -- Perform the insertion
     INSERT INTO dbo.Employee_Replace_Employee (Emp1_ID, Emp2_ID, from_date, to_date)
     VALUES (@Emp1_ID, @Emp2_ID, @from_date, @to_date);
-
-	 SELECT 'SUCCESS' AS Status, 'Replacement record inserted successfully.' AS Message; -- editied by ST
 END;
 GO
 
@@ -1071,83 +1021,111 @@ GO
 
 
 ------------------------------------------------ d) -----------------------------------------------------
-CREATE or alter PROC HR_approval_comp
-@request_ID int, 
-@HR_ID int
-AS	
-DECLARE @check_in time
-DECLARE @check_out time
-DECLARE @instead_of_day date
-DECLARE @emp_id int
+CREATE or alter PROC HR_approval_comp @request_ID int, @HR_ID int
+AS
+declare @emplid int 
+declare @day_off varchar(50)
+declare @dep_name varchar(50)
+declare @date_original_day date
+declare @compensationDate date
+declare @replacementID int
 
-IF EXISTS(
-select 1 from Compensation_Leave
-where request_ID = @request_ID 
-)
-begin
-declare @current_status varchar(50)
-SELECT @current_status = final_approval_status FROM Leave 
-        WHERE request_ID = @request_ID;
+--get the ID of the employee
+select @emplid=emp_ID, @date_original_day=date_of_original_workday, @replacementID=replacement_emp from Compensation_Leave where @request_ID=request_ID
 
-        -- Check if leave is already processed
-        IF @current_status <> 'Pending'
-        BEGIN
-            PRINT 'Error: Leave request has already been processed.';
-            RETURN;
-        END
+select @day_off=official_day_off,@dep_name=dept_name
+from Employee where employee_id=@emplid
+-- CASE 1 check if date_of_original_workday not his day off
+DECLARE @day_name varchar(50);
+SET @day_name = DATENAME(WEEKDAY, @date_original_day);
+if @day_off <> @day_name
+begin 
+UPDATE leave 
+set final_approval_status='Rejected'
+where request_ID=@request_ID 
 
------------------- get the original work day and the ID of the requester ----------
-	select @instead_of_day = date_of_original_workday, @emp_id = emp_ID
-	from Compensation_Leave
-	where request_ID = @request_ID
-	---- check if the original work day is the dayoff ------------
-	if EXISTS (
-		select 1 from Employee
-		where employee_id = @emp_id and official_day_off = DATENAME(WEEKDAY, @instead_of_day)
-	)
-	begin
-	-------------------- check 8 hours in this day and the replacement is not on leave -----------------------
-
-		declare @replacement_ID int
-		select @replacement_ID = replacement_emp
-		from Compensation_Leave
-		where emp_ID = @emp_id and request_ID = @request_ID
-		------------- check on leave -----------------------------
-		if EXISTS(
-			select 1 from Employee
-			where employee_id = @replacement_ID and employment_status <> 'onleave'
-		)
-		begin
-		-------------------------- check 8 hours and in the same month ------------------------------
-			SELECT @check_in=check_in_time, @check_out= check_out_time
-			FROM Attendance
-			WHERE date= @instead_of_day AND emp_ID=@emp_id
-
-
-			IF( DATEDIFF(HOUR,@check_in, @check_out)>=8) and exists(
-                select 1 from Leave l
-                inner join Compensation_Leave cl
-                on l.request_ID = cl.request_ID
-                where month(l.date_of_request) = month(cl.date_of_original_workday) and year(l.date_of_request) = year(cl.date_of_original_workday) and l.request_ID = @request_ID
-            )
-			begin
-				---------- approve the leave -----------------
-				UPDATE Employee_Approve_Leave
-				SET status = 'Approved' 
-				WHERE leave_ID = @request_ID AND Emp1_ID = @HR_ID
-
-				UPDATE LEAVE
-				SET final_approval_status = 'Approved' 
-				WHERE request_ID = @request_ID
-
-				return
-			end
-		end
-		
-		
-	end
-
+--update employee approve leave 
+update Employee_Approve_Leave 
+set status='Rejected'
+where leave_ID=@request_ID
+return
 end
+-- Same Month and Same Year
+select @compensationDate=start_date from leave where request_ID=@request_ID
+
+if NOT (MONTH (@compensationDate) =MONTH (@date_original_day) and YEAR (@compensationDate) =YEAR (@date_original_day))
+begin 
+UPDATE leave 
+set final_approval_status='Rejected'
+where request_ID=@request_ID 
+
+--update employee approve leave 
+update Employee_Approve_Leave 
+set status='Rejected'
+where leave_ID=@request_ID
+return
+end
+--Rules of replacement same Department and replacement not on leave
+--In case the person of replacement isn't on leave so, i need to check the dates of the requests  
+
+declare @onleave bit =dbo.Is_On_Leave (@replacementID ,@compensationDate, @compensationDate)
+if @onleave =1
+begin 
+update Employee_Approve_Leave
+set status='Rejected'
+where leave_ID=@request_ID 
+--update final status of Leave 
+update leave
+set final_approval_status='Rejected'
+where request_ID=@request_ID 
+return
+end
+--check if same department 
+--getting dep of replacement
+declare @dep_name_2 varchar(50)
+select @dep_name_2=dept_name from Employee where employee_id=@replacementID
+--not equal reject 
+if (@dep_name<>@dep_name_2) 
+begin
+update Employee_Approve_Leave
+set status='Rejected'
+where leave_ID=@request_ID 
+--update final status of Leave 
+update leave
+set final_approval_status='Rejected'
+where request_ID=@request_ID 
+
+return 
+end
+-------------------------- Compensation needs at less 8 hours else reject
+declare @total_duration int
+select @total_duration=total_duration from Attendance where date=@date_original_day and emp_ID=@emplid
+
+if @total_duration < 8
+begin 
+update Employee_Approve_Leave
+set status='Rejected'
+where leave_ID=@request_ID 
+--update final status of Leave 
+update leave
+set final_approval_status='Rejected'
+where request_ID=@request_ID 
+return 
+end
+--accept and insert into table employee replace employee
+update Employee_Approve_Leave
+set status='Approved'
+where leave_ID=@request_ID 
+---- update leave 
+update leave
+set final_approval_status='Approved'
+where request_ID=@request_ID 
+--- Update Employee_Replace_Employee if approved
+insert into Employee_Replace_Employee values (@emplid,@replacementID,@compensationDate,@compensationDate)
+
+
+
+
 GO
 ----------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------
@@ -1835,7 +1813,6 @@ where E.employee_id=@employee_ID and ER.role_name like '%HR%' ))
 begin
 SET @approval_emp_ID = dbo.getCorrespondingHR_Manager()
 
-IF @approval_emp_ID IS NOT NULL
 INSERT INTO Employee_Approve_Leave(Emp1_ID, leave_ID)
 VALUES(@approval_emp_ID, @req_id);
 
@@ -1848,7 +1825,6 @@ begin
 SET @approval_emp_ID = dbo.getCorrespondingHR(@employee_ID)
 
 --they should be added to the approvals table
-IF @approval_emp_ID IS NOT NULL
 INSERT INTO Employee_Approve_Leave(Emp1_ID, leave_ID)
 VALUES(@approval_emp_ID, @req_id);
 end
@@ -2236,15 +2212,3 @@ AS
 
 
 GO
-
--- added by ST
-CREATE TABLE AdminLog (
-    LogID INT IDENTITY PRIMARY KEY,
-    AdminName NVARCHAR(100),
-    Action NVARCHAR(200),
-    Timestamp DATETIME DEFAULT GETDATE()
-);
-
-
-
-
