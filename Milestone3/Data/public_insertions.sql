@@ -1,6 +1,6 @@
-﻿USE University_HR_ManagementSystem;
+﻿
+USE University_HR_ManagementSystem;
 go
-
 
 ------
 insert into Department (name,building_location)
@@ -781,7 +781,7 @@ EXEC clearAllTables
 -- 1. Setup Departments
 INSERT INTO Department (name, building_location) VALUES 
 ('Computer Science', 'Building C4'),
-('Human Resources', 'Admin Building');
+('HR', 'Admin Building');
 
 -- 2. Setup Roles (Crucial for Base Salary Calculation)
 -- Rank 1 = High salary, Rank 5 = Lower salary
@@ -795,7 +795,7 @@ INSERT INTO Role (role_name, title, description, rank, base_salary, percentage_Y
 INSERT INTO Employee (first_name, last_name, email, password, address, gender, official_day_off, years_of_experience, national_ID, employment_status, type_of_contract, annual_balance, accidental_balance, hire_date, dept_name) VALUES 
 ('Alice', 'Wonder', 'alice@uni.edu', '123', '101 Logic Lane', 'F', 'Saturday', 10, '1111111111111111', 'active', 'full_time', 30, 7, '2015-01-01', 'Computer Science'),
 ('Bob', 'Builder', 'bob@uni.edu', '123', '202 Tool St', 'M', 'Friday', 2, '2222222222222222', 'active', 'full_time', 30, 7, '2021-06-01', 'Computer Science'),
-('Charlie', 'Check', 'charlie@uni.edu', '123', '303 Payroll Pl', 'M', 'Sunday', 5, '3333333333333333', 'active', 'full_time', 25, 5, '2019-03-15', 'Human Resources');
+('Charlie', 'Check', 'charlie@uni.edu', '123', '303 Payroll Pl', 'M', 'Sunday', 5, '3333333333333333', 'active', 'full_time', 25, 5, '2019-03-15', 'HR');
 
 -- 4. Assign Roles (Links Employee to Salary)
 INSERT INTO Employee_Role (emp_ID, role_name)
