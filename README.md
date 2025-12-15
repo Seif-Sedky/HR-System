@@ -3,8 +3,6 @@
 A robust and aesthetically designed web-based system for managing university HR operations, academic workflows, and administrative tasks. This project digitizes the core functionalities of a university, including employee attendance, leave management, payroll processing, and student/staff administration.
 
 **Course:** Databases I (CSEN501) - German University in Cairo  
-**Milestone:** 3 (GUI Implementation)
-
 ---
 
 ## 🚀 Features
