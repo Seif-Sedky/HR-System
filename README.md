@@ -35,6 +35,11 @@ The system is divided into three role-based portals, each with specialized workf
 
 ---
 
+🖼️ Sample Preview Images
+<p align="center"> <img src="Sample Preview Images/1.png" width="700" /> <img src="Sample Preview Images/2.png" width="700" /> <img src="Sample Preview Images/3.png" width="700" /> <img src="Sample Preview Images/4.png" width="700" /> <img src="Sample Preview Images/5.png" width="700" /> <img src="Sample Preview Images/6.png" width="700" /> </p>
+
+---
+
 ## 💻 Local Setup Guide
 
 Follow these steps to get the project running on your machine.
