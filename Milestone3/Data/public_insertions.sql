@@ -645,9 +645,10 @@ SELECT * FROM Deduction
 
 SELECT * FROM Employee
 select * from Leave INNER JOIN Compensation_Leave ON Leave.request_ID = Compensation_Leave.request_ID
-EXEC clearAllTables
+--EXEC clearAllTables
 
 
+/*
 -------- DEDUCTION UI TESTING --------------
  
  
@@ -889,3 +890,9 @@ SELECT
                     ORDER BY l.date_of_request DESC
 
 UPDATE Employee_Approve_Leave SET status = 'pending'
+
+*/
+
+
+
+SELECT * FROM Employee
